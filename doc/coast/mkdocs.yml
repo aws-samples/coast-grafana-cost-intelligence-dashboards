@@ -1,4 +1,4 @@
-site_name: COAST - Cost Optimation and Savings Tool with Amazon managed Grafana
+site_name: COAST - Cost Optimation and Savings Tool for Amazon Managed Grafana
 docs_dir: "docs"
 copyright: "Copyright © Amazon 2023"
 site_author: "AWS"
@@ -15,10 +15,28 @@ theme:
     repo: fontawesome/brands/github
   features:
     - navigation.tabs.sticky
-
+    - navigation.sections
+    - toc.integrate
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.tabs.link
+    - content.code.annotation
+    - content.code.copy
+  language: en
   palette:
-    primary: indigo
-    accent: grey
+    - scheme: default
+      toggle:
+        icon: material/toggle-switch-off-outline 
+        name: Switch to dark mode
+      primary: teal
+      accent: purple 
+    - scheme: slate 
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode    
+      primary: teal
+      accent: lime  
 
 
 
@@ -46,3 +64,7 @@ markdown_extensions:
       permalink: true
 plugins:
   - search
+
+
+copyright: |
+  &copy; 2023 <a href="https://aws-samples.github.io/cost-dashboard-for-amazon-managed-grafana/"  target="_blank" rel="noopener">COAST @ AWS</a>  
