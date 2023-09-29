@@ -10,26 +10,28 @@
         <meta name="author" content="AWS">
       
       
-        <link rel="canonical" href="https://aws-samples.github.io/cost-dashboard-for-amazon-managed-grafana/">
+        <link rel="canonical" href="https://aws-samples.github.io/cost-dashboard-for-amazon-managed-grafana/deploy/">
       
       
+        <link rel="prev" href="../getstarted/">
       
-        <link rel="next" href="getstarted/">
+      
+        <link rel="next" href="../faq/">
       
       
-      <link rel="icon" href="images/aws-favicon.png">
+      <link rel="icon" href="../images/aws-favicon.png">
       <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.0">
     
     
       
-        <title>COAST - Cost Optimation and Savings Tool for Amazon Managed Grafana</title>
+        <title>Deploy the solution - COAST - Cost Optimation and Savings Tool for Amazon Managed Grafana</title>
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.9f615399.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.9f615399.min.css">
       
         
-        <link rel="stylesheet" href="assets/stylesheets/palette.649f08f9.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.649f08f9.min.css">
       
       
 
@@ -48,7 +50,7 @@
       
     
     
-    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -77,7 +79,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#what-is-coast" class="md-skip">
+        <a href="#deploying-the-solution" class="md-skip">
           Skip to content
         </a>
       
@@ -93,9 +95,9 @@
 
 <header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="." title="COAST - Cost Optimation and Savings Tool for Amazon Managed Grafana" class="md-header__button md-logo" aria-label="COAST - Cost Optimation and Savings Tool for Amazon Managed Grafana" data-md-component="logo">
+    <a href=".." title="COAST - Cost Optimation and Savings Tool for Amazon Managed Grafana" class="md-header__button md-logo" aria-label="COAST - Cost Optimation and Savings Tool for Amazon Managed Grafana" data-md-component="logo">
       
-  <img src="images/aws-logo.png" alt="logo">
+  <img src="../images/aws-logo.png" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -112,7 +114,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Introduction
+              Deploy the solution
             
           </span>
         </div>
@@ -214,15 +216,53 @@
 
 <nav class="md-nav md-nav--primary md-nav--integrated" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="." title="COAST - Cost Optimation and Savings Tool for Amazon Managed Grafana" class="md-nav__button md-logo" aria-label="COAST - Cost Optimation and Savings Tool for Amazon Managed Grafana" data-md-component="logo">
+    <a href=".." title="COAST - Cost Optimation and Savings Tool for Amazon Managed Grafana" class="md-nav__button md-logo" aria-label="COAST - Cost Optimation and Savings Tool for Amazon Managed Grafana" data-md-component="logo">
       
-  <img src="images/aws-logo.png" alt="logo">
+  <img src="../images/aws-logo.png" alt="logo">
 
     </a>
     COAST - Cost Optimation and Savings Tool for Amazon Managed Grafana
   </label>
   
   <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Introduction
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getstarted/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+      </a>
+    </li>
+  
+
     
       
       
@@ -243,18 +283,18 @@
           
   
   <span class="md-ellipsis">
-    Introduction
+    Deploy the solution
   </span>
   
 
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <a href="." class="md-nav__link md-nav__link--active">
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
-    Introduction
+    Deploy the solution
   </span>
   
 
@@ -276,9 +316,22 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#key-features" class="md-nav__link">
-    Key Features
+  <a href="#deployment-using-aws-cli" class="md-nav__link">
+    Deployment using AWS CLI
   </a>
+  
+    <nav class="md-nav" aria-label="Deployment using AWS CLI">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#post-installation-steps" class="md-nav__link">
+    Post Installation Steps
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -296,45 +349,7 @@
   
   
     <li class="md-nav__item">
-      <a href="getstarted/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Getting Started
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="deploy/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Deploy the solution
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="faq/" class="md-nav__link">
+      <a href="../faq/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -353,7 +368,7 @@
   
   
     <li class="md-nav__item">
-      <a href="contributors/" class="md-nav__link">
+      <a href="../contributors/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -381,16 +396,24 @@
                   
 
 
-<h1 id="what-is-coast">What is COAST?<a class="headerlink" href="#what-is-coast" title="Permanent link">&para;</a></h1>
-<p>COAST is an open-source Infrastructure-as-a-code based (<a href="https://aws.amazon.com/cloudformation/">AWS CloudFormation</a>) one-click solution to simplify cloud financial management of your resources in AWS. COAST provides role-based customizable Grafana dashboards ensuring that every stakeholder receives es relevant, actionable insights tailored to their unique needs and responsibilities. For customers, already using Grafana for operational insights, COAST is natural extention, enabling the monitoring the monitoring of both operational and cost metrics within a single, preferred platform, reducing operational friction and prompting a unified view of essential KPIs. With COAST, users can gain full visibility and control over their cloud costs and maximize their AWS Investments.</p>
-<h2 id="key-features">Key Features<a class="headerlink" href="#key-features" title="Permanent link">&para;</a></h2>
+<h1 id="deploying-the-solution">Deploying the Solution<a class="headerlink" href="#deploying-the-solution" title="Permanent link">&para;</a></h1>
+<h2 id="deployment-using-aws-cli">Deployment using AWS CLI<a class="headerlink" href="#deployment-using-aws-cli" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code>aws<span class="w"> </span>cloudformation<span class="w"> </span>create-stack<span class="w"> </span>
+--stack-name<span class="w"> </span>curcoast<span class="w"> </span>
+--template-body<span class="w"> </span>file://coast-cfn.yaml<span class="w"> </span>
+--parameters<span class="w"> </span><span class="nv">ParameterKey</span><span class="o">=</span>CURDataBucketName,ParameterValue<span class="o">=</span>demo-cur-report<span class="w"> </span>
+<span class="nv">ParameterKey</span><span class="o">=</span>CURReportName,ParameterValue<span class="o">=</span>demo-cur-report
+<span class="nv">ParameterKey</span><span class="o">=</span>CreateCURReport,ParameterValue<span class="o">=</span><span class="nb">false</span>
+<span class="nv">ParameterKey</span><span class="o">=</span>CURReportPrefixName,ParameterValue<span class="o">=</span>grafana
+<span class="nv">ParameterKey</span><span class="o">=</span>GrafanaDashboardTemplateURL,ParameterValue<span class="o">=</span>https://raw.githubusercontent.com/pelgrim/observability-best-practices/main/sandbox/coast/grafana-dashboard.json<span class="w">  </span>
+--capabilities<span class="w"> </span>CAPABILITY_NAMED_IAM
+</code></pre></div>
+<h3 id="post-installation-steps">Post Installation Steps<a class="headerlink" href="#post-installation-steps" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Persona based dashboards: Offer customizable and persona-based dashboards for Executives, Analysts, Developers, Cloud Operations, etc.</li>
-<li>Tag based Cost tracking: Allows users to monitor and optimized AWS spend at granular level. This is valuable for organizations with varied products, teams, and SaaS workloads, enabling precision monitoring of costs related to specific projects or departments.</li>
-<li>Unified Platform experience: For customers already utilizing Grafana for operational observability, COAST offers a unified platform experience, enabling the integration of operational and cost metrics within a familiar environment.</li>
-<li>Infrastructure-as-a-code: Single click repeatable, reliable and scalable deployment</li>
-<li>Open-source: Open-source nature of COAST will spur continued innovation and improvements ensuring the solution evolves in response to changing customer needs and market dynamics.</li>
-<li>Supports both Payer and member AWS accounts.</li>
+<li>Grafana workspaces require an identity provider (IdP) to enable users to log in to the workspace.</li>
+<li>We recommend AWS IAM Identity Center.  Follow instructions in the <a href="https://docs.aws.amazon.com/grafana/latest/userguide/AMG-manage-users-and-groups-AMG.html">Grafana User Guide</a> to setup user access.</li>
+<li>Login with the identity to the COAST Grafana workspace URL</li>
+<li>The dashboard will be automatically imported under the General folder in the Dashboards menu</li>
 </ul>
 
 
@@ -441,10 +464,10 @@
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": ".", "features": ["navigation.tabs.sticky", "navigation.sections", "toc.integrate", "navigation.top", "search.suggest", "search.highlight", "content.tabs.link", "content.code.annotation", "content.code.copy"], "search": "assets/javascripts/workers/search.a264c092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs.sticky", "navigation.sections", "toc.integrate", "navigation.top", "search.suggest", "search.highlight", "content.tabs.link", "content.code.annotation", "content.code.copy"], "search": "../assets/javascripts/workers/search.a264c092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="assets/javascripts/bundle.4e0fa4ba.min.js"></script>
+      <script src="../assets/javascripts/bundle.4e0fa4ba.min.js"></script>
       
     
   </body>
