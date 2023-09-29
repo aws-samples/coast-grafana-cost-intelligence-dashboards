@@ -1,7 +1,0 @@
-groups:
-  - name: apiserver-rules
-    rules:
-    - record: metric:apiserver_flowcontrol_request_concurrency_limit
-      expr: avg(rate(apiserver_flowcontrol_request_concurrency_limit[5m]))
-    - record: metric:apiserver_flowcontrol_rejected_requests_total  
-      expr: rate(apiserver_flowcontrol_rejected_requests_total[5m])  
