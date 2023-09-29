@@ -10,13 +10,13 @@
         <meta name="author" content="AWS">
       
       
-        <link rel="canonical" href="https://aws-samples.github.io/cost-dashboard-for-amazon-managed-grafana/contributors/">
+        <link rel="canonical" href="https://aws-samples.github.io/cost-dashboard-for-amazon-managed-grafana/deploy/">
       
       
-        <link rel="prev" href="../faq/">
+        <link rel="prev" href="../getstarted/">
       
       
-        <link rel="next" href="../contributing/">
+        <link rel="next" href="../faq/">
       
       
       <link rel="icon" href="../images/aws-favicon.png">
@@ -24,7 +24,7 @@
     
     
       
-        <title>Contributors - COAST - Cost Optimation and Savings Tool for Amazon Managed Grafana</title>
+        <title>Deploy the solution - COAST - Cost Optimation and Savings Tool for Amazon Managed Grafana</title>
       
     
     
@@ -79,7 +79,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#contributors" class="md-skip">
+        <a href="#deploying-the-solution" class="md-skip">
           Skip to content
         </a>
       
@@ -114,7 +114,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Contributors
+              Deploy the solution
             
           </span>
         </div>
@@ -292,9 +292,29 @@
       
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../deploy/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Deploy the solution
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -303,6 +323,46 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#deployment-using-aws-cli" class="md-nav__link">
+    Deployment using AWS CLI
+  </a>
+  
+    <nav class="md-nav" aria-label="Deployment using AWS CLI">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#post-installation-steps" class="md-nav__link">
+    Post Installation Steps
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -330,18 +390,9 @@
       
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../contributors/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -350,7 +401,6 @@
   
 
       </a>
-      
     </li>
   
 
@@ -392,22 +442,28 @@
   
 
 
-<h1 id="contributors">Contributors<a class="headerlink" href="#contributors" title="Permanent link">&para;</a></h1>
-<p>The content on this site is maintained by the Solutions Architects and Technical Account Managers from the
-AWS observability team with support from the AWS service teams and other
-volunteers from across the organization.</p>
-<p>Our goal is to make it easier to use AWS Native and Open Source Observability Services.</p>
-<p>The core team include the following people, in alphabetical order:</p>
+<h1 id="deploying-the-solution">Deploying the Solution<a class="headerlink" href="#deploying-the-solution" title="Permanent link">&para;</a></h1>
+<h2 id="deployment-using-aws-cli">Deployment using AWS CLI<a class="headerlink" href="#deployment-using-aws-cli" title="Permanent link">&para;</a></h2>
+<div class="codehilite"><pre><span></span><code>aws<span class="w"> </span>cloudformation<span class="w"> </span>create-stack<span class="w"> </span><span class="se">\</span>
+--stack-name<span class="w"> </span>curcoast<span class="w"> </span><span class="se">\</span>
+--template-body<span class="w"> </span>file://coast-cfn.yaml<span class="w"> </span><span class="se">\</span>
+--parameters<span class="w"> </span><span class="nv">ParameterKey</span><span class="o">=</span>CURDataBucketName,ParameterValue<span class="o">=</span>demo-cur-report<span class="w"> </span><span class="se">\</span>
+<span class="nv">ParameterKey</span><span class="o">=</span>CURReportName,ParameterValue<span class="o">=</span>demo-cur-report<span class="w"> </span><span class="se">\</span>
+<span class="nv">ParameterKey</span><span class="o">=</span>CreateCURReport,ParameterValue<span class="o">=</span><span class="nb">false</span><span class="w"> </span><span class="se">\</span>
+<span class="nv">ParameterKey</span><span class="o">=</span>CURReportPrefixName,ParameterValue<span class="o">=</span>grafana<span class="w"> </span><span class="se">\</span>
+<span class="nv">ParameterKey</span><span class="o">=</span>GrafanaDashboardTemplateURL,ParameterValue<span class="o">=</span>https://raw.githubusercontent.com/pelgrim/observability-best-practices/main/sandbox/coast/grafana-dashboard.json<span class="w">  </span><span class="se">\</span>
+--capabilities<span class="w"> </span>CAPABILITY_NAMED_IAM
+</code></pre></div>
+
+<h3 id="post-installation-steps">Post Installation Steps<a class="headerlink" href="#post-installation-steps" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Chris Strzelczyk</li>
-<li>Imaya Kumar Jagannathan</li>
-<li>Lucas Vieira Souza da Silva</li>
-<li>Munish Dabra</li>
-<li>Siva Guruvareddiar</li>
+<li>Grafana workspaces require an identity provider (IdP) to enable users to log in to the workspace.</li>
+<li>We recommend AWS IAM Identity Center.  Follow instructions in the <a href="https://docs.aws.amazon.com/grafana/latest/userguide/AMG-manage-users-and-groups-AMG.html">Grafana User Guide</a> to setup user access.</li>
+<li>Login with the identity to the COAST Grafana workspace URL</li>
+<li>The dashboard will be automatically imported under the General folder in the Dashboards menu</li>
+<li>After logging into your Amazon Managed Grafana dashboard, you will see like below:
+   <img alt="Dashboard" src="../images/image.png" title="Dashboard" /></li>
 </ul>
-<p>We welcome the wider open source community to this project.</p>
-<p>Note that all information published on this site is available via the
-MIT-0 license.</p>
 
 
 

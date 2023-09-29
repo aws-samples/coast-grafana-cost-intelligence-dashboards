@@ -10,13 +10,13 @@
         <meta name="author" content="AWS">
       
       
-        <link rel="canonical" href="https://aws-samples.github.io/cost-dashboard-for-amazon-managed-grafana/contributors/">
+        <link rel="canonical" href="https://aws-samples.github.io/cost-dashboard-for-amazon-managed-grafana/getstarted/">
       
       
-        <link rel="prev" href="../faq/">
+        <link rel="prev" href="..">
       
       
-        <link rel="next" href="../contributing/">
+        <link rel="next" href="../deploy/">
       
       
       <link rel="icon" href="../images/aws-favicon.png">
@@ -24,7 +24,7 @@
     
     
       
-        <title>Contributors - COAST - Cost Optimation and Savings Tool for Amazon Managed Grafana</title>
+        <title>Getting Started - COAST - Cost Optimation and Savings Tool for Amazon Managed Grafana</title>
       
     
     
@@ -79,7 +79,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#contributors" class="md-skip">
+        <a href="#getting-started" class="md-skip">
           Skip to content
         </a>
       
@@ -114,7 +114,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Contributors
+              Getting Started
             
           </span>
         </div>
@@ -273,9 +273,18 @@
       
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../getstarted/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -284,6 +293,7 @@
   
 
       </a>
+      
     </li>
   
 
@@ -330,18 +340,9 @@
       
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../contributors/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -350,7 +351,6 @@
   
 
       </a>
-      
     </li>
   
 
@@ -392,22 +392,43 @@
   
 
 
-<h1 id="contributors">Contributors<a class="headerlink" href="#contributors" title="Permanent link">&para;</a></h1>
-<p>The content on this site is maintained by the Solutions Architects and Technical Account Managers from the
-AWS observability team with support from the AWS service teams and other
-volunteers from across the organization.</p>
-<p>Our goal is to make it easier to use AWS Native and Open Source Observability Services.</p>
-<p>The core team include the following people, in alphabetical order:</p>
+<h1 id="getting-started">Getting Started<a class="headerlink" href="#getting-started" title="Permanent link">&para;</a></h1>
+<h1 id="pre-requisites">Pre-requisites<a class="headerlink" href="#pre-requisites" title="Permanent link">&para;</a></h1>
 <ul>
-<li>Chris Strzelczyk</li>
-<li>Imaya Kumar Jagannathan</li>
-<li>Lucas Vieira Souza da Silva</li>
-<li>Munish Dabra</li>
-<li>Siva Guruvareddiar</li>
+<li>AWS Organization</li>
+<li>AWS IAM Identity Center</li>
 </ul>
-<p>We welcome the wider open source community to this project.</p>
-<p>Note that all information published on this site is available via the
-MIT-0 license.</p>
+<h2 id="setup">Setup<a class="headerlink" href="#setup" title="Permanent link">&para;</a></h2>
+<p>The setup process will create the following resources, along with it's dependencies:</p>
+<ul>
+<li>Cost and Usage Report (AWS CUR) (optional)</li>
+<li>An Amazon Athena  database</li>
+<li>Glue/Lamda infrastructure to update Athena database with CUR</li>
+<li>An Amazon Managed Grafana workspace</li>
+<li>Grafana datasource for Amazon Athena</li>
+<li>Grafana dashboards</li>
+</ul>
+<h2 id="aws-cost-and-usage-report-cur-report">AWS Cost and Usage Report (CUR) report<a class="headerlink" href="#aws-cost-and-usage-report-cur-report" title="Permanent link">&para;</a></h2>
+<p>COAST support both existing CUR report as well as creation of new CUR report. In the CloudFormation template you have the option to specify if you would like the template to create a new CUR report.  If you already have an existing CUR and would like to use it, you can provide the report name to use as well.  </p>
+<h3 id="create-new-cur-report">Create New CUR Report<a class="headerlink" href="#create-new-cur-report" title="Permanent link">&para;</a></h3>
+<p>This option will create a new CUR and supporting infrastructure to hydrate the athena database with CUR data.  Note, it will take at least 24 hours for a new CUR to populate with data.  </p>
+<ul>
+<li>In CloudFormation, create a new stack from the cloudformation/coast-cfn.yaml</li>
+<li>Select 'true' in the CreateCURReport select form</li>
+<li>Enter a prefix path name for the new report in the CURReportPrefixName field</li>
+<li>Note, an entry in the CURReportName field is not needed for this option.  The template will generate a report name for you based on the CFN stack name</li>
+<li>Note, an S3 bucket name in CURDataBucketName is not needed for this option.  An S3 data bucket will be named and created based on the CFN stack name</li>
+</ul>
+<h3 id="use-existing-cur-report">Use Existing CUR Report<a class="headerlink" href="#use-existing-cur-report" title="Permanent link">&para;</a></h3>
+<p>Use this setting only if you already have a CUR and you would like Grafana to use that existing CUR as the datasource.  This option will use your existing CUR and create supporting infrastructure to hydrate the Athena database with CUR data.</p>
+<ul>
+<li>Ensure your CUR bucket of your existing CUR report is located in the same region as this Cloud Formation stack (<a href="https://docs.aws.amazon.com/cur/latest/userguide/use-athena-cf.html">see same region note in documentation</a>).  </li>
+<li>In CloudFormation, create a new stack from the cloudformation/coast-cfn.yaml</li>
+<li>Select 'false' in the CreateCURReport select form</li>
+<li>Enter the name of your existing CUR in the CURReportName field</li>
+<li>Enter the prefix path of the existing CUR in the CURReportPrefixName field</li>
+<li>Enter the S3 bucket of the existing CUR in the CURDataBucketName</li>
+</ul>
 
 
 

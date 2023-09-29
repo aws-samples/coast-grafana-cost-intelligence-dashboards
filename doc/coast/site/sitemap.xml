@@ -6,12 +6,27 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://aws-samples.github.io/cost-dashboard-for-amazon-managed-grafana/contributing/</loc>
+         <lastmod>2023-09-29</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://aws-samples.github.io/cost-dashboard-for-amazon-managed-grafana/contributors/</loc>
          <lastmod>2023-09-29</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://aws-samples.github.io/cost-dashboard-for-amazon-managed-grafana/deploy/</loc>
+         <lastmod>2023-09-29</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://aws-samples.github.io/cost-dashboard-for-amazon-managed-grafana/faq/</loc>
+         <lastmod>2023-09-29</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://aws-samples.github.io/cost-dashboard-for-amazon-managed-grafana/getstarted/</loc>
          <lastmod>2023-09-29</lastmod>
          <changefreq>daily</changefreq>
     </url>

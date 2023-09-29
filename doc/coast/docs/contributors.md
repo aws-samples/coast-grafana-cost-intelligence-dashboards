@@ -6,12 +6,12 @@ volunteers from across the organization.
 
 Our goal is to make it easier to use AWS Native and Open Source Observability Services.
 
-The core team include the following people:
+The core team include the following people, in alphabetical order:
 
-* Munish Dabra
 * Chris Strzelczyk
 * Imaya Kumar Jagannathan
 * Lucas Vieira Souza da Silva
+* Munish Dabra
 * Siva Guruvareddiar
 
 We welcome the wider open source community to this project.

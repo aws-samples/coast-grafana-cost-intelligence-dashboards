@@ -3,8 +3,7 @@ docs_dir: "docs"
 copyright: "Copyright © Amazon 2023"
 site_author: "AWS"
 site_url: "https://aws-samples.github.io/cost-dashboard-for-amazon-managed-grafana/"
-
-
+repo_url: https://github.com/aws-samples/cost-dashboard-for-amazon-managed-grafana
 theme:
   logo: images/aws-logo.png
   favicon: images/aws-favicon.png
@@ -37,34 +36,23 @@ theme:
         name: Switch to light mode    
       primary: teal
       accent: lime  
-
-
-
-
-
+nav:
+  - Introduction: 'index.md'
+  - Getting Started: 'getstarted.md'
+  - Deploy the solution: 'deploy.md'
+  - FAQ: 'faq.md'
+  - Contributors: 'contributors.md'  
+  - Get Involved: 'contributing.md'   
 markdown_extensions:
   - admonition
   - codehilite
   - footnotes
   - pymdownx.critic
-  - pymdownx.superfences:
-      custom_fences:
-        - name: mermaid
-          class: mermaid
-          format: !!python/name:pymdownx.superfences.fence_code_format
-  - pymdownx.snippets:
-      check_paths: true
-  - pymdownx.tabbed:
-      alternate_style: true
-  - pymdownx.tasklist:
-      custom_checkbox: true
   - toc:
       permalink: "¤"
   - toc:
       permalink: true
 plugins:
   - search
-
-
 copyright: |
-  &copy; 2023 <a href="https://aws-samples.github.io/cost-dashboard-for-amazon-managed-grafana/"  target="_blank" rel="noopener">COAST @ AWS</a>  
+  &copy; Amazon 2023
