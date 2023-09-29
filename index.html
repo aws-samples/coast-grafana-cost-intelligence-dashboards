@@ -1,0 +1,470 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="AWS">
+      
+      
+        <link rel="canonical" href="https://aws-samples.github.io/cost-dashboard-for-amazon-managed-grafana/">
+      
+      
+      
+        <link rel="next" href="contributors/">
+      
+      
+      <link rel="icon" href="images/aws-favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.0">
+    
+    
+      
+        <title>COAST - Cost Optimation and Savings Tool for Amazon Managed Grafana</title>
+      
+    
+    
+      <link rel="stylesheet" href="assets/stylesheets/main.9f615399.min.css">
+      
+        
+        <link rel="stylesheet" href="assets/stylesheets/palette.649f08f9.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=ember:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"ember";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="purple">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#what-is-coast" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="." title="COAST - Cost Optimation and Savings Tool for Amazon Managed Grafana" class="md-header__button md-logo" aria-label="COAST - Cost Optimation and Savings Tool for Amazon Managed Grafana" data-md-component="logo">
+      
+  <img src="images/aws-logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            COAST - Cost Optimation and Savings Tool for Amazon Managed Grafana
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              What is COAST?
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="purple"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6zm0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4zM7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="lime"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="." title="COAST - Cost Optimation and Savings Tool for Amazon Managed Grafana" class="md-nav__button md-logo" aria-label="COAST - Cost Optimation and Savings Tool for Amazon Managed Grafana" data-md-component="logo">
+      
+  <img src="images/aws-logo.png" alt="logo">
+
+    </a>
+    COAST - Cost Optimation and Savings Tool for Amazon Managed Grafana
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    What is COAST?
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="." class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    What is COAST?
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#key-features" class="md-nav__link">
+    Key Features
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pre-requisites" class="md-nav__link">
+    Pre-requisites
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="contributors/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contributors
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="faq/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    FAQ
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<h1 id="what-is-coast">What is COAST?<a class="headerlink" href="#what-is-coast" title="Permanent link">&para;</a></h1>
+<p>COAST is an open-source Infrastructure-as-a-code based (<a href="https://aws.amazon.com/cloudformation/">AWS CloudFormation</a>) one-click solution to simplify cloud financial management of your resources in AWS. COAST provides role-based customizable Grafana dashboards ensuring that every stakeholder receives es relevant, actionable insights tailored to their unique needs and responsibilities. For customers, already using Grafana for operational insights, COAST is natural extention, enabling the monitoring the monitoring of both operational and cost metrics within a single, preferred platform, reducing operational friction and prompting a unified view of essential KPIs. With COAST, users can gain full visibility and control over their cloud costs and maximize their AWS Investments.</p>
+<h2 id="key-features">Key Features<a class="headerlink" href="#key-features" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Persona based dashboards: Offer customizable and persona-based dashboards for Executives, Analysts, Developers, Cloud Operations, etc.</li>
+<li>Tag based Cost tracking: Allows users to monitor and optimized AWS spend at granular level. This is valuable for organizations with varied products, teams, and SaaS workloads, enabling precision monitoring of costs related to specific projects or departments.</li>
+<li>Unified Platform experience: For customers already utilizing Grafana for operational observability, COAST offers a unified platform experience, enabling the integration of operational and cost metrics within a familiar environment.</li>
+<li>Infrastructure-as-a-code: Single click repeatable, reliable and scalable deployment</li>
+<li>Open-source: Open-source nature of COAST will spur continued innovation and improvements ensuring the solution evolves in response to changing customer needs and market dynamics.</li>
+<li>Supports both Payer and member AWS accounts.</li>
+</ul>
+<h2 id="pre-requisites">Pre-requisites<a class="headerlink" href="#pre-requisites" title="Permanent link">&para;</a></h2>
+<ul>
+<li>AWS Organization</li>
+<li>AWS IAM Identity Center</li>
+</ul>
+<h1 id="cloud-formation-template-deployment">Cloud Formation Template Deployment<a class="headerlink" href="#cloud-formation-template-deployment" title="Permanent link">&para;</a></h1>
+<h2 id="1-setup">1. Setup<a class="headerlink" href="#1-setup" title="Permanent link">&para;</a></h2>
+<p>The setup process will create the following resources, along with it's dependencies:</p>
+<ul>
+<li>Cost and Usage Report (AWS CUR) (optional)</li>
+<li>An Amazon Athena  database</li>
+<li>Glue/Lamda infrastructure to update Athena database with CUR</li>
+<li>An Amazon Managed Grafana workspace</li>
+<li>Grafana datasource for Amazon Athena</li>
+<li>Grafana dashboards</li>
+</ul>
+<h2 id="2-aws-cost-and-usage-report-cur-report">2. AWS Cost and Usage Report (CUR) report<a class="headerlink" href="#2-aws-cost-and-usage-report-cur-report" title="Permanent link">&para;</a></h2>
+<p>COAST support both existing CUR report as well as creation of new CUR report. In the CloudFormation template you have the option to specify if you would like the template to create a new CUR report.  If you already have an existing CUR and would like to use it, you can provide the report name to use as well.  </p>
+<h4 id="create-new-cur-report">Create New CUR Report<a class="headerlink" href="#create-new-cur-report" title="Permanent link">&para;</a></h4>
+<p>This option will create a new CUR and supporting infrastructure to hydrate the athena database with CUR data.  Note, it will take at least 24 hours for a new CUR to populate with data.  </p>
+<ul>
+<li>In CloudFormation, create a new stack from the cloudformation/coast-cfn.yaml</li>
+<li>Select 'true' in the CreateCURReport select form</li>
+<li>Enter a prefix path name for the new report in the CURReportPrefixName field</li>
+<li>Note, an entry in the CURReportName field is not needed for this option.  The template will generate a report name for you based on the CFN stack name</li>
+<li>Note, an S3 bucket name in CURDataBucketName is not needed for this option.  An S3 data bucket will be named and created based on the CFN stack name</li>
+</ul>
+<h4 id="use-existing-cur-report">Use Existing CUR Report<a class="headerlink" href="#use-existing-cur-report" title="Permanent link">&para;</a></h4>
+<p>Use this setting only if you already have a CUR and you would like Grafana to use that existing CUR as the datasource.  This option will use your existing CUR and create supporting infrastructure to hydrate the Athena database with CUR data.</p>
+<ul>
+<li>Ensure your CUR bucket of your existing CUR report is located in the same region as this Cloud Formation stack (<a href="https://docs.aws.amazon.com/cur/latest/userguide/use-athena-cf.html">see same region note in documentation</a>).  </li>
+<li>In CloudFormation, create a new stack from the cloudformation/coast-cfn.yaml</li>
+<li>Select 'false' in the CreateCURReport select form</li>
+<li>Enter the name of your existing CUR in the CURReportName field</li>
+<li>Enter the prefix path of the existing CUR in the CURReportPrefixName field</li>
+<li>Enter the S3 bucket of the existing CUR in the CURDataBucketName</li>
+</ul>
+<h4 id="deployment-using-aws-cli">Deployment using AWS CLI<a class="headerlink" href="#deployment-using-aws-cli" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code>aws cloudformation create-stack --stack-name curcoast --template-body file://coast-cfn.yaml --parameters ParameterKey=CURDataBucketName,ParameterValue=demo-cur-report ParameterKey=CURReportName,ParameterValue=demo-cur-report
+ParameterKey=CreateCURReport,ParameterValue=false
+ParameterKey=CURReportPrefixName,ParameterValue=grafana
+ParameterKey=GrafanaDashboardTemplateURL,ParameterValue=https://raw.githubusercontent.com/pelgrim/observability-best-practices/main/sandbox/coast/grafana-dashboard.json  --capabilities CAPABILITY_NAMED_IAM
+</code></pre></div>
+<h3 id="3-post-installation-steps">3. Post Installation Steps<a class="headerlink" href="#3-post-installation-steps" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Grafana workspaces require an identity provider (IdP) to enable users to log in to the workspace.</li>
+<li>We recommend AWS IAM Identity Center.  Follow instructions in the <a href="https://docs.aws.amazon.com/grafana/latest/userguide/AMG-manage-users-and-groups-AMG.html">Grafana User Guide</a> to setup user access.</li>
+<li>Login with the identity to the COAST Grafana workspace URL</li>
+<li>The dashboard will be automatically imported under the General folder in the Dashboards menu</li>
+</ul>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var tab,labels=set.querySelector(".tabbed-labels");for(tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+            Back to top
+          </button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      &copy; 2023 <a href="https://aws-samples.github.io/cost-dashboard-for-amazon-managed-grafana/"  target="_blank" rel="noopener">COAST @ AWS</a>  
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": ".", "features": ["navigation.tabs.sticky", "navigation.sections", "toc.integrate", "navigation.top", "search.suggest", "search.highlight", "content.tabs.link", "content.code.annotation", "content.code.copy"], "search": "assets/javascripts/workers/search.a264c092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="assets/javascripts/bundle.4e0fa4ba.min.js"></script>
+      
+    
+  </body>
+</html>
