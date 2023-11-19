@@ -9,7 +9,7 @@ The COAST CloudFormation deployment template supports both deploying with an exi
 
 ## Cloud Formation Template Deployment
 
-### Setup
+### Setup Overview
 
 The setup process will create the following resources, along with their dependencies:
 
@@ -22,7 +22,14 @@ The setup process will create the following resources, along with their dependen
 - A Grafana Athena Data Source
 - Importation of the Grafana FinOps Dashboard
 
-### CUR report
+### Deploy with CloudFormation
+- In CloudFormation, select Create Stack and select 'Upload a template file'.  Download and use the template cloudformation/coast-cfn.yaml.  
+- Enter a Stack name.
+- For the parameters section follow the guidance below on enabling the dashboards with an existing CUR or a new CUR.
+- On the next screen, we suggest adding tags to your deployment.
+- On the last screen check 'I acknowledge that AWS CloudFormation might create IAM resources with custom names.' and click 'Submit'.
+
+### CUR report Overview
 Within the CloudFormation template, you can choose whether to create a new Cost and Usage Report (CUR) or utilize an existing one by providing its name. The template will establish the necessary infrastructure to update the Grafana datasource (Athena) with CUR data. For additional information on the CUR/Athena integration, refer to the documentatio [here](https://docs.aws.amazon.com/cur/latest/userguide/use-athena-cf.html).  
 
   #### Create New CUR
@@ -48,10 +55,10 @@ Within the CloudFormation template, you can choose whether to create a new Cost 
 
 ### Post Installation Steps
 - Grafana workspaces require an identity provider (IdP) to enable users to log in to the workspace.
-  - We recommend AWS IAM Identity Center.  
-  - Add at least one Admin user under the Authentication tab in the Grafana Workspace console.  For additional instructions, see the [Grafana User Guide](https://docs.aws.amazon.com/grafana/latest/userguide/AMG-manage-users-and-groups-AMG.html) to setup user access.
-  - Login with the identity to the COAST Grafana workspace URL
-  - The dashboard will be automatically imported under the General folder in the Dashboards menu
+- We recommend AWS IAM Identity Center.  
+- Add at least one Admin user under the Authentication tab in the Grafana Workspace console.  For additional instructions, see the [Grafana User Guide](https://docs.aws.amazon.com/grafana/latest/userguide/AMG-manage-users-and-groups-AMG.html) to setup user access.
+- Login with the identity to the COAST Grafana workspace URL
+- The dashboard will be automatically imported under the General folder in the Dashboards menu
 
   #### Importing Additional Dashboards
 
