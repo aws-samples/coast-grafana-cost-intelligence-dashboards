@@ -1,5 +1,7 @@
 # COAST - Cost Optimization and Saving Toolkit for Amazon Managed Grafana
 
+![Executive Dashboard](images/coast_header.png )
+
 ## Pre-requisites
 
 - AWS IAM Identity Center - [Amazon Managed Grafana requires authentication](https://docs.aws.amazon.com/grafana/latest/userguide/authentication-in-AMG.html).  Our CloudFormation template configures the Grafana workspace with [AWS SSO](https://docs.aws.amazon.com/singlesignon/latest/userguide/getting-started.html).
