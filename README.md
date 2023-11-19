@@ -11,7 +11,7 @@ COAST is an open-source infrastructure as code deployment solution that integrat
 - AWS IAM Identity Center - [Amazon Managed Grafana requires authentication](https://docs.aws.amazon.com/grafana/latest/userguide/authentication-in-AMG.html).  Our CloudFormation template configures the Grafana workspace with [AWS SSO](https://docs.aws.amazon.com/singlesignon/latest/userguide/getting-started.html).
 
 ## Suggested Configuration
-The COAST CloudFormation deployment template supports both deploying with an existing [[Cost and Usage Report (CUR)]](https://docs.aws.amazon.com/cur/latest/userguide/what-is-cur.html) or creating a new one if none exists. For immediate utilization of the Coast dashboard, it is recommended to have an already enabled Cost and Usage Report (CUR). If CUR is enabled after COAST, dashboards may not display data for approximately 24 hours, and historical data will be unavailable unless a backfill is requested from AWS. 
+The COAST CloudFormation deployment template supports both deploying with an existing [[Cost and Usage Report (CUR)]](https://docs.aws.amazon.com/cur/latest/userguide/what-is-cur.html) or creating a new one if none exists. For immediate utilization of the Coast dashboard, it is recommended to have an already enabled Cost and Usage Report (CUR). If CUR is enabled during COAST deployment, dashboards may not display data for approximately 24 hours, and historical data will be unavailable unless a backfill is requested from AWS. 
 
 ## Cloud Formation Template Deployment
 
