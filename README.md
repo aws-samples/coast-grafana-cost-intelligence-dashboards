@@ -1,17 +1,19 @@
 # COAST - Cost Optimization and Saving Toolkit for Amazon Managed Grafana
 
-![Executive Dashboard](images/coast_header.png )
+![Executive Dashboard](images/COAST_header.png )
 
 ## About
 
 COAST is an open-source infrastructure as code deployment solution that integrates with Amazon Managed Grafana to provide customers with a cost intelligence and optimization dashboards. COAST helps customers to analyze and optimize their cloud costs by providing them with customizable dashboards on the Grafana open-source analytics and monitoring application they are already familiar with. With COAST, customers can gain full visibility and control over their cloud costs, ensuring that they are optimizing their spend and maximizing their ROI.
+
+COAST deploys with a CloudFormation template in under 5 minutes, and additional dashboards may be added with a one click import.
 
 ## Pre-requisites
 
 - AWS IAM Identity Center - [Amazon Managed Grafana requires authentication](https://docs.aws.amazon.com/grafana/latest/userguide/authentication-in-AMG.html).  Our CloudFormation template configures the Grafana workspace with [AWS SSO](https://docs.aws.amazon.com/singlesignon/latest/userguide/getting-started.html).
 
 ## Suggested Configuration
-The COAST CloudFormation deployment template supports both deploying with an existing [[Cost and Usage Report (CUR)]](https://docs.aws.amazon.com/cur/latest/userguide/what-is-cur.html) or creating a new one if none exists. For immediate utilization of the Coast dashboard, it is recommended to have an already enabled Cost and Usage Report (CUR). If CUR is enabled during COAST deployment, dashboards may not display data for approximately 24 hours, and historical data will be unavailable unless a backfill is requested from AWS. 
+The COAST CloudFormation deployment template supports both deploying with an existing [[Cost and Usage Report (CUR)]](https://docs.aws.amazon.com/cur/latest/userguide/what-is-cur.html) or creating a new one if none exists. For immediate utilization of the COAST dashboard, it is recommended to have an already enabled Cost and Usage Report (CUR). If CUR is enabled during COAST deployment, dashboards may not display data for approximately 24 hours, and historical data will be unavailable unless a backfill is requested from AWS. 
 
 ## Cloud Formation Template Deployment
 
@@ -29,7 +31,7 @@ The setup process will create the following resources, along with their dependen
 - Importation of the Grafana FinOps Dashboard
 
 ### Deploy with CloudFormation
-- In CloudFormation, select Create Stack and select 'Upload a template file'.  Download and use the template cloudformation/coast-cfn.yaml.  
+- In CloudFormation, select Create Stack and select 'Upload a template file'.  Download and use the template cloudformation/COAST-cfn.yaml.  
 - Enter a Stack name.
 - For the parameters section follow the guidance below on enabling the dashboards with an existing CUR or a new CUR.
 - On the next screen, we suggest adding tags to your deployment.
@@ -43,7 +45,7 @@ Within the CloudFormation template, you can choose whether to create a new Cost 
 
   To implement this in CloudFormation:
 
-  - Launch a new stack using the cloudformation/coast-cfn.yaml template.
+  - Launch a new stack using the cloudformation/COAST-cfn.yaml template.
   - Do not modify the CurReportName parameter in the template
   - The template will generate a report name based on the CloudFormation (CFN) stack name.
   - Similarly, an S3 data bucket will be named and created based on the CFN stack name.
@@ -54,7 +56,7 @@ Within the CloudFormation template, you can choose whether to create a new Cost 
   To implement this in CloudFormation:
 
   - Ensure the CUR bucket of your existing CUR report is located in the same region as this CloudFormation stack (refer to the same region note in the documentation).
-  - Launch a new stack using the cloudformation/coast-cfn.yaml template.
+  - Launch a new stack using the cloudformation/COAST-cfn.yaml template.
   - Enter the name of your existing CUR in the CurReportName field.
   - We will determine the S3 bucket used with the existing CUR report and use this bucket while establishing the necessary infrastructure.
 
