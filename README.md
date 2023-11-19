@@ -7,9 +7,9 @@
 ## Suggested Configuration
 The COAST CloudFormation deployment template supports both deploying with an existing [[Cost and Usage Report (CUR)]](https://docs.aws.amazon.com/cur/latest/userguide/what-is-cur.html) or creating a new one if none exists. For immediate utilization of the Coast dashboard, it is recommended to have an already enabled Cost and Usage Report (CUR). If CUR is enabled after COAST, dashboards may not display data for approximately 24 hours, and historical data will be unavailable unless a backfill is requested from AWS. 
 
-# Cloud Formation Template Deployment
+## Cloud Formation Template Deployment
 
-## 1. Setup
+### Setup
 
 The setup process will create the following resources, along with their dependencies:
 
@@ -22,32 +22,51 @@ The setup process will create the following resources, along with their dependen
 - A Grafana Athena Data Source
 - Importation of the Grafana FinOps Dashboard
 
-## 2. CUR report
+### CUR report
 Within the CloudFormation template, you can choose whether to create a new Cost and Usage Report (CUR) or utilize an existing one by providing its name. The template will establish the necessary infrastructure to update the Grafana datasource (Athena) with CUR data. For additional information on the CUR/Athena integration, refer to the documentatio [here](https://docs.aws.amazon.com/cur/latest/userguide/use-athena-cf.html).  
 
-#### Create New CUR
-Opting for this choice will initiate the creation of a new Cost and Usage Report (CUR) along with the necessary infrastructure to populate the Athena database with CUR data. Please be aware that it will take a minimum of 24 hours for the new CUR to be populated with data.  Historical data will be unavailable unless a backfill is requested from AWS Support.
+  #### Create New CUR
+  Opting for this choice will initiate the creation of a new Cost and Usage Report (CUR) along with the necessary infrastructure to populate the Athena database with CUR data. Please be aware that it will take a minimum of 24 hours for the new CUR to be populated with data.  Historical data will be unavailable unless a backfill is requested from AWS Support.
 
-To implement this in CloudFormation:
+  To implement this in CloudFormation:
 
-- Launch a new stack using the cloudformation/coast-cfn.yaml template.
-- Do not modify the CurReportName parameter in the template
-- The template will generate a report name based on the CloudFormation (CFN) stack name.
-- Similarly, an S3 data bucket will be named and created based on the CFN stack name.
+  - Launch a new stack using the cloudformation/coast-cfn.yaml template.
+  - Do not modify the CurReportName parameter in the template
+  - The template will generate a report name based on the CloudFormation (CFN) stack name.
+  - Similarly, an S3 data bucket will be named and created based on the CFN stack name.
 
-#### Use Existing CUR
-Opt for this configuration only if you already possess a Cost and Usage Report (CUR) and wish to have Grafana utilize that existing CUR as the datasource. This choice will leverage your current CUR while establishing the necessary infrastructure to populate the Athena database with the CUR data.
+  #### Use Existing CUR
+  Opt for this configuration only if you already possess a Cost and Usage Report (CUR) and wish to have Grafana utilize that existing CUR as the datasource. This choice will leverage your current CUR while establishing the necessary infrastructure to populate the Athena database with the CUR data.
 
-To implement this in CloudFormation:
+  To implement this in CloudFormation:
 
-- Ensure the CUR bucket of your existing CUR report is located in the same region as this CloudFormation stack (refer to the same region note in the documentation).
-- Launch a new stack using the cloudformation/coast-cfn.yaml template.
-- Enter the name of your existing CUR in the CurReportName field.
-- We will determine the S3 bucket used with the existing CUR report and use this bucket while establishing the necessary infrastructure.
+  - Ensure the CUR bucket of your existing CUR report is located in the same region as this CloudFormation stack (refer to the same region note in the documentation).
+  - Launch a new stack using the cloudformation/coast-cfn.yaml template.
+  - Enter the name of your existing CUR in the CurReportName field.
+  - We will determine the S3 bucket used with the existing CUR report and use this bucket while establishing the necessary infrastructure.
 
 
-### 4. Post Installation Steps
+### Post Installation Steps
 - Grafana workspaces require an identity provider (IdP) to enable users to log in to the workspace.
-  - We recommend AWS IAM Identity Center.  Follow instructions in the [Grafana User Guide](https://docs.aws.amazon.com/grafana/latest/userguide/AMG-manage-users-and-groups-AMG.html) to setup user access.
+  - We recommend AWS IAM Identity Center.  
+  - Add at least one Admin user under the Authentication tab in the Grafana Workspace console.  For additional instructions, see the [Grafana User Guide](https://docs.aws.amazon.com/grafana/latest/userguide/AMG-manage-users-and-groups-AMG.html) to setup user access.
   - Login with the identity to the COAST Grafana workspace URL
   - The dashboard will be automatically imported under the General folder in the Dashboards menu
+
+  #### Importing Additional Dashboards
+
+  You can import extra dashboards available in the grafana_dashboards folder of this repository. When importing dashboards, initially set all top variables to 'All'. This ensures that no variables (such as tags) are filtered in your initial view.
+  
+  ##### FinOps Dashboard
+
+  This dashboard is recommended for FinOps practitioners. It displays a billing overview, a summary of spend trends, region activity, and visuals for purchase types. To utilize this dashboard, your Cost and Usage Report (CUR) data should include reserved instance and savings plans columns. Additionally, you need to have at least one cost allocation tag enabled.
+  
+  ##### Executive Dashboard
+
+  Designed for company leadership, this dashboard offers a view of billing and overall spend trends. To use this dashboard, your CUR data should include reserved instance and savings plans columns. Additionally, at least one cost allocation tag must be enabled.
+  
+  ##### Engineering Dashboard
+
+  This dashboard is recommended for engineering teams. Teams can filter based on cost allocation tags and display only the services relevant to them. To utilize this dashboard, your CUR data should include reserved instance and savings plans columns. Additionally, you need to have at least one cost allocation tag enabled.
+
+
