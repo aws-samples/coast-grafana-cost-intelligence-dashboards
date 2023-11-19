@@ -1,6 +1,6 @@
 # COAST - Cost Optimization and Saving Toolkit for Amazon Managed Grafana
 
-![Executive Dashboard](images/COAST_header.png )
+![Executive Dashboard](images/coast_header.png )
 
 ## About
 
