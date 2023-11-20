@@ -136,7 +136,7 @@ Resources:
                   if not cur_report['validated']:
                       cur_report['report_name'] = default_report
                       cur_report['output_bucket'] = f'{default_output_bucket}-{generate_6_digit_hash()}'
-                      cur_report['output_prefix'] = 'report/'
+                      cur_report['output_prefix'] = 'report'
                   
               logger.info(f'CUR Report Complete: {cur_report}')
               cfnresponse.send(event,context,cfnresponse.SUCCESS,cur_report)
@@ -302,7 +302,7 @@ Resources:
             - !Ref AWS::StackName
             - '-'
             - !GetAtt "CURStatus.hash"
-      S3Prefix: report/
+      S3Prefix: report
       S3Region: !Ref AWS::Region
       TimeUnit: HOURLY
   
