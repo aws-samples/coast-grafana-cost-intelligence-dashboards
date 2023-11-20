@@ -1,45 +1,182 @@
 AWSTemplateFormatVersion: 2010-09-09
 
 Parameters:
-  CreateCURReport:
+  CurReportName:
     Type: String
-    Default: 'true'
-    Description: Choose whether to create a new CUR. Select `true` to create a new CUR in the us-east-1 region.
-    AllowedValues:
-      - 'true'
-      - 'false'
-  CURReportName:
-    Type: String
-    Description: Name of the new CUR or the existing CUR which you would like to use as the data source for the dashboards.
-  CURReportPrefixName:
-    Type: String
-    Description: Enter the new CUR report path prefix or report path prefix value of the existing CUR.
-  CURDataBucketName:
-    Type: String
-    Description: Name of existing CUR S3 bucket. Only needed if `CreateCURReport` is `false`.
-  GrafanaDashboardTemplateURL:
+    Description: |
+      Optional: Name of existing Cost and Usage (CUR) report to be utilized by COAST.  
+      This CUR report should be configurated as parquet with a granularity of HOURLY.
+    Default: "optional_change_if_report_exists"
+  DashboardURL:
     Type: String
     Default: https://github.com/aws-observability/observability-best-practices/raw/main/sandbox/cure-grafana-dashboard/AmazonManagedGrafanaCUREDashboard.json
     Description: URL of Grafana Dashboard to be imported. DON'T CHANGE unless you have forked this repository.
     AllowedPattern: 'https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&\/\/=]*).json'
-
-Conditions:
-  CreateCURReport:
-    Fn::Equals:
-      - !Ref CreateCURReport
-      - 'true'
   
 Resources:
+  CURStatusLambdaRole: #CUR Status Lambda Role
+    Type: 'AWS::IAM::Role'
+    Properties:
+      RoleName:
+        !Join
+          - ''
+          - - 'coast-lambda-status-function-'
+            - !Ref AWS::StackName
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Tags:
+        - Key: "deployment"
+          Value: "coast"
 
-  COASTNotificationsTopic:
-    Type: 'AWS::SNS::Topic'
-  
-  CURDataBucket:
+      Path: /
+      Policies:
+        - PolicyName: AWSS3CURLambdaExecutor
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'logs:CreateLogGroup'
+                  - 'logs:CreateLogStream'
+                  - 'logs:PutLogEvents'
+                Resource: !Sub 'arn:${AWS::Partition}:logs:*:*:*'
+              - Effect: Allow
+                Action:
+                  - 'cur:DescribeReportDefinitions'
+                Resource: 
+                  - '*'
+
+  CURStatusLambda: #CUR Status Lambda
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        !Join
+          - ''
+          - - 'coast-cur-status-'
+            - !Ref AWS::StackName
+      Code:
+        ZipFile: |
+          import json
+          import boto3
+          import logging
+          import hashlib
+          from datetime import datetime
+          import cfnresponse
+
+          # Configure the logging module
+          logger = logging.getLogger()
+          logger.setLevel(logging.DEBUG)
+          
+          def generate_6_digit_hash():
+            # Get the current date and time as a string
+            current_datetime_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+            # Create an MD5 hash object
+            md5_hash = hashlib.md5()
+
+            # Update the hash object with the current date and time string
+            md5_hash.update(current_datetime_str.encode('utf-8'))
+
+            # Get the hexadecimal digest of the hash
+            hex_digest = md5_hash.hexdigest()
+
+            # Take the first 6 characters of the hex digest
+            six_digit_hash = hex_digest[:6]
+
+            return six_digit_hash
+          
+          
+          def lambda_handler(event, context):
+              logger.info('Event: {}'.format(json.dumps(event)))
+
+              try:
+                provided_report = event['ResourceProperties']['ProvidedReport']
+                default_report = event['ResourceProperties']['DefaultReport']
+                default_output_bucket = event['ResourceProperties']['DefaultOutputBucket']
+              except:
+                logger.error(f'Event are not provided correctly: {event}')
+                cfnresponse.send(event,context,cfnresponse.FAILED,cur_report_json)
+              
+              client = boto3.client('cur')
+
+              reports = client.describe_report_definitions()
+              
+              cur_report = {'validated': False, 'time_unit': None, 'format': None, 'report_name': None, 'output_bucket': None, 'hash': generate_6_digit_hash() } 
+              if isinstance(reports, dict) and 'ReportDefinitions' in reports:
+                  for report in reports['ReportDefinitions']:
+                      
+                      try:
+                        if report['ReportName'] == provided_report:
+                            cur_report['validated'] = True
+                            cur_report['report_name'] = report['ReportName']
+                            cur_report['time_unit'] = report['TimeUnit']
+                            cur_report['format'] = report['Format']
+                            cur_report['output_bucket'] = report['S3Bucket']
+                            cur_report['output_prefix'] = report['S3Prefix']
+                            cur_report['region'] = report['S3Region']
+                            cur_report['AdditionalSchemaElements'] = report['AdditionalSchemaElements']
+                            break
+                      except:
+                        logger.error(f'Error in report: {report}')
+                        cfnresponse.send(event,context,cfnresponse.FAILED,cur_report_json)
+                          
+                  if cur_report['time_unit'] == 'HOURLY' and cur_report['format'] == 'Parquet':
+                  
+                      if  isinstance(cur_report['AdditionalSchemaElements'], list):
+                          if 'RESOURCES' in cur_report['AdditionalSchemaElements']:
+                              cur_report['validated'] = True
+                  
+                  if not cur_report['validated']:
+                      cur_report['report_name'] = default_report
+                      cur_report['output_bucket'] = f'{default_output_bucket}-{generate_6_digit_hash()}'
+                      cur_report['output_prefix'] = 'report/'
+                  
+              logger.info(f'CUR Report Complete: {cur_report}')
+              cfnresponse.send(event,context,cfnresponse.SUCCESS,cur_report)
+      Role: !GetAtt CURStatusLambdaRole.Arn
+      Handler: 'index.lambda_handler'
+      Timeout: 30
+      Runtime: python3.11
+      ReservedConcurrentExecutions: 1
+      Tags:
+        - Key: "deployment"
+          Value: "coast"
+
+  CURStatus: #Execute CUR Status Lambda Custom Resource
+    Type: 'Custom::DetermineCURStatus'
+    Properties:
+      ServiceToken: !GetAtt CURStatusLambda.Arn
+      ProvidedReport: !Ref CurReportName
+      DefaultReport:
+        !Join
+          - ''
+          - - 'coast-cur-report-'
+            - !Ref AWS::StackName
+      DefaultOutputBucket: 
+        !Join
+          - ''
+          - - 'coast-cur-bucket-'
+            - !Ref AWS::StackName
+      
+  CURDataBucket: #CUR S3 Bucket
     Type: AWS::S3::Bucket
     DeletionPolicy: Retain
     UpdateReplacePolicy: Retain
-    Condition: CreateCURReport
     Properties:
+      BucketName: 
+        !Join
+          - ''
+          - - 'coast-cur-bucket-'
+            - !Ref AWS::StackName
+            - '-'
+            - !GetAtt "CURStatus.hash"
       BucketEncryption:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
@@ -60,17 +197,19 @@ Resources:
           - Id: Object&Version Expiration
             Status: Enabled
             NoncurrentVersionExpirationInDays: 32 
+      Tags:
+        - Key: "deployment"
+          Value: "coast"
     Metadata:
       cfn_nag:
         rules_to_suppress:
           - id: 'W35'
             reason: "Data buckets would generate too much logs"
 
-  CURDataBucketPolicy:
+  CURDataBucketPolicy: #CUR S3 Bucket Policy
     Type: 'AWS::S3::BucketPolicy'
     DeletionPolicy: Retain
     UpdateReplacePolicy: Delete
-    Condition: CreateCURReport
     Properties:
       Bucket: !Ref CURDataBucket
       PolicyDocument:
@@ -136,34 +275,51 @@ Resources:
             Resource:
               - Fn::Sub: 'arn:${AWS::Partition}:s3:::${CURDataBucket}'
   
-  CURReport:
+  CURReport: #Create CUR report
+    DependsOn:
+      - CURStatus
+      - CURDataBucket
+      - CURDataBucketPolicy
     Type: AWS::CUR::ReportDefinition
-    Condition: CreateCURReport
-    Properties: 
+    Properties:
       AdditionalArtifacts: 
         - ATHENA
       AdditionalSchemaElements: 
         - RESOURCES
       Compression: Parquet
       Format: Parquet
-      ReportName: !Ref AWS::StackName
-      S3Bucket: !Ref CURDataBucket
-      S3Prefix: !Ref CURReportPrefixName
+      RefreshClosedReports: True
+      ReportName: 
+        !Join
+          - ''
+          - - 'coast-cur-report-'
+            - !Ref AWS::StackName
+      ReportVersioning: OVERWRITE_REPORT
+      S3Bucket: 
+        !Join
+          - ''
+          - - 'coast-cur-bucket-'
+            - !Ref AWS::StackName
+            - '-'
+            - !GetAtt "CURStatus.hash"
+      S3Prefix: report/
       S3Region: !Ref AWS::Region
       TimeUnit: HOURLY
-      RefreshClosedReports: True
-      ReportVersioning: OVERWRITE_REPORT
-    DependsOn:
-      - CURDataBucketPolicy
-
-  AWSCURDatabase:
+  
+  AWSCURDatabase: #Glue Database
     Type: 'AWS::Glue::Database'
     Properties:
       DatabaseInput:
-        Description: !Sub "${AWS::StackName} COAST database"
+        Name: !Join
+          - ''
+          - - 'coast-cur-report-'
+            - !Ref AWS::StackName
       CatalogId: !Ref AWS::AccountId
 
-  AWSCURCrawlerComponentFunction:
+  SNSNotificationsTopic: #SNS Notification for Grafana
+    Type: 'AWS::SNS::Topic'
+
+  AWSCURCrawlerRole: #Glue Crawler Role
     Type: 'AWS::IAM::Role'
     Properties:
       AssumeRolePolicyDocument:
@@ -176,10 +332,13 @@ Resources:
             Action:
               - 'sts:AssumeRole'
       Path: /
+      Tags:
+        - Key: "deployment"
+          Value: "coast"
       ManagedPolicyArns:
         - !Sub 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSGlueServiceRole'
       Policies:
-        - PolicyName: AWSCURCrawlerComponentFunction
+        - PolicyName: AWSCURCrawlerRole
           PolicyDocument:
             Version: 2012-10-17
             Statement:
@@ -204,11 +363,7 @@ Resources:
                 Action:
                   - 's3:GetObject'
                   - 's3:PutObject'
-                Resource:
-                  Fn::If:
-                    - CreateCURReport
-                    - !Sub 'arn:${AWS::Partition}:s3:::${CURDataBucket}/${CURReportPrefixName}/${CURReport}/${CURReport}*'
-                    - !Sub 'arn:${AWS::Partition}:s3:::${CURDataBucketName}/${CURReportPrefixName}/${CURReportName}/${CURReportName}*'
+                Resource: !Sub 'arn:${AWS::Partition}:s3:::${CURStatus.output_bucket}/${CURStatus.output_prefix}/${CURStatus.report_name}/${CURStatus.report_name}*'
         - PolicyName: AWSCURKMSDecryption
           PolicyDocument:
             Version: 2012-10-17
@@ -217,8 +372,34 @@ Resources:
                 Action:
                   - 'kms:Decrypt'
                 Resource: '*'
-       
-  AWSCURCrawlerLambdaExecutor:
+
+  AWSCURCrawler: #Glue Crawler for CUR S3 Bucket
+    Type: 'AWS::Glue::Crawler'
+    DependsOn:
+      - AWSCURDatabase
+      - AWSCURCrawlerRole
+    Properties:
+      Name: !Sub AWSCURCrawler-${AWS::StackName}
+      Description: A recurring crawler that keeps your CUR table in Athena up-to-date.
+      Role: !GetAtt AWSCURCrawlerRole.Arn
+      DatabaseName: !Ref AWSCURDatabase
+      Tags:
+        "deployment": "coast"
+      Targets:
+        S3Targets:
+          - Path: !Sub 's3://${CURStatus.output_bucket}/${CURStatus.output_prefix}/${CURStatus.report_name}/${CURStatus.report_name}'
+            Exclusions:
+              - '**.json'
+              - '**.yml'
+              - '**.sql'
+              - '**.csv'
+              - '**.gz'
+              - '**.zip'
+      SchemaChangePolicy:
+        UpdateBehavior: UPDATE_IN_DATABASE
+        DeleteBehavior: DELETE_FROM_DATABASE
+    
+  AWSCURInitializerRole: #Glue Crawler Lambda Role
     Type: 'AWS::IAM::Role'
     Properties:
       AssumeRolePolicyDocument:
@@ -231,8 +412,11 @@ Resources:
             Action:
               - 'sts:AssumeRole'
       Path: /
+      Tags:
+        - Key: "deployment"
+          Value: "coast"
       Policies:
-        - PolicyName: AWSCURCrawlerLambdaExecutor
+        - PolicyName: AWSCURInitializerRole
           PolicyDocument:
             Version: 2012-10-17
             Statement:
@@ -249,40 +433,17 @@ Resources:
               - Effect: Allow
                 Action:
                   - 'sns:Publish'
-                Resource: !Ref COASTNotificationsTopic
-       
-  AWSCURCrawler:
-    Type: 'AWS::Glue::Crawler'
-    DependsOn:
-      - AWSCURDatabase
-      - AWSCURCrawlerComponentFunction
-    Properties:
-      Name: !Sub AWSCURCrawler-${AWS::StackName}
-      Description: A recurring crawler that keeps your CUR table in Athena up-to-date.
-      Role: !GetAtt AWSCURCrawlerComponentFunction.Arn
-      DatabaseName: !Ref AWSCURDatabase
-      Targets:
-        S3Targets:
-          - Path:
-              Fn::If:
-                - CreateCURReport
-                - !Sub 's3://${CURDataBucket}/${CURReportPrefixName}/${CURReport}/${CURReport}'
-                - !Sub 's3://${CURDataBucketName}/${CURReportPrefixName}/${CURReportName}/${CURReportName}'
-            Exclusions:
-              - '**.json'
-              - '**.yml'
-              - '**.sql'
-              - '**.csv'
-              - '**.gz'
-              - '**.zip'
-      SchemaChangePolicy:
-        UpdateBehavior: UPDATE_IN_DATABASE
-        DeleteBehavior: DELETE_FROM_DATABASE
-       
-  AWSCURInitializer:
+                Resource: !Ref SNSNotificationsTopic
+          
+  AWSCURInitializerLambda: #Run initial crawler
     Type: 'AWS::Lambda::Function'
     DependsOn: AWSCURCrawler
     Properties:
+      FunctionName:
+        !Join
+          - ''
+          - - 'coast-cur-initializer-'
+            - !Ref AWS::StackName
       Code:
         ZipFile: !Sub >
           const AWS = require('aws-sdk');
@@ -318,28 +479,28 @@ Resources:
           };
       Handler: 'index.handler'
       Timeout: 30
+      Tags:
+        - Key: "deployment"
+          Value: "coast"
       Runtime: nodejs16.x
       ReservedConcurrentExecutions: 1
-      Role: !GetAtt AWSCURCrawlerLambdaExecutor.Arn
+      Role: !GetAtt AWSCURInitializerRole.Arn
      
-  AWSStartCURCrawler:
-    Type: 'Custom::AWSStartCURCrawler'
+  AWSCURInitializer: #Execute Crawler Lambda Customer Resource
+    Type: 'Custom::AWSCURInitializer'
     Properties:
-      ServiceToken: !GetAtt AWSCURInitializer.Arn
+      ServiceToken: !GetAtt AWSCURInitializerLambda.Arn
      
-  AWSS3CUREventLambdaPermission:
+  AWSS3CUREventLambdaPermission: #Allow S3 to invoke lambda on event
     Type: AWS::Lambda::Permission
     Properties:
       Action: 'lambda:InvokeFunction'
-      FunctionName: !GetAtt AWSCURInitializer.Arn
+      FunctionName: !GetAtt AWSCURInitializerLambda.Arn
       Principal: 's3.amazonaws.com'
       SourceAccount: !Ref AWS::AccountId
-      SourceArn: !If
-        - CreateCURReport
-        - !Sub 'arn:${AWS::Partition}:s3:::${CURDataBucket}'
-        - !Sub 'arn:${AWS::Partition}:s3:::${CURDataBucketName}'
+      SourceArn: !Sub 'arn:${AWS::Partition}:s3:::${CURStatus.output_bucket}'
      
-  AWSS3CURLambdaExecutor:
+  AWSS3NotificationRole: #Role for Lambeda put event notification
     Type: 'AWS::IAM::Role'
     Properties:
       AssumeRolePolicyDocument:
@@ -352,8 +513,11 @@ Resources:
             Action:
               - 'sts:AssumeRole'
       Path: /
+      Tags:
+        - Key: "deployment"
+          Value: "coast"
       Policies:
-        - PolicyName: AWSS3CURLambdaExecutor
+        - PolicyName: AWSS3NotificationRole
           PolicyDocument:
             Version: 2012-10-17
             Statement:
@@ -366,17 +530,15 @@ Resources:
               - Effect: Allow
                 Action:
                   - 's3:PutBucketNotification'
-                Resource: !If
-                  - CreateCURReport
-                  - !Sub 'arn:${AWS::Partition}:s3:::${CURDataBucket}'
-                  - !Sub 'arn:${AWS::Partition}:s3:::${CURDataBucketName}'
+                Resource: !Sub 'arn:${AWS::Partition}:s3:::${CURStatus.output_bucket}'
        
-  AWSS3CURNotification:
+  AWSS3NotificationLambda: #Put S3 event notification to bucket
     Type: 'AWS::Lambda::Function'
     DependsOn:
-    - AWSCURInitializer
+    - AWSCURInitializerLambda
     - AWSS3CUREventLambdaPermission
-    - AWSS3CURLambdaExecutor
+    - AWSS3NotificationRole
+    - CURStatus
     Properties:
       Code:
         ZipFile: >
@@ -415,26 +577,25 @@ Resources:
       Handler: 'index.handler'
       Timeout: 30
       Runtime: nodejs16.x
+      Tags:
+        - Key: "deployment"
+          Value: "coast"
       ReservedConcurrentExecutions: 1
-      Role: !GetAtt AWSS3CURLambdaExecutor.Arn
+      Role: !GetAtt AWSS3NotificationRole.Arn
 
-  AWSPutS3CURNotification:
-    Type: 'Custom::AWSPutS3CURNotification'
+  AWSS3Notification: #Execute S3 notification custom resource
+    Type: 'Custom::AWSS3Notification'
     Properties:
-      ServiceToken: !GetAtt AWSS3CURNotification.Arn
-      TargetLambdaArn: !GetAtt AWSCURInitializer.Arn
-      BucketName: !If
-        - CreateCURReport
-        - !Sub '${CURDataBucket}'
-        - !Sub '${CURDataBucketName}'
-      ReportKey: !If
-        - CreateCURReport
-        - !Sub '${CURReportPrefixName}/${CURReport}/${CURReport}'
-        - !Sub '${CURReportPrefixName}/${CURReportName}/${CURReportName}'
+      ServiceToken: !GetAtt AWSS3NotificationLambda.Arn
+      TargetLambdaArn: !GetAtt AWSCURInitializerLambda.Arn
+      BucketName: !Sub '${CURStatus.output_bucket}'
+      ReportKey: !Sub '${CURStatus.output_prefix}/${CURStatus.report_name}/${CURStatus.report_name}'
 
-  AWSCURReportStatusTable:
+  GlueCURReportStatusTable: #Create cur status table in glue/athena
     Type: 'AWS::Glue::Table'
-    DependsOn: AWSCURDatabase
+    DependsOn: 
+      - AWSCURDatabase
+      - CURStatus
     Properties:
       DatabaseName: !Ref AWSCURDatabase
       CatalogId: !Ref AWS::AccountId
@@ -449,15 +610,19 @@ Resources:
           OutputFormat: 'org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat'
           SerdeInfo:
             SerializationLibrary: 'org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe'
-          Location: !If
-            - CreateCURReport
-            - !Sub 's3://${CURDataBucket}/${CURReportPrefixName}/${CURReport}/cost_and_usage_data_status/'
-            - !Sub 's3://${CURDataBucketName}/${CURReportPrefixName}/${CURReportName}/cost_and_usage_data_status/'
+          Location: !Sub 's3://${CURStatus.output_bucket}/${CURStatus.output_prefix}/${CURStatus.report_name}/cost_and_usage_data_status/'
 
-  MyAthenaQueryResultsBucket:
+  AthenaQueryResultsBucket: #Create S3 bucket fork workgroup query results
     Type: AWS::S3::Bucket
     DeletionPolicy: Retain
     Properties:
+      BucketName: 
+        !Join
+          - ''
+          - - 'coast-athena-query-results-'
+            - !Ref AWS::StackName
+            - '-'
+            - !GetAtt "CURStatus.hash"            
       BucketEncryption:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
@@ -478,30 +643,39 @@ Resources:
             ExpirationInDays: 7
       VersioningConfiguration:
         Status: Enabled
-    Metadata:
-      cfn_nag:
-        rules_to_suppress:
-          - id: 'W35'
-            reason: "Data buckets would generate too much logs"
+      Tags:
+        - Key: "deployment"
+          Value: "coast"
 
-  MyAthenaWorkGroup:
+  AthenaWorkGroup:  #Create athena workgroup 
     Type: AWS::Athena::WorkGroup
+    DependsOn:
+      - AthenaQueryResultsBucket
     Properties:
-      Name: !Ref AWS::StackName
+      Name: 
+        !Join
+          - ''
+          - - 'coast-workgroup-'
+            - !Ref AWS::StackName
       Description: 'Used for COAST'
+      Tags:
+        - Key: "GrafanaDataSource"
+          Value: "false"
+        - Key: "deployment"
+          Value: "coast"
       WorkGroupConfiguration:
         EnforceWorkGroupConfiguration: true
         ResultConfiguration:
           EncryptionConfiguration:
             EncryptionOption: SSE_S3
-          OutputLocation: !Sub 's3://${MyAthenaQueryResultsBucket}'
+          OutputLocation: !Sub 's3://${AthenaQueryResultsBucket}'
           AclConfiguration:
             S3AclOption: BUCKET_OWNER_FULL_CONTROL
       Tags:
         - Key: GrafanaDataSource
           Value: 'true'
 
-  GrafanaWorkspaceRole:
+  GrafanaWorkspaceRole: #Role for Grafana workspace
     Type: AWS::IAM::Role
     Properties: 
       AssumeRolePolicyDocument:
@@ -512,6 +686,9 @@ Resources:
             Service: 'grafana.amazonaws.com'
           Action: 'sts:AssumeRole'
       Description: 'COAST Grafana Workspace Role'
+      Tags:
+        - Key: "deployment"
+          Value: "coast"
       ManagedPolicyArns: 
         - 'arn:aws:iam::aws:policy/service-role/AmazonGrafanaAthenaAccess'
       Policies:
@@ -531,19 +708,13 @@ Resources:
                   - 's3:PutObject'
                   - 's3:PutBucketPublicAccessBlock'
                 Resource:
-                  - !If
-                    - CreateCURReport
-                    - !Sub 'arn:aws:s3:::${CURDataBucket}'
-                    - !Sub 'arn:aws:s3:::${CURDataBucketName}'
-                  - !If
-                    - CreateCURReport
-                    - !Sub 'arn:aws:s3:::${CURDataBucket}/*'
-                    - !Sub 'arn:aws:s3:::${CURDataBucketName}/*'
-                  - !Sub 'arn:aws:s3:::${MyAthenaQueryResultsBucket}'
-                  - !Sub 'arn:aws:s3:::${MyAthenaQueryResultsBucket}/*'
+                  - !Sub 'arn:aws:s3:::${CURStatus.output_bucket}'
+                  - !Sub 'arn:aws:s3:::${CURStatus.output_bucket}/*'
+                  - !Sub 'arn:aws:s3:::${AthenaQueryResultsBucket}'
+                  - !Sub 'arn:aws:s3:::${AthenaQueryResultsBucket}/*'
       Path: /
 
-  GrafanaWorkspace:
+  GrafanaWorkspace: #Create Grafana workspace
     Type: AWS::Grafana::Workspace
     Properties: 
       AccountAccessType: CURRENT_ACCOUNT
@@ -554,15 +725,25 @@ Resources:
         - ATHENA
       Description: 'COAST Project Workspace'
       GrafanaVersion: '9.4'
-      Name: COAST
+      PluginAdminEnabled: true
+      Name:
+        !Join
+          - ''
+          - - 'COAST-'
+            - !Ref AWS::StackName
       NotificationDestinations: 
         - SNS
       PermissionType: SERVICE_MANAGED
       RoleArn: !Ref GrafanaWorkspaceRole
 
-  COASTDataSourceFunctionRole:
+  GrafanaLambdaFunctionRole: #Role required for Grafana Datasource and CoastDashboard functions
     Type: AWS::IAM::Role
     Properties:
+      RoleName:
+        !Join
+          - ''
+          - - 'coast-grafana-lambda-role'
+            - !Ref AWS::StackName
       AssumeRolePolicyDocument:
         Statement:
           - Effect: Allow
@@ -572,8 +753,11 @@ Resources:
             Action:
               - 'sts:AssumeRole'
       Path: /
+      Tags:
+        - Key: "deployment"
+          Value: "coast"
       Policies:
-        - PolicyName: LambdaExecution
+        - PolicyName: 'coast-datasource-lambda'
           PolicyDocument:
             Version: 2012-10-17
             Statement:
@@ -586,11 +770,11 @@ Resources:
               - Effect: Allow
                 Action:
                   - 'sns:Publish'
-                Resource: !Ref COASTNotificationsTopic
+                Resource: !Ref SNSNotificationsTopic
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/AWSGrafanaAccountAdministrator
 
-  COASTDataSourceFunction:
+  GrafanaDataSourceFunction: #Lambda function to create Grafana data source
     Type: AWS::Lambda::Function
     Properties:
       Code:
@@ -599,12 +783,20 @@ Resources:
           import boto3
           import urllib3
           import json
+          import logging
+
+          # Configure the logging module
+          logger = logging.getLogger()
+          logger.setLevel(logging.DEBUG)
+
           SUCCESS="SUCCESS"
           FAILED="FAILED"
           class CoastGrafanaWorkspace:
               client=boto3.client('grafana')
               http=urllib3.PoolManager()
               def __init__(self,athena_db,athena_region,athena_workgroup,datasource_name,key_name,workspace_id):
+                  self.logger = logging.getLogger()
+                  self.logger.setLevel(logging.DEBUG)
                   self.athena_db=athena_db
                   self.athena_region=athena_region
                   self.athena_workgroup=athena_workgroup
@@ -620,20 +812,46 @@ Resources:
               def create_key(self,key_name):
                   try:
                       self.client.delete_workspace_api_key(keyName=key_name,workspaceId=self.workspace['id'])
+                  except client.exceptions.ResourceNotFoundException as rnfe:
+                      self.logger.info(f'Unable to delete key.  This is not a breaking error.: {rnfe}.')
                   except Exception as err:
                       print('Error:'+str(err))
                       pass
                   finally:
                       return self.client.create_workspace_api_key(keyName=key_name,keyRole='ADMIN',secondsToLive=60,workspaceId=self.workspace['id'])
-              def delete_datasource(self,id):
-                  return self.grafana_api('DELETE','datasources/'+str(id))
+              def enable_plugin(self):
+                  body = {}
+                  return self.grafana_api('POST','plugins/grafana-athena-datasource/install',bytes(json.dumps(body),encoding='utf-8'))
+              def delete_datasource(self):
+                  grafana_url='https://'+self.workspace['endpoint']+'/api/datasources'
+                  try:
+                    response = requests.get(grafana_url, headers={'Authorization': f"Bearer {self.key['key']}",'Content-Type': 'application/json'})
+                  except:
+                    return 'Failed calling grafana api to retrieve datasources'
+
+                  if response.status_code == 200:
+                    datasources = response.json()
+                    
+                    # Find the ID of the datasource by name
+                    datasource_id = None
+                    for datasource in datasources:
+                        if datasource['name'] == self.datasource_name:
+                            datasource_id = datasource['id']
+                            break
+                  
+                    return self.grafana_api('DELETE',f'datasources/uid/{datasource_id}')
+                  
+                  return 'unable to find matching datasource to delete'
               def set_datasource_body(self):
                   body = {'name':self.datasource_name,'type':'grafana-athena-datasource','access':'proxy','url':'','user':'','database':'','basicAuth':False,'isDefault':False,'jsonData':{'authType':'ec2_iam_role','catalog':'AwsDataCatalog','database':self.athena_db,'defaultRegion':self.athena_region,'provisionedBy':'COAST','workgroup':self.athena_workgroup},'readOnly':False}
                   return bytes(json.dumps(body),encoding='utf-8')
               def create_datasource(self):
+                  res = self.enable_plugin()
+                  print('Status: '+str(res.status))
+                  print(res.data)
                   return self.grafana_api('POST','datasources',self.set_datasource_body())
               def update_datasource(self,id):
-                    return self.grafana_api('PUT','datasources/'+str(id),self.set_datasource_body())
+                  return self.grafana_api('PUT','datasources/'+str(id),self.set_datasource_body())
               def grafana_api(self,method,path,body=None):
                   url='https://'+self.workspace['endpoint']+'/api/'+path
                   headers={'Accept':'application/json','Content-Type':'application/json','Authorization':'Bearer '+self.key['key']}
@@ -650,40 +868,65 @@ Resources:
                       res=ws.create_datasource()
                   elif event['RequestType']=='Update':
                       if int(id)>0:
-                        res=ws.update_datasource(id)
+                          res=ws.update_datasource(id)
                       else:
-                        res=ws.create_datasource()
+                          res=ws.create_datasource()
                   elif event['RequestType']=='Delete':
-                      res=ws.delete_datasource(id)
+                      res=ws.delete_datasource()
+                      try:
+                        if res.status==200:
+                            cfnresponse.send(event,context,cfnresponse.SUCCESS,response_data)
+                        else:
+                            cfnresponse.send(event,context,cfnresponse.FAILED,response_data)
+                      except:
+                        logger.info(f"Failed attempting to delete datasource {event['ResourceProperties']['DataSource']}: {res} ")
+                        cfnresponse.send(event, context, cfnresponse.FAILED, response_data)
+                      
                   print('Status: '+str(res.status))
                   print(res.data)
                   datasource_id=str(json.loads(res.data)['id']) 
                   if res.status==200:
-                    cfnresponse.send(event,context,cfnresponse.SUCCESS,response_data,datasource_id)
+                      cfnresponse.send(event,context,cfnresponse.SUCCESS,response_data,datasource_id)
                   else:
-                    cfnresponse.send(event,context,cfnresponse.FAILED,response_data,datasource_id)
+                      cfnresponse.send(event,context,cfnresponse.FAILED,response_data,datasource_id)
               except Exception as err:
                   print('Error:'+str(err))
                   cfnresponse.send(event,context,cfnresponse.FAILED,response_data,'0')
 
-      Role: !GetAtt COASTDataSourceFunctionRole.Arn
+      FunctionName:
+        !Join
+          - ''
+          - - 'coast-grafana-datasource-'
+            - !Ref AWS::StackName
+      Role: !GetAtt GrafanaLambdaFunctionRole.Arn
       Handler: 'index.lambda_handler'
       Timeout: 30
+
+      Tags:
+        - Key: "deployment"
+          Value: "coast"
       Runtime: python3.10
       ReservedConcurrentExecutions: 1
 
-  GrafanaDatasource:
+  GrafanaDatasource: #Execute lambda data source creation; custom resource
     Type: 'Custom::GrafanaDatasource'
+    DependsOn:
+      - GrafanaWorkspace
     Properties:
-      ServiceToken: !GetAtt COASTDataSourceFunction.Arn
-      AthenaDB: !Ref AWSCURDatabase
+      ServiceToken: !GetAtt GrafanaDataSourceFunction.Arn
+      AthenaDB: 
+        !Join
+          - ''
+          - - 'coast-cur-report-'
+            - !Ref AWS::StackName
       AthenaRegion: !Ref AWS::Region
-      AthenaWorkgroup: !Ref MyAthenaWorkGroup
-      DataSource: !Ref AWS::StackName
+      AthenaWorkgroup: !Ref AthenaWorkGroup
+      DataSource: 'COAST-2023-09-19' #Do not change until we update our templates
       GrafanaKey: !Ref AWS::StackName
       GrafanaWorkspace: !Ref GrafanaWorkspace
+      CoastWorkspace: !GetAtt "GrafanaWorkspace.Name"
 
-  COASTDashboardFunction:
+  COASTDashboardFunction: #Lambda function to import COAST Dashboard
     Type: AWS::Lambda::Function
     Properties:
       Code:
@@ -743,6 +986,7 @@ Resources:
                       res=ws.create_dashboard()
                   elif event['RequestType']=='Delete':
                       res=ws.delete_dashboard(uid)
+                      cfnresponse.send(event,context,cfnresponse.SUCCESS,response_data)
                   print('Status: '+str(res.status))
                   print(res.data)
                   if 'uid' in json.loads(res.data):
@@ -756,19 +1000,45 @@ Resources:
               except Exception as err:
                   print('Error:'+str(err))
                   cfnresponse.send(event,context,cfnresponse.FAILED,response_data,'0')
-
-      Role: !GetAtt COASTDataSourceFunctionRole.Arn
+      FunctionName:
+        !Join
+          - ''
+          - - 'coast-dashboard-function-'
+            - !Ref AWS::StackName
+      Role: !GetAtt GrafanaLambdaFunctionRole.Arn
       Handler: 'index.lambda_handler'
       Timeout: 30
+      Tags:
+        - Key: "deployment"
+          Value: "coast"
       Runtime: python3.10
       ReservedConcurrentExecutions: 1
 
-  COASTDashboard:
+  COASTDashboard: #Execute lambda function to import COAST Dashboard; custom resource
     Type: 'Custom::GrafanaDashboard'
+    DependsOn:
+      - GrafanaDatasource
     Properties:
       ServiceToken: !GetAtt COASTDashboardFunction.Arn
       DashboardName: !Sub 'COAST-${AWS::StackName}'
-      DashboardURL: !Ref GrafanaDashboardTemplateURL
+      DashboardURL: !Ref DashboardURL
       DashboardDatasource: !Ref GrafanaDatasource
       GrafanaKey: !Ref AWS::StackName
       GrafanaWorkspace: !Ref GrafanaWorkspace
+
+Outputs:
+  CurReportStatus:
+    Description: If you have provided a CUR report in the parameters, COAST ran logic to validate if the report is in the necessary format.  This value will be true if COAST used an existing CUR report.
+    Value: !GetAtt "CURStatus.validated"
+  
+  GrafanaWorkspace:
+    Description: The Grafana workspace associated with this stack.
+    Value: !GetAtt "GrafanaWorkspace.Name"  
+
+  CurReportName:
+    Description: This is the CUR report either created or used by the stack.
+    Value: !GetAtt "CURStatus.report_name"
+
+  CurBucketName:
+    Description: This is the CUR bucket created or used by this stack.
+    Value: !GetAtt "CURStatus.output_bucket"
