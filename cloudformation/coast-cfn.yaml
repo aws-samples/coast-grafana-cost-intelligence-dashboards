@@ -9,8 +9,8 @@ Parameters:
     Default: "optional_change_if_report_exists"
   DashboardURL:
     Type: String
-    Default: https://github.com/aws-observability/observability-best-practices/raw/main/sandbox/cure-grafana-dashboard/AmazonManagedGrafanaCUREDashboard.json
-    Description: URL of Grafana Dashboard to be imported. DON'T CHANGE unless you have forked this repository.
+    Default: https://github.com/aws-samples/COAST/blob/main/grafana_dashboards/coast_executive_dashboard_v0.0.1.json
+    Description: URL of COAST Executive Dashboard to be imported. See https://github.com/aws-samples/COAST/blob/main/README.md for dashboard overviews.
     AllowedPattern: 'https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&\/\/=]*).json'
   
 Resources:

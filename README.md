@@ -4,9 +4,9 @@
 
 ## About
 
-COAST is an open-source infrastructure as code deployment solution that integrates with Amazon Managed Grafana to provide customers with a cost intelligence and optimization dashboards. COAST helps customers to analyze and optimize their cloud costs by providing them with customizable dashboards on the Grafana open-source analytics and monitoring application they are already familiar with. With COAST, customers can gain full visibility and control over their cloud costs, ensuring that they are optimizing their spend and maximizing their ROI.
+COAST is an open-source infrastructure as code deployment solution that integrates with Amazon Managed Grafana to provide customers with cost intelligence and optimization dashboards. COAST helps customers analyze and optimize their cloud costs by providing them with customizable dashboards on the Grafana open-source analytics and monitoring application they are already familiar with. With COAST, customers can gain full visibility and control over their cloud costs, ensuring that they are optimizing their spend and maximizing their ROI.
 
-COAST deploys with a CloudFormation template in under 5 minutes, and additional dashboards may be added with a one click import.
+COAST deploys the FinOps dashboard with a CloudFormation template in under 5 minutes, and additional dashboards may be added with Grafana's easy one click [import](https://grafana.com/docs/grafana/latest/dashboards/manage-dashboards/#export-and-import-dashboards).
 
 ## Pre-requisites
 
