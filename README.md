@@ -91,4 +91,21 @@ Within the CloudFormation template, you can choose whether to create a new Cost 
 
   This dashboard is recommended for engineering teams. Teams can filter based on cost allocation tags and display only the services relevant to them. To utilize this dashboard, your CUR data should include reserved instance and savings plans columns. Additionally, you need to have at least one cost allocation tag enabled.
 
+## Associated Cost
+COAST is an open-source solution and is completely free to use. However, you will be responsible for any AWS costs associated with underlying AWS services.
 
+## Support
+COAST is supported by Solution Architects of AWS on best effort basis. However, users are encouraged to ask questions, open issues, contribute and provide feedback.
+
+## Contributing
+The core team for COAST include the following, in alphabetical order:
+
+- Chris Strzelczyk
+- Lucas Vieira
+- Munish Dabra
+- Siva Guruvareddiar
+
+However, we welcome the wider open-source community to this project. See [CONTRIBUTING](https://github.com/aws-samples/COAST/blob/main/CONTRIBUTING.md) for more information.
+
+## License
+This library is licensed under the MIT-0 License. See the [LICENSE](https://github.com/aws-samples/COAST/blob/main/LICENSE) file.
