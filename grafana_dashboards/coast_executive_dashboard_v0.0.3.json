@@ -1,53 +1,4 @@
 {
-  "__inputs": [
-    {
-      "name": "COAST-2023-09-19",
-      "label": "COAST-2023-09-19",
-      "description": "",
-      "type": "datasource",
-      "pluginId": "grafana-athena-datasource",
-      "pluginName": "Amazon Athena"
-    }
-  ],
-  "__elements": {},
-  "__requires": [
-    {
-      "type": "panel",
-      "id": "barchart",
-      "name": "Bar chart",
-      "version": ""
-    },
-    {
-      "type": "grafana",
-      "id": "grafana",
-      "name": "Grafana",
-      "version": "9.4.7"
-    },
-    {
-      "type": "datasource",
-      "id": "grafana-athena-datasource",
-      "name": "Amazon Athena",
-      "version": "2.8.0"
-    },
-    {
-      "type": "panel",
-      "id": "stat",
-      "name": "Stat",
-      "version": ""
-    },
-    {
-      "type": "panel",
-      "id": "text",
-      "name": "Text",
-      "version": ""
-    },
-    {
-      "type": "panel",
-      "id": "timeseries",
-      "name": "Time series",
-      "version": ""
-    }
-  ],
   "annotations": {
     "list": [
       {
@@ -74,7 +25,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 2,
-  "id": null,
+  "id": 8,
   "links": [
     {
       "asDropdown": false,
@@ -94,7 +45,7 @@
     {
       "datasource": {
         "type": "grafana-athena-datasource",
-        "uid": "${COAST-2023-09-19}"
+        "uid": "UAKxS3ISk"
       },
       "description": "",
       "gridPos": {
@@ -118,7 +69,7 @@
         {
           "datasource": {
             "type": "grafana-athena-datasource",
-            "uid": "${COAST-2023-09-19}"
+            "uid": "UAKxS3ISk"
           },
           "refId": "A"
         }
@@ -140,7 +91,7 @@
         {
           "datasource": {
             "type": "grafana-athena-datasource",
-            "uid": "${COAST-2023-09-19}"
+            "uid": "UAKxS3ISk"
           },
           "description": "",
           "gridPos": {
@@ -164,7 +115,7 @@
             {
               "datasource": {
                 "type": "grafana-athena-datasource",
-                "uid": "${COAST-2023-09-19}"
+                "uid": "UAKxS3ISk"
               },
               "refId": "A"
             }
@@ -175,7 +126,7 @@
         {
           "datasource": {
             "type": "grafana-athena-datasource",
-            "uid": "${COAST-2023-09-19}"
+            "uid": "UAKxS3ISk"
           },
           "description": "",
           "gridPos": {
@@ -199,7 +150,7 @@
             {
               "datasource": {
                 "type": "grafana-athena-datasource",
-                "uid": "${COAST-2023-09-19}"
+                "uid": "UAKxS3ISk"
               },
               "refId": "A"
             }
@@ -210,7 +161,7 @@
         {
           "datasource": {
             "type": "grafana-athena-datasource",
-            "uid": "${COAST-2023-09-19}"
+            "uid": "UAKxS3ISk"
           },
           "description": "",
           "gridPos": {
@@ -234,7 +185,7 @@
             {
               "datasource": {
                 "type": "grafana-athena-datasource",
-                "uid": "${COAST-2023-09-19}"
+                "uid": "UAKxS3ISk"
               },
               "refId": "A"
             }
@@ -286,7 +237,7 @@
     {
       "datasource": {
         "type": "grafana-athena-datasource",
-        "uid": "${COAST-2023-09-19}"
+        "uid": "UAKxS3ISk"
       },
       "description": "Last two invoices - Top 10",
       "fieldConfig": {
@@ -403,7 +354,7 @@
           },
           "datasource": {
             "type": "grafana-athena-datasource",
-            "uid": "${COAST-2023-09-19}"
+            "uid": "UAKxS3ISk"
           },
           "format": 1,
           "rawSQL": "with spend_difference as (\n    SELECT\n    line_item_usage_account_id as account,\n    SUM(\n        CASE\n        WHEN(bill_billing_period_start_date = date_add('MONTH', -1, DATE_TRUNC('MONTH', current_date))) THEN line_item_unblended_cost\n    END) as cost_one_month_ago,\n    SUM(\n        CASE\n        WHEN(bill_billing_period_start_date = date_add('MONTH', -2, DATE_TRUNC('MONTH', current_date))) THEN line_item_unblended_cost\n    END) as cost_two_months_ago\n    FROM\n    $CurTable\n    where\n    ( bill_billing_period_start_date = date_add('MONTH', -1, DATE_TRUNC('MONTH', current_date)) \n    OR bill_billing_period_start_date = date_add('MONTH', -2, DATE_TRUNC('MONTH', current_date)) )\n    AND product_location in ($Regions)\n    AND line_item_usage_account_id IN ($LinkedAccounts)\n    Group by \n    line_item_usage_account_id\n    ORDER BY \n    account DESC\n    LIMIT 10\n)\n\nSELECT\n    account,\n    (((cost_one_month_ago - cost_two_months_ago) / cost_two_months_ago) * 100) as spend_percentage_diff\nFROM\nspend_difference\nORDER BY spend_percentage_diff",
@@ -430,7 +381,7 @@
     {
       "datasource": {
         "type": "grafana-athena-datasource",
-        "uid": "${COAST-2023-09-19}"
+        "uid": "UAKxS3ISk"
       },
       "description": "Last Month",
       "fieldConfig": {
@@ -544,7 +495,7 @@
           },
           "datasource": {
             "type": "grafana-athena-datasource",
-            "uid": "${COAST-2023-09-19}"
+            "uid": "UAKxS3ISk"
           },
           "format": 1,
           "rawSQL": "SELECT \nCAST(line_item_usage_account_id as varchar) as account,\nCAST(sum(line_item_unblended_cost) as integer) as spend\nFROM $CurTable\nwhere\nbill_billing_period_start_date = date_add('MONTH', -1, date_trunc('MONTH', current_date))\nAND product_location in ($Regions)\nAND line_item_usage_account_id IN ($LinkedAccounts)\nGROUP BY\nline_item_usage_account_id\nORDER BY \nspend DESC\nLIMIT 10\n",
@@ -557,7 +508,7 @@
     {
       "datasource": {
         "type": "grafana-athena-datasource",
-        "uid": "${COAST-2023-09-19}"
+        "uid": "UAKxS3ISk"
       },
       "description": "The invoice panel allows for filtering by accounts and regions only.  This panel displays the current number of accounts and regions used to calculate the invoice sums.",
       "fieldConfig": {
@@ -641,7 +592,7 @@
           },
           "datasource": {
             "type": "grafana-athena-datasource",
-            "uid": "${COAST-2023-09-19}"
+            "uid": "UAKxS3ISk"
           },
           "format": 1,
           "rawSQL": "SELECT \nCOUNT(DISTINCT(line_item_usage_account_id)) as Accounts,\nCOUNT(DISTINCT(product_location)) as Regions\nFROM $CurTable\nWHERE \nproduct_location in ($Regions)\nAND line_item_usage_account_id IN ($LinkedAccounts)",
@@ -679,7 +630,7 @@
     {
       "datasource": {
         "type": "grafana-athena-datasource",
-        "uid": "${COAST-2023-09-19}"
+        "uid": "UAKxS3ISk"
       },
       "description": "Invoice trend over the past two months",
       "fieldConfig": {
@@ -753,7 +704,7 @@
           },
           "datasource": {
             "type": "grafana-athena-datasource",
-            "uid": "${COAST-2023-09-19}"
+            "uid": "UAKxS3ISk"
           },
           "format": 1,
           "rawSQL": "-- Output the bill sum from jan of this year and last month\nWITH bill_sum_ytd_and_last_month as (\n  SELECT \n  SUM(CASE\n        WHEN (bill_billing_period_start_date = date_add('YEAR', 0, DATE_TRUNC('YEAR', current_date))) THEN line_item_unblended_cost ELSE 0 \n      END) AS bill_january,\n  SUM(CASE\n        WHEN (bill_billing_period_start_date = date_add('MONTH', -1, DATE_TRUNC('MONTH', current_date))) THEN line_item_unblended_cost ELSE 0 \n      END) AS bill_one_month_ago\n  FROM $CurTable\n  where\n  ( bill_billing_period_start_date = date_add('YEAR', 0, DATE_TRUNC('YEAR', current_date))\n  OR bill_billing_period_start_date = date_add('MONTH', -1, DATE_TRUNC('MONTH', current_date)) )  \n  AND product_location in ($Regions)\n  AND line_item_usage_account_id IN ($LinkedAccounts)\n),\n\n-- output percentage change ytd\nbill_percentage_change as (\n  SELECT \n    bill_january,\n    bill_one_month_ago,\n    CAST(bill_one_month_ago - bill_january as double) as spend_difference,\n    CAST(((bill_one_month_ago - bill_january) / bill_january) * 100 as double) as percentage_change\n  FROM \n  bill_sum_ytd_and_last_month\n)\n\nSELECT \npercentage_change\nFROM \nbill_percentage_change",
@@ -765,7 +716,7 @@
     {
       "datasource": {
         "type": "grafana-athena-datasource",
-        "uid": "${COAST-2023-09-19}"
+        "uid": "UAKxS3ISk"
       },
       "description": "Invoice trend over the past two months",
       "fieldConfig": {
@@ -839,7 +790,7 @@
           },
           "datasource": {
             "type": "grafana-athena-datasource",
-            "uid": "${COAST-2023-09-19}"
+            "uid": "UAKxS3ISk"
           },
           "format": 1,
           "rawSQL": "-- Output the bill sum last two months\nWITH bill_sum_last_two_months as (\n  SELECT \n  SUM(CASE\n        WHEN (bill_billing_period_start_date = date_add('MONTH', -2, DATE_TRUNC('MONTH', current_date))) THEN line_item_unblended_cost ELSE 0 \n      END) AS bill_two_months_ago,\n  SUM(CASE\n        WHEN (bill_billing_period_start_date = date_add('MONTH', -1, DATE_TRUNC('MONTH', current_date))) THEN line_item_unblended_cost ELSE 0 \n      END) AS bill_one_month_ago\n  FROM $CurTable\n  where\n  ( bill_billing_period_start_date = date_add('MONTH', -2, DATE_TRUNC('MONTH', current_date))\n  OR bill_billing_period_start_date = date_add('MONTH', -1, DATE_TRUNC('MONTH', current_date)) )  \n  AND product_location in ($Regions)\n  AND line_item_usage_account_id IN ($LinkedAccounts)\n),\n\n-- output percentage change for bill in last two months\nbill_percentage_change as (\nSELECT \n  bill_two_months_ago,\n  bill_one_month_ago,\n  CAST(bill_one_month_ago - bill_two_months_ago as double) as spend_difference,\n  CAST(((bill_one_month_ago - bill_two_months_ago) / bill_two_months_ago) * 100 as double) as percentage_change\nFROM \nbill_sum_last_two_months\n)\n\nSELECT \npercentage_change\nFROM \nbill_percentage_change",
@@ -851,7 +802,7 @@
     {
       "datasource": {
         "type": "grafana-athena-datasource",
-        "uid": "${COAST-2023-09-19}"
+        "uid": "UAKxS3ISk"
       },
       "fieldConfig": {
         "defaults": {
@@ -924,7 +875,7 @@
           },
           "datasource": {
             "type": "grafana-athena-datasource",
-            "uid": "${COAST-2023-09-19}"
+            "uid": "UAKxS3ISk"
           },
           "format": 1,
           "rawSQL": "-- Output number for last months bill\nSELECT \nSUM(line_item_unblended_cost)\nFROM $CurTable\nwhere\nbill_billing_period_start_date = date_add('MONTH', -1, DATE_TRUNC('MONTH', current_date) )\nAND product_location in ($Regions)\nAND line_item_usage_account_id IN ($LinkedAccounts)",
@@ -936,7 +887,7 @@
     {
       "datasource": {
         "type": "grafana-athena-datasource",
-        "uid": "${COAST-2023-09-19}"
+        "uid": "UAKxS3ISk"
       },
       "fieldConfig": {
         "defaults": {
@@ -1009,7 +960,7 @@
           },
           "datasource": {
             "type": "grafana-athena-datasource",
-            "uid": "${COAST-2023-09-19}"
+            "uid": "UAKxS3ISk"
           },
           "format": 1,
           "rawSQL": "-- Output number for last months bill\nSELECT \nSUM(line_item_unblended_cost)\nFROM $CurTable\nwhere\nbill_billing_period_start_date = date_add('MONTH', -2, DATE_TRUNC('MONTH', current_date) )\nAND product_location in ($Regions)\nAND line_item_usage_account_id IN ($LinkedAccounts)",
@@ -1058,7 +1009,7 @@
     {
       "datasource": {
         "type": "grafana-athena-datasource",
-        "uid": "${COAST-2023-09-19}"
+        "uid": "UAKxS3ISk"
       },
       "description": "Total spend as represented by SUM of line_item_unblended_cost.",
       "fieldConfig": {
@@ -1078,8 +1029,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "light-purple",
-                "value": null
+                "color": "light-purple"
               }
             ]
           },
@@ -1134,7 +1084,7 @@
           },
           "datasource": {
             "type": "grafana-athena-datasource",
-            "uid": "${COAST-2023-09-19}"
+            "uid": "UAKxS3ISk"
           },
           "format": 1,
           "rawSQL": "SELECT\n  date_trunc('$Granularity', line_item_usage_start_date),\n  sum(line_item_unblended_cost) AS cost\nfrom $CurTable\nWHERE\n  $__timeFilter(line_item_usage_start_date)\n  and product_location in ($Regions)\n  AND  line_item_product_code in ($Services)\n  AND line_item_usage_account_id IN ($LinkedAccounts)\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_line_item_type IN ($ChargeType)\nGROUP BY 1\nORDER BY 1\n;",
@@ -1182,8 +1132,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1273,8 +1222,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "super-light-blue",
-                "value": null
+                "color": "super-light-blue"
               },
               {
                 "color": "super-light-purple",
@@ -1337,7 +1285,7 @@
     {
       "datasource": {
         "type": "grafana-athena-datasource",
-        "uid": "${COAST-2023-09-19}"
+        "uid": "UAKxS3ISk"
       },
       "description": "Total spend by service as represented by  SUM of line_item_unblended_cost.\n\nTop 5 namely, remaning grouped under Others.\n\nSelect a service to apply filter to dashboard, or Others to clear service filtering.",
       "fieldConfig": {
@@ -1356,8 +1304,7 @@
             "mode": "percentage",
             "steps": [
               {
-                "color": "blue",
-                "value": null
+                "color": "blue"
               }
             ]
           },
@@ -1415,7 +1362,7 @@
           },
           "datasource": {
             "type": "grafana-athena-datasource",
-            "uid": "${COAST-2023-09-19}"
+            "uid": "UAKxS3ISk"
           },
           "format": 0,
           "hide": false,
@@ -1432,7 +1379,7 @@
           },
           "datasource": {
             "type": "grafana-athena-datasource",
-            "uid": "${COAST-2023-09-19}"
+            "uid": "UAKxS3ISk"
           },
           "format": 0,
           "hide": false,
@@ -1515,8 +1462,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1593,7 +1539,7 @@
     {
       "datasource": {
         "type": "grafana-athena-datasource",
-        "uid": "${COAST-2023-09-19}"
+        "uid": "UAKxS3ISk"
       },
       "description": "Total spend per region as represented by  SUM of line_item_unblended_cost.\n\nTop 5 namely, remaning grouped under Others.\n\n\nSelect a region to apply filter to dashboard, or Others to clear region filtering.",
       "fieldConfig": {
@@ -1612,8 +1558,7 @@
             "mode": "percentage",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1674,7 +1619,7 @@
           },
           "datasource": {
             "type": "grafana-athena-datasource",
-            "uid": "${COAST-2023-09-19}"
+            "uid": "UAKxS3ISk"
           },
           "format": 0,
           "hide": false,
@@ -1691,7 +1636,7 @@
           },
           "datasource": {
             "type": "grafana-athena-datasource",
-            "uid": "${COAST-2023-09-19}"
+            "uid": "UAKxS3ISk"
           },
           "format": 0,
           "hide": false,
@@ -1774,8 +1719,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1856,10 +1800,14 @@
         "type": "datasource"
       },
       {
-        "current": {},
+        "current": {
+          "selected": false,
+          "text": "csaws_cur",
+          "value": "csaws_cur"
+        },
         "datasource": {
           "type": "grafana-athena-datasource",
-          "uid": "${COAST-2023-09-19}"
+          "uid": "UAKxS3ISk"
         },
         "definition": "",
         "hide": 2,
@@ -1878,10 +1826,14 @@
         "type": "query"
       },
       {
-        "current": {},
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
+        },
         "datasource": {
           "type": "grafana-athena-datasource",
-          "uid": "${COAST-2023-09-19}"
+          "uid": "UAKxS3ISk"
         },
         "definition": "",
         "description": "Select Linked Account",
@@ -1909,10 +1861,14 @@
         "type": "query"
       },
       {
-        "current": {},
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
+        },
         "datasource": {
           "type": "grafana-athena-datasource",
-          "uid": "${COAST-2023-09-19}"
+          "uid": "UAKxS3ISk"
         },
         "definition": "",
         "hide": 0,
@@ -1939,10 +1895,14 @@
         "type": "query"
       },
       {
-        "current": {},
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
+        },
         "datasource": {
           "type": "grafana-athena-datasource",
-          "uid": "${COAST-2023-09-19}"
+          "uid": "UAKxS3ISk"
         },
         "definition": "",
         "hide": 0,
@@ -2008,10 +1968,14 @@
         "type": "custom"
       },
       {
-        "current": {},
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
+        },
         "datasource": {
           "type": "grafana-athena-datasource",
-          "uid": "${COAST-2023-09-19}"
+          "uid": "UAKxS3ISk"
         },
         "definition": "",
         "hide": 0,
@@ -2038,10 +2002,14 @@
         "type": "query"
       },
       {
-        "current": {},
+        "current": {
+          "selected": true,
+          "text": "arch",
+          "value": "arch"
+        },
         "datasource": {
           "type": "grafana-athena-datasource",
-          "uid": "${COAST-2023-09-19}"
+          "uid": "UAKxS3ISk"
         },
         "definition": "",
         "hide": 0,
@@ -2068,10 +2036,18 @@
         "type": "query"
       },
       {
-        "current": {},
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
         "datasource": {
           "type": "grafana-athena-datasource",
-          "uid": "${COAST-2023-09-19}"
+          "uid": "UAKxS3ISk"
         },
         "definition": "",
         "hide": 0,
@@ -2098,10 +2074,14 @@
         "type": "query"
       },
       {
-        "current": {},
+        "current": {
+          "selected": false,
+          "text": "internal",
+          "value": "internal"
+        },
         "datasource": {
           "type": "grafana-athena-datasource",
-          "uid": "${COAST-2023-09-19}"
+          "uid": "UAKxS3ISk"
         },
         "definition": "",
         "hide": 2,
@@ -2128,10 +2108,14 @@
         "type": "query"
       },
       {
-        "current": {},
+        "current": {
+          "selected": false,
+          "text": "",
+          "value": ""
+        },
         "datasource": {
           "type": "grafana-athena-datasource",
-          "uid": "${COAST-2023-09-19}"
+          "uid": "UAKxS3ISk"
         },
         "definition": "",
         "hide": 2,
@@ -2158,10 +2142,14 @@
         "type": "query"
       },
       {
-        "current": {},
+        "current": {
+          "selected": false,
+          "text": "100.0",
+          "value": "100.0"
+        },
         "datasource": {
           "type": "grafana-athena-datasource",
-          "uid": "${COAST-2023-09-19}"
+          "uid": "UAKxS3ISk"
         },
         "definition": "",
         "description": "Calculate the spend percentage from the top 25 accounts in the AWS Organization.",
@@ -2188,10 +2176,14 @@
         "type": "query"
       },
       {
-        "current": {},
+        "current": {
+          "selected": false,
+          "text": "8",
+          "value": "8"
+        },
         "datasource": {
           "type": "grafana-athena-datasource",
-          "uid": "${COAST-2023-09-19}"
+          "uid": "UAKxS3ISk"
         },
         "definition": "",
         "hide": 2,
@@ -2235,6 +2227,6 @@
   "timezone": "utc",
   "title": "COAST - Executive Dashboard",
   "uid": "Z1knv3WIz",
-  "version": 155,
+  "version": 2,
   "weekStart": ""
 }
