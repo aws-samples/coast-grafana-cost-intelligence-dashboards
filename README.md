@@ -6,14 +6,21 @@
 
 COAST is an open-source infrastructure as code deployment solution that integrates with Amazon Managed Grafana to provide customers with cost intelligence and optimization dashboards. COAST helps customers analyze and optimize their cloud costs by providing them with customizable dashboards on the Grafana open-source analytics and monitoring application they are already familiar with. With COAST, customers can gain full visibility and control over their cloud costs, ensuring that they are optimizing their spend and maximizing their ROI.
 
-COAST deploys the FinOps dashboard with a CloudFormation template in under 5 minutes, and additional dashboards may be added with Grafana's easy one click [import](https://grafana.com/docs/grafana/latest/dashboards/manage-dashboards/#export-and-import-dashboards).
+
+
+###### Advantages of COAST
+- If you are already using Grafana for monitoring application metrics, you will be familiar with the tool inferface.
+- COAST will integrate nicely with your existing Grafana dashboards.
+- COAST has support for filtering by AWS account, service and AWS tags.
+- COAST may be installed at the AWS Management Account (payer) or in a single linked account with [member CUR](https://aws.amazon.com/about-aws/whats-new/2020/12/cost-and-usage-report-now-available-to-member-linked-accounts/).
+- COAST deploys the Executive dashboard with a CloudFormation template in under 5 minutes, and [additional dashboards](https://github.com/aws-samples/COAST/tree/main/grafana_dashboards) may be added with Grafana's easy one click [import](https://grafana.com/docs/grafana/latest/dashboards/manage-dashboards/#export-and-import-dashboards).
 
 ## Pre-requisites
 
 - AWS IAM Identity Center - [Amazon Managed Grafana requires authentication](https://docs.aws.amazon.com/grafana/latest/userguide/authentication-in-AMG.html).  Our CloudFormation template configures the Grafana workspace with [AWS SSO](https://docs.aws.amazon.com/singlesignon/latest/userguide/getting-started.html).
 
 ## Suggested Configuration
-The COAST CloudFormation deployment template supports both deploying with an existing [[Cost and Usage Report (CUR)]](https://docs.aws.amazon.com/cur/latest/userguide/what-is-cur.html) or creating a new one if none exists. For immediate utilization of the COAST dashboard, it is recommended to have an already enabled Cost and Usage Report (CUR). If CUR is enabled during COAST deployment, dashboards may not display data for approximately 24 hours, and historical data will be unavailable unless a backfill is requested from AWS. 
+The COAST CloudFormation deployment template supports both deploying with an existing [Cost and Usage Report (CUR)](https://docs.aws.amazon.com/cur/latest/userguide/what-is-cur.html) or creating a new one if none exists. For immediate utilization of the COAST dashboard, it is recommended to have an already enabled Cost and Usage Report (CUR). If CUR is enabled during COAST deployment, dashboards may not display data for approximately 24 hours, and historical data will be unavailable unless a backfill is requested from AWS. 
 
 ## Cloud Formation Template Deployment
 
@@ -27,8 +34,8 @@ The setup process will create the following resources, along with their dependen
 - An Amazon Athena database for the Cost and Usage Report
 - Least Privilege Access Roles to allow the Cost and Usage Report to update Athena
 - An Amazon Managed Grafana workspace
-- A Grafana Athena Data Source
-- Importation of the Grafana FinOps Dashboard
+- A Grafana Athena Data Source (with AWS IAM Identity Center as the identity provider)
+- Importation of the Grafana Executive Dashboard
 
 ### Deploy with CloudFormation
 - In CloudFormation, select Create Stack and select 'Upload a template file'.  Download and use the template cloudformation/COAST-cfn.yaml.  
@@ -63,9 +70,9 @@ Within the CloudFormation template, you can choose whether to create a new Cost 
 
 ### Post Installation Steps
 - Grafana workspaces require an identity provider (IdP) to enable users to log in to the workspace.
-- We recommend AWS IAM Identity Center.  
+- We recommend AWS IAM Identity Center (the Cloudformation template creates the Grafana workspace with AWS IAM Identity Center enabled).  
 - Add at least one Admin user under the Authentication tab in the Grafana Workspace console.  For additional instructions, see the [Grafana User Guide](https://docs.aws.amazon.com/grafana/latest/userguide/AMG-manage-users-and-groups-AMG.html) to setup user access.
-- Login with the identity to the COAST Grafana workspace URL
+- Login to the COAST Grafana workspace URL using the identity configured above.
 - The dashboard will be automatically imported under the General folder in the Dashboards menu
 
   #### Importing Additional Dashboards
