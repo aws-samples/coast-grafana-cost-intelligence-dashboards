@@ -1,7 +1,7 @@
 {
   "__inputs": [
     {
-      "name": "DS_COAST-2023-09-19",
+      "name": "Datasource",
       "label": "COAST-2023-09-19",
       "description": "",
       "type": "datasource",
@@ -116,7 +116,7 @@
         {
           "datasource": {
             "type": "grafana-athena-datasource",
-            "uid": "${DS_COAST-2023-09-19}"
+            "uid": "${Datasource}"
           },
           "description": "",
           "gridPos": {
@@ -140,7 +140,7 @@
             {
               "datasource": {
                 "type": "grafana-athena-datasource",
-                "uid": "${DS_COAST-2023-09-19}"
+                "uid": "${Datasource}"
               },
               "refId": "A"
             }
@@ -192,7 +192,7 @@
     {
       "datasource": {
         "type": "grafana-athena-datasource",
-        "uid": "${DS_COAST-2023-09-19}"
+        "uid": "${Datasource}"
       },
       "description": "The invoice panel allows for filtering by accounts and regions only.  This panel displays the current number of accounts and regions used to calculate the invoice sums.",
       "fieldConfig": {
@@ -250,7 +250,7 @@
           },
           "datasource": {
             "type": "grafana-athena-datasource",
-            "uid": "${DS_COAST-2023-09-19}"
+            "uid": "${Datasource}"
           },
           "format": 1,
           "rawSQL": "SELECT \nCOUNT(DISTINCT(line_item_usage_account_id)) as Accounts,\nCOUNT(DISTINCT(product_location)) as Regions\nFROM $CurTable\nWHERE \nproduct_location in ($Regions)\nAND line_item_usage_account_id IN ($LinkedAccounts)",
@@ -263,7 +263,7 @@
     {
       "datasource": {
         "type": "grafana-athena-datasource",
-        "uid": "${DS_COAST-2023-09-19}"
+        "uid": "${Datasource}"
       },
       "description": "The invoice panel allows for filtering by accounts and regions only.  This panel displays invoice amount two months ago.",
       "fieldConfig": {
@@ -324,7 +324,7 @@
           },
           "datasource": {
             "type": "grafana-athena-datasource",
-            "uid": "${DS_COAST-2023-09-19}"
+            "uid": "${Datasource}"
           },
           "format": 1,
           "rawSQL": "-- Output number for last months bill\nSELECT \nSUM(line_item_unblended_cost)\nFROM $CurTable\nwhere\nbill_billing_period_start_date = date_add('MONTH', -2, DATE_TRUNC('MONTH', current_date) )\nAND product_location in ($Regions)\nAND line_item_usage_account_id IN ($LinkedAccounts)",
@@ -337,7 +337,7 @@
     {
       "datasource": {
         "type": "grafana-athena-datasource",
-        "uid": "${DS_COAST-2023-09-19}"
+        "uid": "${Datasource}"
       },
       "description": "The invoice panel allows for filtering by accounts and regions only.  This panel displays the invoice amount for last month.",
       "fieldConfig": {
@@ -398,7 +398,7 @@
           },
           "datasource": {
             "type": "grafana-athena-datasource",
-            "uid": "${DS_COAST-2023-09-19}"
+            "uid": "${Datasource}"
           },
           "format": 1,
           "rawSQL": "-- Output number for last months bill\nSELECT \nSUM(line_item_unblended_cost)\nFROM $CurTable\nwhere\nbill_billing_period_start_date = date_add('MONTH', -1, DATE_TRUNC('MONTH', current_date) )\nAND product_location in ($Regions)\nAND line_item_usage_account_id IN ($LinkedAccounts)",
@@ -411,7 +411,7 @@
     {
       "datasource": {
         "type": "grafana-athena-datasource",
-        "uid": "${DS_COAST-2023-09-19}"
+        "uid": "${Datasource}"
       },
       "description": "The invoice panel allows for filtering by accounts and regions only.  Your invoice trend over the past two invoices.",
       "fieldConfig": {
@@ -468,7 +468,7 @@
           },
           "datasource": {
             "type": "grafana-athena-datasource",
-            "uid": "${DS_COAST-2023-09-19}"
+            "uid": "${Datasource}"
           },
           "format": 1,
           "rawSQL": "-- Output the bill sum last two months\nWITH bill_sum_last_two_months as (\n  SELECT \n  SUM(CASE\n        WHEN (bill_billing_period_start_date = date_add('MONTH', -2, DATE_TRUNC('MONTH', current_date))) THEN line_item_unblended_cost ELSE 0 \n      END) AS bill_two_months_ago,\n  SUM(CASE\n        WHEN (bill_billing_period_start_date = date_add('MONTH', -1, DATE_TRUNC('MONTH', current_date))) THEN line_item_unblended_cost ELSE 0 \n      END) AS bill_one_month_ago\n  FROM $CurTable\n  where\n  ( bill_billing_period_start_date = date_add('MONTH', -2, DATE_TRUNC('MONTH', current_date))\n  OR bill_billing_period_start_date = date_add('MONTH', -1, DATE_TRUNC('MONTH', current_date)) )  \n  AND product_location in ($Regions)\n  AND line_item_usage_account_id IN ($LinkedAccounts)\n),\n\n-- output percentage change for bill in last two months\nbill_percentage_change as (\nSELECT \n  bill_two_months_ago,\n  bill_one_month_ago,\n  CAST(bill_one_month_ago - bill_two_months_ago as double) as spend_difference,\n  CAST(((bill_one_month_ago - bill_two_months_ago) / bill_two_months_ago) * 100 as double) as percentage_change\nFROM \nbill_sum_last_two_months\n)\n\nSELECT \npercentage_change\nFROM \nbill_percentage_change",
@@ -481,7 +481,7 @@
     {
       "datasource": {
         "type": "grafana-athena-datasource",
-        "uid": "${DS_COAST-2023-09-19}"
+        "uid": "${Datasource}"
       },
       "description": "The invoice panel allows for filtering by accounts and regions only.  Your invoice trend year to date.",
       "fieldConfig": {
@@ -542,7 +542,7 @@
           },
           "datasource": {
             "type": "grafana-athena-datasource",
-            "uid": "${DS_COAST-2023-09-19}"
+            "uid": "${Datasource}"
           },
           "format": 1,
           "rawSQL": "-- Output the bill sum from jan of this year and last month\nWITH bill_sum_ytd_and_last_month as (\n  SELECT \n  SUM(CASE\n        WHEN (bill_billing_period_start_date = date_add('YEAR', 0, DATE_TRUNC('YEAR', current_date))) THEN line_item_unblended_cost ELSE 0 \n      END) AS bill_january,\n  SUM(CASE\n        WHEN (bill_billing_period_start_date = date_add('MONTH', -1, DATE_TRUNC('MONTH', current_date))) THEN line_item_unblended_cost ELSE 0 \n      END) AS bill_one_month_ago\n  FROM $CurTable\n  where\n  ( bill_billing_period_start_date = date_add('YEAR', 0, DATE_TRUNC('YEAR', current_date))\n  OR bill_billing_period_start_date = date_add('MONTH', -1, DATE_TRUNC('MONTH', current_date)) )  \n  AND product_location in ($Regions)\n  AND line_item_usage_account_id IN ($LinkedAccounts)\n),\n\n-- output percentage change ytd\nbill_percentage_change as (\n  SELECT \n    bill_january,\n    bill_one_month_ago,\n    CAST(bill_one_month_ago - bill_january as double) as spend_difference,\n    CAST(((bill_one_month_ago - bill_january) / bill_january) * 100 as double) as percentage_change\n  FROM \n  bill_sum_ytd_and_last_month\n)\n\nSELECT \npercentage_change\nFROM \nbill_percentage_change",
@@ -579,7 +579,7 @@
     {
       "datasource": {
         "type": "grafana-athena-datasource",
-        "uid": "${DS_COAST-2023-09-19}"
+        "uid": "${Datasource}"
       },
       "description": "The invoice panel allows for filtering by accounts and regions only.  Top 10 accounts by spend in last month's invoice.",
       "fieldConfig": {
@@ -671,7 +671,7 @@
           },
           "datasource": {
             "type": "grafana-athena-datasource",
-            "uid": "${DS_COAST-2023-09-19}"
+            "uid": "${Datasource}"
           },
           "format": 1,
           "rawSQL": "SELECT \nCAST(line_item_usage_account_id as varchar) as account,\nCAST(sum(line_item_unblended_cost) as integer) as spend\nFROM $CurTable\nwhere\nbill_billing_period_start_date = date_add('MONTH', -1, date_trunc('MONTH', current_date))\nAND product_location in ($Regions)\nAND line_item_usage_account_id IN ($LinkedAccounts)\nGROUP BY\nline_item_usage_account_id\nORDER BY \nspend DESC\nLIMIT 10\n",
@@ -684,7 +684,7 @@
     {
       "datasource": {
         "type": "grafana-athena-datasource",
-        "uid": "${DS_COAST-2023-09-19}"
+        "uid": "${Datasource}"
       },
       "description": "The invoice panel allows for filtering by accounts and regions only.  Trends in the top 10 spend accounts over the past two months.",
       "fieldConfig": {
@@ -773,7 +773,7 @@
           },
           "datasource": {
             "type": "grafana-athena-datasource",
-            "uid": "${DS_COAST-2023-09-19}"
+            "uid": "${Datasource}"
           },
           "format": 1,
           "rawSQL": "with spend_difference as (\n    SELECT\n    line_item_usage_account_id as account,\n    SUM(\n        CASE\n        WHEN(bill_billing_period_start_date = date_add('MONTH', -1, DATE_TRUNC('MONTH', current_date))) THEN line_item_unblended_cost\n    END) as cost_one_month_ago,\n    SUM(\n        CASE\n        WHEN(bill_billing_period_start_date = date_add('MONTH', -2, DATE_TRUNC('MONTH', current_date))) THEN line_item_unblended_cost\n    END) as cost_two_months_ago\n    FROM\n    $CurTable\n    where\n    ( bill_billing_period_start_date = date_add('MONTH', -1, DATE_TRUNC('MONTH', current_date)) \n    OR bill_billing_period_start_date = date_add('MONTH', -2, DATE_TRUNC('MONTH', current_date)) )\n    AND product_location in ($Regions)\n    AND line_item_usage_account_id IN ($LinkedAccounts)\n    Group by \n    line_item_usage_account_id\n    ORDER BY \n    account DESC\n    LIMIT 10\n)\n\nSELECT\n    account,\n    (((cost_one_month_ago - cost_two_months_ago) / cost_two_months_ago) * 100) as spend_percentage_diff\nFROM\nspend_difference\nORDER BY spend_percentage_diff",
@@ -800,7 +800,7 @@
         {
           "datasource": {
             "type": "grafana-athena-datasource",
-            "uid": "${DS_COAST-2023-09-19}"
+            "uid": "${Datasource}"
           },
           "description": "Total spend trend as represented by SUM of line_item_unblended_cost aggregated by bill_billing_period_start_date (monthly).",
           "fieldConfig": {
@@ -892,7 +892,7 @@
               },
               "datasource": {
                 "type": "grafana-athena-datasource",
-                "uid": "${DS_COAST-2023-09-19}"
+                "uid": "${Datasource}"
               },
               "format": 0,
               "rawSQL": "SELECT\n  date_trunc('$Granularity', line_item_usage_start_date),\n  sum(line_item_unblended_cost) AS cost\nfrom $CurTable\nWHERE\n  $__timeFilter(line_item_usage_start_date)\n  and product_location in ($Regions)\n  AND  line_item_product_code in ($Services)\n  AND line_item_usage_account_id IN ($LinkedAccounts)\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_line_item_type IN ($ChargeType)\nGROUP BY 1\nORDER BY 1\n;",
@@ -906,7 +906,7 @@
         {
           "datasource": {
             "type": "grafana-athena-datasource",
-            "uid": "${DS_COAST-2023-09-19}"
+            "uid": "${Datasource}"
           },
           "description": "Total spend as represented by SUM of line_item_unblended_cost aggregated by bill_billing_period_start_date (monthly).",
           "fieldConfig": {
@@ -965,7 +965,7 @@
               },
               "datasource": {
                 "type": "grafana-athena-datasource",
-                "uid": "${DS_COAST-2023-09-19}"
+                "uid": "${Datasource}"
               },
               "format": 1,
               "rawSQL": "SELECT\n  sum(line_item_unblended_cost) AS cost\nfrom $CurTable\nWHERE\n  $__timeFilter(line_item_usage_start_date)\n  and product_location in ($Regions)\n  AND  line_item_product_code in ($Services)\n  AND line_item_usage_account_id IN ($LinkedAccounts)\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_line_item_type IN ($ChargeType)\n;\n",
@@ -978,7 +978,7 @@
         {
           "datasource": {
             "type": "grafana-athena-datasource",
-            "uid": "${DS_COAST-2023-09-19}"
+            "uid": "${Datasource}"
           },
           "description": "Total spend by service as represented by  SUM of line_item_unblended_cost aggregated by bill_billing_period_start_date (monthly).  Displaying all customers with spend in a service which is greater than $1.  You can edit this dollar amount, buy editing the HAVING line in the query.",
           "fieldConfig": {
@@ -1069,7 +1069,7 @@
               },
               "datasource": {
                 "type": "grafana-athena-datasource",
-                "uid": "${DS_COAST-2023-09-19}"
+                "uid": "${Datasource}"
               },
               "format": 0,
               "rawSQL": "SELECT\n  date_trunc('$Granularity', line_item_usage_start_date),\n  line_item_product_code as product,\n  CAST(SUM(line_item_unblended_cost) as INTEGER) as cost\nfrom $CurTable\nWHERE\n  $__timeFilter(line_item_usage_start_date)\n  and product_location in ($Regions)\n  AND line_item_product_code in ($Services)\n  AND line_item_usage_account_id IN ($LinkedAccounts)\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_line_item_type IN ($ChargeType)\nGROUP BY 1, 2\nHAVING CAST(SUM(line_item_unblended_cost) as INTEGER) > 1\nORDER BY 1\n;",
@@ -1082,7 +1082,7 @@
         {
           "datasource": {
             "type": "grafana-athena-datasource",
-            "uid": "${DS_COAST-2023-09-19}"
+            "uid": "${Datasource}"
           },
           "description": "Top service (by spend) during the selected time period (unblended)",
           "fieldConfig": {
@@ -1141,7 +1141,7 @@
               },
               "datasource": {
                 "type": "grafana-athena-datasource",
-                "uid": "${DS_COAST-2023-09-19}"
+                "uid": "${Datasource}"
               },
               "format": 1,
               "rawSQL": "SELECT\n  line_item_product_code as product,\n  sum(line_item_blended_cost) as cost\nfrom $CurTable\nWHERE\n  $__timeFilter(line_item_usage_start_date)\n  and product_location in ($Regions)\n  AND  line_item_product_code in ($Services)\n  AND line_item_usage_account_id IN ($LinkedAccounts)\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_line_item_type IN ($ChargeType)\nGROUP BY 1\nORDER BY 2 DESC\nLIMIT 1\n;",
@@ -1190,7 +1190,7 @@
         {
           "datasource": {
             "type": "grafana-athena-datasource",
-            "uid": "${DS_COAST-2023-09-19}"
+            "uid": "${Datasource}"
           },
           "description": "Total spend by region as represented by SUM of line_item_unblended_cost aggregated by bill_billing_period_start_date (monthly). Displaying all customers with spend in a region which is greater than $1. You can edit this dollar amount, buy editing the HAVING line in the query.",
           "fieldConfig": {
@@ -1283,7 +1283,7 @@
               },
               "datasource": {
                 "type": "grafana-athena-datasource",
-                "uid": "${DS_COAST-2023-09-19}"
+                "uid": "${Datasource}"
               },
               "format": 0,
               "rawSQL": "select \n  date_trunc('$Granularity', line_item_usage_start_date),\n  product_location as location,\n  CAST(SUM(line_item_unblended_cost) as INTEGER) as cost\nfrom $CurTable\nWHERE\n  $__timeFilter(line_item_usage_start_date)\n  and product_location in ($Regions)\n  AND  line_item_product_code in ($Services)\n  AND line_item_usage_account_id IN ($LinkedAccounts)\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_line_item_type IN ($ChargeType)\nGROUP BY 1, 2\nHAVING CAST(SUM(line_item_unblended_cost) as INTEGER) > 1\nORDER BY 1\n;",
@@ -1305,7 +1305,7 @@
         {
           "datasource": {
             "type": "grafana-athena-datasource",
-            "uid": "${DS_COAST-2023-09-19}"
+            "uid": "${Datasource}"
           },
           "description": "Total spend by region as represented by SUM of line_item_unblended_cost aggregated by bill_billing_period_start_date (monthly). Displaying all customers with spend in a region which is greater than $1. You can edit this dollar amount, buy editing the HAVING line in the query.",
           "fieldConfig": {
@@ -1362,7 +1362,7 @@
               },
               "datasource": {
                 "type": "grafana-athena-datasource",
-                "uid": "${DS_COAST-2023-09-19}"
+                "uid": "${Datasource}"
               },
               "format": 0,
               "rawSQL": "SELECT\n  product_location as location,\n  CAST(SUM(line_item_unblended_cost) as INTEGER) as cost\nfrom $CurTable\nWHERE\n  $__timeFilter(line_item_usage_start_date)\n  and product_location in ($Regions)\n  AND  line_item_product_code in ($Services)\n  AND line_item_usage_account_id IN ($LinkedAccounts)\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_line_item_type IN ($ChargeType)\nGROUP BY 1\nHAVING CAST(SUM(line_item_unblended_cost) as INTEGER) > 1\nORDER BY cost DESC",
@@ -1395,7 +1395,7 @@
         {
           "datasource": {
             "type": "grafana-athena-datasource",
-            "uid": "${DS_COAST-2023-09-19}"
+            "uid": "${Datasource}"
           },
           "description": "Amortized breakdown of On-Demand, Reserved and Savings plan for Amazon EC2.",
           "fieldConfig": {
@@ -1488,7 +1488,7 @@
               },
               "datasource": {
                 "type": "grafana-athena-datasource",
-                "uid": "${DS_COAST-2023-09-19}"
+                "uid": "${Datasource}"
               },
               "format": 1,
               "rawSQL": "SELECT \n  date_trunc('$Granularity', line_item_usage_start_date),\n  SUM(CAST(CASE\n    WHEN line_item_line_item_type IN ('Usage') AND line_item_usage_type NOT LIKE '%SpotUsage%' THEN line_item_unblended_cost\n    ELSE 0\n    END AS DOUBLE)) AS \"On-Demand\",\n  SUM(CAST(savings_plan_savings_plan_effective_cost AS DOUBLE)) AS \"Savings Plan\",\n  SUM(CAST(reservation_effective_cost AS DOUBLE)) AS \"Reserved\",\n  SUM(CAST(CASE\n    WHEN line_item_usage_type LIKE '%SpotUsage%' THEN line_item_unblended_cost\n    ELSE 0\n    END AS DOUBLE)) AS \"Spot\"\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  and product_location in ($Regions)\n  AND  line_item_product_code in ($Services)\n  AND line_item_usage_account_id IN ($LinkedAccounts)\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_line_item_type IN ($ChargeType)\n  AND line_item_product_code = 'AmazonEC2'\n  AND line_item_operation LIKE '%RunInstance%'\n  -- AND line_item_line_item_type IN ('Usage','SavingsPlanCoveredUsage', 'Fee','RIFee','DiscountedUsage')\n  AND product_product_family NOT IN ('Data Transfer')\nGROUP BY \n  1",
@@ -1520,7 +1520,7 @@
         {
           "datasource": {
             "type": "grafana-athena-datasource",
-            "uid": "${DS_COAST-2023-09-19}"
+            "uid": "${Datasource}"
           },
           "description": "Breakdown of Amazon RDS On-Demand and Reserved Instance Coverage",
           "fieldConfig": {
@@ -1613,7 +1613,7 @@
               },
               "datasource": {
                 "type": "grafana-athena-datasource",
-                "uid": "${DS_COAST-2023-09-19}"
+                "uid": "${Datasource}"
               },
               "format": 1,
               "rawSQL": "SELECT \n  date_trunc('$Granularity', line_item_usage_start_date),\n  SUM(CAST(CASE\n    WHEN line_item_line_item_type IN ('Usage') THEN line_item_unblended_cost\n    ELSE 0\n    END AS DOUBLE)) AS \"On-Demand\",\n  SUM(CAST(reservation_effective_cost AS DOUBLE)) AS \"Reserved\",\n  SUM(CAST(reservation_unused_amortized_upfront_fee_for_billing_period AS DOUBLE) + CAST(reservation_unused_recurring_fee AS DOUBLE)) AS \"Unused Reserved\"\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  and product_location in ($Regions)\n  AND  line_item_product_code in ($Services)\n  AND line_item_usage_account_id IN ($LinkedAccounts)\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_line_item_type IN ($ChargeType)\n  AND line_item_product_code = 'AmazonRDS'\n  -- AND line_item_line_item_type IN ('Usage','Fee','RIFee','DiscountedUsage')\n  AND product_product_family NOT IN ('Data Transfer')\nGROUP BY \n  1",
@@ -1645,7 +1645,7 @@
         {
           "datasource": {
             "type": "grafana-athena-datasource",
-            "uid": "${DS_COAST-2023-09-19}"
+            "uid": "${Datasource}"
           },
           "description": "Breakdown of Amazon OpenSearch On-Demand and Reserved Instance Coverage",
           "fieldConfig": {
@@ -1738,7 +1738,7 @@
               },
               "datasource": {
                 "type": "grafana-athena-datasource",
-                "uid": "${DS_COAST-2023-09-19}"
+                "uid": "${Datasource}"
               },
               "format": 1,
               "rawSQL": "SELECT \n  date_trunc('$Granularity', line_item_usage_start_date),\n  SUM(CAST(CASE\n    WHEN line_item_line_item_type IN ('Usage') THEN line_item_unblended_cost\n    ELSE 0\n    END AS DOUBLE)) AS \"On-Demand\",\n  SUM(CAST(reservation_effective_cost AS DOUBLE)) AS \"Reserved\",\n  SUM(CAST(reservation_unused_amortized_upfront_fee_for_billing_period AS DOUBLE) + CAST(reservation_unused_recurring_fee AS DOUBLE)) AS \"Unused Reserved\"\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  and product_location in ($Regions)\n  AND  line_item_product_code in ($Services)\n  AND line_item_usage_account_id IN ($LinkedAccounts)\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_line_item_type IN ($ChargeType)\n  AND line_item_product_code = 'AmazonES'\n  -- AND line_item_line_item_type IN ('Usage','Fee','RIFee','DiscountedUsage')\n  AND product_product_family NOT IN ('Data Transfer')\nGROUP BY \n  1",
@@ -1770,7 +1770,7 @@
         {
           "datasource": {
             "type": "grafana-athena-datasource",
-            "uid": "${DS_COAST-2023-09-19}"
+            "uid": "${Datasource}"
           },
           "description": "Breakdown of Amazon ElastiCache On-Demand and Reserved Instance Coverage",
           "fieldConfig": {
@@ -1863,7 +1863,7 @@
               },
               "datasource": {
                 "type": "grafana-athena-datasource",
-                "uid": "${DS_COAST-2023-09-19}"
+                "uid": "${Datasource}"
               },
               "format": 1,
               "rawSQL": "SELECT \n  date_trunc('$Granularity', line_item_usage_start_date),\n  SUM(CAST(CASE\n    WHEN line_item_line_item_type IN ('Usage') THEN line_item_unblended_cost\n    ELSE 0\n    END AS DOUBLE)) AS \"On-Demand\",\n  SUM(CAST(reservation_effective_cost AS DOUBLE)) AS \"Reserved\",\n  SUM(CAST(reservation_unused_amortized_upfront_fee_for_billing_period AS DOUBLE) + CAST(reservation_unused_recurring_fee AS DOUBLE)) AS \"Unused Reserved\"\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  and product_location in ($Regions)\n  AND  line_item_product_code in ($Services)\n  AND line_item_usage_account_id IN ($LinkedAccounts)\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_line_item_type IN ($ChargeType)\n  AND line_item_product_code = 'AmazonElastiCache'\n  -- AND line_item_line_item_type IN ('Usage','Fee','RIFee','DiscountedUsage')\n  AND product_product_family NOT IN ('Data Transfer')\nGROUP BY \n  1",
@@ -1895,7 +1895,7 @@
         {
           "datasource": {
             "type": "grafana-athena-datasource",
-            "uid": "${DS_COAST-2023-09-19}"
+            "uid": "${Datasource}"
           },
           "description": "Breakdown of Amazon Redshift On-Demand and Reserved Instance Coverage",
           "fieldConfig": {
@@ -1987,7 +1987,7 @@
               },
               "datasource": {
                 "type": "grafana-athena-datasource",
-                "uid": "${DS_COAST-2023-09-19}"
+                "uid": "${Datasource}"
               },
               "format": 1,
               "rawSQL": "SELECT \n  date_trunc('$Granularity', line_item_usage_start_date),\n  SUM(CAST(CASE\n    WHEN line_item_line_item_type IN ('Usage') THEN line_item_unblended_cost\n    ELSE 0\n    END AS DOUBLE)) AS \"On-Demand\",\n  SUM(CAST(reservation_effective_cost AS DOUBLE)) AS \"Reserved\",\n  SUM(CAST(reservation_unused_amortized_upfront_fee_for_billing_period AS DOUBLE) + CAST(reservation_unused_recurring_fee AS DOUBLE)) AS \"Unused Reserved\"\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  and product_location in ($Regions)\n  AND  line_item_product_code in ($Services)\n  AND line_item_usage_account_id IN ($LinkedAccounts)\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_line_item_type IN ($ChargeType)\n  AND line_item_product_code = 'AmazonRedshift'\n  -- AND line_item_line_item_type IN ('Usage','Fee','RIFee','DiscountedUsage')\n  AND product_product_family NOT IN ('Data Transfer')\nGROUP BY \n  1",
@@ -2019,7 +2019,7 @@
         {
           "datasource": {
             "type": "grafana-athena-datasource",
-            "uid": "${DS_COAST-2023-09-19}"
+            "uid": "${Datasource}"
           },
           "description": "This table allows you to parse your savings plan at the set granularity.  It reports the purchasing account and the percentage utilized.  This table allows only the linked_account,  granularity and tag filters.\n\nThe linked account filter will display where the savings plan was used.\nThe tag filter will display the savings plans which were utilized by the tag.",
           "fieldConfig": {
@@ -2099,7 +2099,7 @@
               },
               "datasource": {
                 "type": "grafana-athena-datasource",
-                "uid": "${DS_COAST-2023-09-19}"
+                "uid": "${Datasource}"
               },
               "format": 1,
               "rawSQL": "SELECT\n  date_trunc('$Granularity', line_item_usage_start_date) as usage_month,\n  -- DATE_FORMAT((line_item_usage_start_date),'%Y-%m') AS usage_month,\n    -- (used commitment / total commitment) * 100 = utilization %\n  TRY_CAST(((SUM(TRY_CAST(savings_plan_used_commitment AS DECIMAL(16, 8))) / SUM(TRY_CAST(savings_plan_total_commitment_to_date AS DOUBLE))) * 100) AS DECIMAL(3, 0)) AS \"savings_plan_utilization\",\n  savings_plan_end_time AS \"expiration_date\",\n  SPLIT_PART(savings_plan_savings_plan_a_r_n, '/', 2) AS \"plan_id\",\n  bill_payer_account_id AS \"payer_account_number\",\n  SPLIT_PART(savings_plan_savings_plan_a_r_n, ':', 5) AS \"purchasing_account_number\",\n  savings_plan_offering_type AS \"offering_type\",\n  savings_plan_region AS \"region\",\n  -- DATE_FORMAT(FROM_ISO8601_TIMESTAMP(savings_plan_start_time),'%Y-%m-%d') AS day_savings_plan_start_time,\n  savings_plan_payment_option AS \"payment_option\",\n  savings_plan_purchase_term AS \"purchase_term\",\n  SUM(TRY_CAST(savings_plan_total_commitment_to_date AS DOUBLE)) AS \"amortized_total_commitment_to_date\", \n  SUM(TRY_CAST(savings_plan_used_commitment AS DOUBLE)) AS \"used_commitment\",\n  AVG(CASE\n    WHEN line_item_line_item_type = 'SavingsPlanRecurringFee' THEN TRY_CAST(savings_plan_total_commitment_to_date AS DOUBLE)\n  END) AS \"Hourly Commitment\"\nFROM\n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_usage_account_id IN ($LinkedAccounts)\n  -- and product_location in ($Regions)\n  -- AND  line_item_product_code in ($Services)\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  -- AND line_item_line_item_type IN ($ChargeType)\n  AND savings_plan_savings_plan_a_r_n <> ''\n  AND (line_item_line_item_type = 'SavingsPlanRecurringFee' OR line_item_line_item_type = 'SavingsPlanCoveredUsage')\nGROUP BY\n  -- SPLIT_PART(savings_plan_savings_plan_a_r_n, '/', 2),\n  1, 3, 4, 5, 6,\n  savings_plan_offering_type,\n  savings_plan_region,\n  -- DATE_FORMAT(FROM_ISO8601_TIMESTAMP(savings_plan_start_time),'%Y-%m-%d'),\n  savings_plan_end_time,\n  savings_plan_payment_option,\n  savings_plan_purchase_term\nORDER BY\n  usage_month DESC,\n  savings_plan_utilization ASC,\n  savings_plan_end_time DESC;\n",
@@ -2143,7 +2143,7 @@
         "current": {},
         "datasource": {
           "type": "grafana-athena-datasource",
-          "uid": "${DS_COAST-2023-09-19}"
+          "uid": "${Datasource}"
         },
         "definition": "",
         "hide": 2,
@@ -2165,7 +2165,7 @@
         "current": {},
         "datasource": {
           "type": "grafana-athena-datasource",
-          "uid": "${DS_COAST-2023-09-19}"
+          "uid": "${Datasource}"
         },
         "definition": "",
         "description": "Select Linked Account",
@@ -2196,7 +2196,7 @@
         "current": {},
         "datasource": {
           "type": "grafana-athena-datasource",
-          "uid": "${DS_COAST-2023-09-19}"
+          "uid": "${Datasource}"
         },
         "definition": "",
         "hide": 0,
@@ -2226,7 +2226,7 @@
         "current": {},
         "datasource": {
           "type": "grafana-athena-datasource",
-          "uid": "${DS_COAST-2023-09-19}"
+          "uid": "${Datasource}"
         },
         "definition": "",
         "hide": 0,
@@ -2290,7 +2290,7 @@
         "current": {},
         "datasource": {
           "type": "grafana-athena-datasource",
-          "uid": "${DS_COAST-2023-09-19}"
+          "uid": "${Datasource}"
         },
         "definition": "",
         "hide": 0,
@@ -2320,7 +2320,7 @@
         "current": {},
         "datasource": {
           "type": "grafana-athena-datasource",
-          "uid": "${DS_COAST-2023-09-19}"
+          "uid": "${Datasource}"
         },
         "definition": "",
         "hide": 0,
@@ -2350,7 +2350,7 @@
         "current": {},
         "datasource": {
           "type": "grafana-athena-datasource",
-          "uid": "${DS_COAST-2023-09-19}"
+          "uid": "${Datasource}"
         },
         "definition": "",
         "hide": 0,
@@ -2380,7 +2380,7 @@
         "current": {},
         "datasource": {
           "type": "grafana-athena-datasource",
-          "uid": "${DS_COAST-2023-09-19}"
+          "uid": "${Datasource}"
         },
         "definition": "",
         "hide": 2,
@@ -2410,7 +2410,7 @@
         "current": {},
         "datasource": {
           "type": "grafana-athena-datasource",
-          "uid": "${DS_COAST-2023-09-19}"
+          "uid": "${Datasource}"
         },
         "definition": "",
         "hide": 2,
@@ -2440,7 +2440,7 @@
         "current": {},
         "datasource": {
           "type": "grafana-athena-datasource",
-          "uid": "${DS_COAST-2023-09-19}"
+          "uid": "${Datasource}"
         },
         "definition": "",
         "description": "Calculate the spend percentage from the top 25 accounts in the AWS Organization.",
@@ -2470,7 +2470,7 @@
         "current": {},
         "datasource": {
           "type": "grafana-athena-datasource",
-          "uid": "${DS_COAST-2023-09-19}"
+          "uid": "${Datasource}"
         },
         "definition": "",
         "hide": 2,
