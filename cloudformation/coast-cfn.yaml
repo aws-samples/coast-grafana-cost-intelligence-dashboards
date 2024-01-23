@@ -784,6 +784,8 @@ Resources:
           import urllib3
           import json
           import logging
+          from urllib.request import Request, urlopen
+          from urllib.parse import urlencode
 
           # Configure the logging module
           logger = logging.getLogger()
@@ -825,21 +827,30 @@ Resources:
               def delete_datasource(self):
                   grafana_url='https://'+self.workspace['endpoint']+'/api/datasources'
                   try:
-                    response = requests.get(grafana_url, headers={'Authorization': f"Bearer {self.key['key']}",'Content-Type': 'application/json'})
+                    headers = {'Authorization': f"Bearer {self.key['key']}", 'Content-Type': 'application/json'}
+                    request = Request(grafana_url, headers=headers)
                   except:
-                    return 'Failed calling grafana api to retrieve datasources'
+                    return 'Failed to build grafana_url Request object'
 
-                  if response.status_code == 200:
-                    datasources = response.json()
+                  try:
+                    result = urlopen(request)
+                    content = result.read().decode('utf-8')
+                    self.logger.info(f"URL Open Result: {content}")
+                  except:
+                    return 'Failed to get urlopen request'
+
+                  if result.status == 200:
+                    datasources = json.loads(content)
                     
                     # Find the ID of the datasource by name
                     datasource_id = None
                     for datasource in datasources:
                         if datasource['name'] == self.datasource_name:
                             datasource_id = datasource['id']
+                            datasource_uid = datasource['uid']
                             break
                   
-                    return self.grafana_api('DELETE',f'datasources/uid/{datasource_id}')
+                    return self.grafana_api('DELETE',f'datasources/uid/{datasource_uid}')
                   
                   return 'unable to find matching datasource to delete'
               def set_datasource_body(self):
