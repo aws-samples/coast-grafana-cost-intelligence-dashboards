@@ -119,7 +119,7 @@ Resources:
                             cur_report['time_unit'] = report['TimeUnit']
                             cur_report['format'] = report['Format']
                             cur_report['output_bucket'] = report['S3Bucket']
-                            cur_report['output_prefix'] = report['S3Prefix']
+                            cur_report['output_prefix'] = report['S3Prefix'].strip('/')
                             cur_report['region'] = report['S3Region']
                             cur_report['AdditionalSchemaElements'] = report['AdditionalSchemaElements']
                             break
