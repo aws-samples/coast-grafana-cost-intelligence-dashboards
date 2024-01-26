@@ -861,30 +861,35 @@ Resources:
                 
                           delete_plugin = self.grafana_api('DELETE',f'datasources/uid/{datasource_uid}')
 
-                          if delete_res.status != 200:
+                          if delete_plugin.status != 200:
                             success = False
                             self.logger.info(f"Error deleting datasource: {delete_plugin.json()}")
                             return success
 
                   return success
               
-              def set_datasource_body(self):
+              def set_datasource_body(self, plugin, body=''):
                   '''return body needed for creation of datasource'''
-                  body = {'name':self.datasource_name,'type':'grafana-athena-datasource','access':'proxy','url':'','user':'','database':'','basicAuth':False,'isDefault':False,'jsonData':{'authType':'ec2_iam_role','catalog':'AwsDataCatalog','database':self.athena_db,'defaultRegion':self.athena_region,'provisionedBy':'COAST','workgroup':self.athena_workgroup},'readOnly':False}
-                  return bytes(json.dumps(body),encoding='utf-8')
+                  
+                  if plugin == 'athena':
+                    body = {'name':self.datasource_name,'type':'grafana-athena-datasource','access':'proxy','url':'','user':'','database':'','basicAuth':False,'isDefault':False,'jsonData':{'authType':'ec2_iam_role','catalog':'AwsDataCatalog','database':self.athena_db,'defaultRegion':self.athena_region,'provisionedBy':'COAST','workgroup':self.athena_workgroup},'readOnly':False}
+                  if plugin == 'cloudwatch':
+                    body = {'access': 'proxy', 'isDefault': True, 'name': 'Cloudwatch', 'type': plugin}
               
+                  return bytes(json.dumps(body),encoding='utf-8')
+
               def create_datasource(self):
                   success = True
                   for plugin in self.plugin_list:
                     #install plugin, only required for non-core plugins
                     self.install_plugin(plugin)
 
-                    enable_plugin = self.grafana_api('POST','datasources',self.set_datasource_body())
+                    enable_plugin = self.grafana_api('POST','datasources',self.set_datasource_body(plugin))
+
+                    self.logger.info(f'Enable {plugin} plugin status: {enable_plugin.status}')
 
                     if enable_plugin.status != 200:
                       success = False
-
-                    self.datasource_uid_list.append(str(json.loads(enable_plugin.data)['uid']))
                     
                   return success
               
@@ -913,16 +918,15 @@ Resources:
                       else:
                           cfnresponse.send(event,context,cfnresponse.FAILED,response_data)
                   elif event['RequestType']=='Delete':
-                      res=ws.delete_datasource()
+                      result=ws.delete_datasource()
                       
-                      try:
-                        if res.status==200:
-                            cfnresponse.send(event,context,cfnresponse.SUCCESS,response_data)
-                        else:
-                            cfnresponse.send(event,context,cfnresponse.FAILED,response_data)
-                      except:
-                        logger.info(f"Failed attempting to delete datasource {event['ResourceProperties']['DataSource']}: {res} ")
-                        cfnresponse.send(event, context, cfnresponse.FAILED, response_data)
+                      if result:
+                          logger.info('Successfully deleted datasources')
+                          cfnresponse.send(event,context,cfnresponse.SUCCESS,response_data)
+                      else:
+                          logger.info('Failed to delete datasources')
+                          cfnresponse.send(event,context,cfnresponse.FAILED,response_data)
+
               except Exception as err:
                   print('Error:'+str(err))
                   cfnresponse.send(event,context,cfnresponse.FAILED,response_data,'0')
