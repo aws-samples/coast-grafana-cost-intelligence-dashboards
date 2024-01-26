@@ -784,8 +784,6 @@ Resources:
           import urllib3
           import json
           import logging
-          from urllib.request import Request, urlopen
-          from urllib.parse import urlencode
 
           # Configure the logging module
           logger = logging.getLogger()
