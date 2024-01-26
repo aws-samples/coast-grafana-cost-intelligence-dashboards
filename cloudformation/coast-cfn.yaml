@@ -805,11 +805,17 @@ Resources:
                   self.key=self.create_key(key_name)
                   self.common_headers={'Accept':'application/json','Content-Type':'application/json','Authorization':'Bearer '+self.key['key']}
               def get_workspace(self,workspace_id):
+                  '''return a the workspace id or return None'''
                   workspaces=self.client.list_workspaces()
+                  
                   for workspace in workspaces['workspaces']:
                       if workspace['id']==workspace_id:
                           return workspace
+
+                  return None
+
               def create_key(self,key_name):
+                  '''delete grafana api key and create new key'''
                   try:
                       self.client.delete_workspace_api_key(keyName=key_name,workspaceId=self.workspace['id'])
                   except client.exceptions.ResourceNotFoundException as rnfe:
@@ -819,60 +825,77 @@ Resources:
                       pass
                   finally:
                       return self.client.create_workspace_api_key(keyName=key_name,keyRole='ADMIN',secondsToLive=60,workspaceId=self.workspace['id'])
-              def enable_plugin(self):
+              
+              def install_plugin(self):
+                  '''install plugin, currently only required for Athena'''
                   body = {}
+                  
                   return self.grafana_api('POST','plugins/grafana-athena-datasource/install',bytes(json.dumps(body),encoding='utf-8'))
+              
               def delete_datasource(self):
-                  grafana_url='https://'+self.workspace['endpoint']+'/api/datasources'
-                  try:
-                    response = requests.get(grafana_url, headers={'Authorization': f"Bearer {self.key['key']}",'Content-Type': 'application/json'})
-                  except:
-                    return 'Failed calling grafana api to retrieve datasources'
-
-                  if response.status_code == 200:
-                    datasources = response.json()
+                  '''delete datasource, required for CFN template termination'''
+                  success = True #this variable will be used in the future
+                  result = self.grafana_api('GET','datasources')
+                  
+                  if result.status == 200:
+                      datasources = json.loads(result.data)
+                  else:
+                      success = False
                     
-                    # Find the ID of the datasource by name
-                    datasource_id = None
-                    for datasource in datasources:
-                        if datasource['name'] == self.datasource_name:
-                            datasource_id = datasource['id']
-                            break
+                  # Find the ID of the datasource by name
+                  datasource_uid = None
+                  for datasource in datasources:
+                      if datasource['name'] == self.datasource_name:
+                          datasource_uid = datasource['uid']
+                          break
+                
+                  return self.grafana_api('DELETE',f'datasources/uid/{datasource_uid}')
                   
-                    return self.grafana_api('DELETE',f'datasources/uid/{datasource_id}')
-                  
-                  return 'unable to find matching datasource to delete'
+                  #return 'unable to find matching datasource to delete'
+              
               def set_datasource_body(self):
+                  '''return body needed for creation of datasource'''
                   body = {'name':self.datasource_name,'type':'grafana-athena-datasource','access':'proxy','url':'','user':'','database':'','basicAuth':False,'isDefault':False,'jsonData':{'authType':'ec2_iam_role','catalog':'AwsDataCatalog','database':self.athena_db,'defaultRegion':self.athena_region,'provisionedBy':'COAST','workgroup':self.athena_workgroup},'readOnly':False}
                   return bytes(json.dumps(body),encoding='utf-8')
               def create_datasource(self):
-                  res = self.enable_plugin()
+                  res = self.install_plugin()
+                  
                   print('Status: '+str(res.status))
                   print(res.data)
+                  
                   return self.grafana_api('POST','datasources',self.set_datasource_body())
-              def update_datasource(self,id):
-                  return self.grafana_api('PUT','datasources/'+str(id),self.set_datasource_body())
+              
               def grafana_api(self,method,path,body=None):
                   url='https://'+self.workspace['endpoint']+'/api/'+path
                   headers={'Accept':'application/json','Content-Type':'application/json','Authorization':'Bearer '+self.key['key']}
                   print(method + ' ' + url + ' ' + str(body))
+                  
                   res=self.http.request(method,url,headers=headers,body=body)
+                  
                   return res
+
           def lambda_handler(event,context):
               print(json.dumps(event,indent=4))
               response_data={'Data': None}
               try:
                   id=event['PhysicalResourceId'] if 'PhysicalResourceId' in event else '0'
                   ws=CoastGrafanaWorkspace(athena_db=event['ResourceProperties']['AthenaDB'],athena_region=event['ResourceProperties']['AthenaRegion'],athena_workgroup=event['ResourceProperties']['AthenaWorkgroup'],datasource_name=event['ResourceProperties']['DataSource'],key_name=event['ResourceProperties']['GrafanaKey'],workspace_id=event['ResourceProperties']['GrafanaWorkspace'])
+                  
                   if event['RequestType']=='Create':
                       res=ws.create_datasource()
-                  elif event['RequestType']=='Update':
-                      if int(id)>0:
-                          res=ws.update_datasource(id)
+                      
+                      print('Status: '+str(res.status))
+                      print(res.data)
+                      
+                      datasource_id=str(json.loads(res.data)['id']) 
+                      
+                      if res.status==200:
+                          cfnresponse.send(event,context,cfnresponse.SUCCESS,response_data,datasource_id)
                       else:
-                          res=ws.create_datasource()
+                          cfnresponse.send(event,context,cfnresponse.FAILED,response_data,datasource_id)
                   elif event['RequestType']=='Delete':
                       res=ws.delete_datasource()
+                      
                       try:
                         if res.status==200:
                             cfnresponse.send(event,context,cfnresponse.SUCCESS,response_data)
@@ -881,14 +904,6 @@ Resources:
                       except:
                         logger.info(f"Failed attempting to delete datasource {event['ResourceProperties']['DataSource']}: {res} ")
                         cfnresponse.send(event, context, cfnresponse.FAILED, response_data)
-                      
-                  print('Status: '+str(res.status))
-                  print(res.data)
-                  datasource_id=str(json.loads(res.data)['id']) 
-                  if res.status==200:
-                      cfnresponse.send(event,context,cfnresponse.SUCCESS,response_data,datasource_id)
-                  else:
-                      cfnresponse.send(event,context,cfnresponse.FAILED,response_data,datasource_id)
               except Exception as err:
                   print('Error:'+str(err))
                   cfnresponse.send(event,context,cfnresponse.FAILED,response_data,'0')
