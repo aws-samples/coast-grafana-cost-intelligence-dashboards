@@ -1,0 +1,151 @@
+# github.com/Masterminds/semver/v3 v3.2.1
+## explicit; go 1.18
+github.com/Masterminds/semver/v3
+# github.com/aws/aws-cdk-go/awscdk/v2 v2.116.1
+## explicit; go 1.18
+github.com/aws/aws-cdk-go/awscdk/v2
+github.com/aws/aws-cdk-go/awscdk/v2/awsacmpca
+github.com/aws/aws-cdk-go/awscdk/v2/awsacmpca/internal
+github.com/aws/aws-cdk-go/awscdk/v2/awsapigateway
+github.com/aws/aws-cdk-go/awscdk/v2/awsapigateway/internal
+github.com/aws/aws-cdk-go/awscdk/v2/awsapplicationautoscaling
+github.com/aws/aws-cdk-go/awscdk/v2/awsapplicationautoscaling/internal
+github.com/aws/aws-cdk-go/awscdk/v2/awscertificatemanager
+github.com/aws/aws-cdk-go/awscdk/v2/awscertificatemanager/internal
+github.com/aws/aws-cdk-go/awscdk/v2/awscloudwatch
+github.com/aws/aws-cdk-go/awscdk/v2/awscloudwatch/internal
+github.com/aws/aws-cdk-go/awscdk/v2/awscodeguruprofiler
+github.com/aws/aws-cdk-go/awscdk/v2/awscodeguruprofiler/internal
+github.com/aws/aws-cdk-go/awscdk/v2/awscodestarnotifications
+github.com/aws/aws-cdk-go/awscdk/v2/awscodestarnotifications/internal
+github.com/aws/aws-cdk-go/awscdk/v2/awscognito
+github.com/aws/aws-cdk-go/awscdk/v2/awscognito/internal
+github.com/aws/aws-cdk-go/awscdk/v2/awsec2
+github.com/aws/aws-cdk-go/awscdk/v2/awsec2/internal
+github.com/aws/aws-cdk-go/awscdk/v2/awsecr
+github.com/aws/aws-cdk-go/awscdk/v2/awsecr/internal
+github.com/aws/aws-cdk-go/awscdk/v2/awsecrassets
+github.com/aws/aws-cdk-go/awscdk/v2/awsecrassets/internal
+github.com/aws/aws-cdk-go/awscdk/v2/awsefs
+github.com/aws/aws-cdk-go/awscdk/v2/awsefs/internal
+github.com/aws/aws-cdk-go/awscdk/v2/awselasticloadbalancingv2
+github.com/aws/aws-cdk-go/awscdk/v2/awselasticloadbalancingv2/internal
+github.com/aws/aws-cdk-go/awscdk/v2/awsevents
+github.com/aws/aws-cdk-go/awscdk/v2/awsevents/internal
+github.com/aws/aws-cdk-go/awscdk/v2/awsiam
+github.com/aws/aws-cdk-go/awscdk/v2/awsiam/internal
+github.com/aws/aws-cdk-go/awscdk/v2/awskinesisfirehose
+github.com/aws/aws-cdk-go/awscdk/v2/awskinesisfirehose/internal
+github.com/aws/aws-cdk-go/awscdk/v2/awskms
+github.com/aws/aws-cdk-go/awscdk/v2/awskms/internal
+github.com/aws/aws-cdk-go/awscdk/v2/awslambda
+github.com/aws/aws-cdk-go/awscdk/v2/awslambda/internal
+github.com/aws/aws-cdk-go/awscdk/v2/awslogs
+github.com/aws/aws-cdk-go/awscdk/v2/awslogs/internal
+github.com/aws/aws-cdk-go/awscdk/v2/awsroute53
+github.com/aws/aws-cdk-go/awscdk/v2/awsroute53/internal
+github.com/aws/aws-cdk-go/awscdk/v2/awss3
+github.com/aws/aws-cdk-go/awscdk/v2/awss3/internal
+github.com/aws/aws-cdk-go/awscdk/v2/awss3assets
+github.com/aws/aws-cdk-go/awscdk/v2/awss3assets/internal
+github.com/aws/aws-cdk-go/awscdk/v2/awssagemaker
+github.com/aws/aws-cdk-go/awscdk/v2/awssagemaker/internal
+github.com/aws/aws-cdk-go/awscdk/v2/awssigner
+github.com/aws/aws-cdk-go/awscdk/v2/awssigner/internal
+github.com/aws/aws-cdk-go/awscdk/v2/awssns
+github.com/aws/aws-cdk-go/awscdk/v2/awssns/internal
+github.com/aws/aws-cdk-go/awscdk/v2/awssqs
+github.com/aws/aws-cdk-go/awscdk/v2/awssqs/internal
+github.com/aws/aws-cdk-go/awscdk/v2/awsssm
+github.com/aws/aws-cdk-go/awscdk/v2/awsssm/internal
+github.com/aws/aws-cdk-go/awscdk/v2/awsstepfunctions
+github.com/aws/aws-cdk-go/awscdk/v2/awsstepfunctions/internal
+github.com/aws/aws-cdk-go/awscdk/v2/cloudassemblyschema
+github.com/aws/aws-cdk-go/awscdk/v2/cxapi
+github.com/aws/aws-cdk-go/awscdk/v2/internal
+github.com/aws/aws-cdk-go/awscdk/v2/jsii
+# github.com/aws/constructs-go/constructs/v10 v10.3.0
+## explicit; go 1.18
+github.com/aws/constructs-go/constructs/v10
+github.com/aws/constructs-go/constructs/v10/jsii
+# github.com/aws/jsii-runtime-go v1.93.0
+## explicit; go 1.18
+github.com/aws/jsii-runtime-go
+github.com/aws/jsii-runtime-go/internal/api
+github.com/aws/jsii-runtime-go/internal/compiler
+github.com/aws/jsii-runtime-go/internal/embedded
+github.com/aws/jsii-runtime-go/internal/kernel
+github.com/aws/jsii-runtime-go/internal/kernel/process
+github.com/aws/jsii-runtime-go/internal/objectstore
+github.com/aws/jsii-runtime-go/internal/typeregistry
+github.com/aws/jsii-runtime-go/runtime
+# github.com/cdklabs/awscdk-asset-awscli-go/awscliv1/v2 v2.2.201
+## explicit; go 1.18
+github.com/cdklabs/awscdk-asset-awscli-go/awscliv1/v2/jsii
+# github.com/cdklabs/awscdk-asset-kubectl-go/kubectlv20/v2 v2.1.2
+## explicit; go 1.18
+github.com/cdklabs/awscdk-asset-kubectl-go/kubectlv20/v2/jsii
+# github.com/cdklabs/awscdk-asset-node-proxy-agent-go/nodeproxyagentv6/v2 v2.0.1
+## explicit; go 1.18
+github.com/cdklabs/awscdk-asset-node-proxy-agent-go/nodeproxyagentv6/v2/jsii
+# github.com/fatih/color v1.16.0
+## explicit; go 1.17
+github.com/fatih/color
+# github.com/mattn/go-colorable v0.1.13
+## explicit; go 1.15
+github.com/mattn/go-colorable
+# github.com/mattn/go-isatty v0.0.20
+## explicit; go 1.15
+github.com/mattn/go-isatty
+# github.com/yuin/goldmark v1.4.13
+## explicit; go 1.18
+github.com/yuin/goldmark
+github.com/yuin/goldmark/ast
+github.com/yuin/goldmark/parser
+github.com/yuin/goldmark/renderer
+github.com/yuin/goldmark/renderer/html
+github.com/yuin/goldmark/text
+github.com/yuin/goldmark/util
+# golang.org/x/lint v0.0.0-20210508222113-6edffad5e616
+## explicit; go 1.11
+golang.org/x/lint
+golang.org/x/lint/golint
+# golang.org/x/mod v0.14.0
+## explicit; go 1.18
+golang.org/x/mod/internal/lazyregexp
+golang.org/x/mod/module
+golang.org/x/mod/semver
+# golang.org/x/sys v0.14.0
+## explicit; go 1.18
+golang.org/x/sys/unix
+golang.org/x/sys/windows
+# golang.org/x/tools v0.16.0
+## explicit; go 1.18
+golang.org/x/tools/cmd/godoc
+golang.org/x/tools/cmd/goimports
+golang.org/x/tools/go/ast/astutil
+golang.org/x/tools/go/gcexportdata
+golang.org/x/tools/go/types/objectpath
+golang.org/x/tools/godoc
+golang.org/x/tools/godoc/analysis
+golang.org/x/tools/godoc/redirect
+golang.org/x/tools/godoc/static
+golang.org/x/tools/godoc/util
+golang.org/x/tools/godoc/vfs
+golang.org/x/tools/godoc/vfs/gatefs
+golang.org/x/tools/godoc/vfs/httpfs
+golang.org/x/tools/godoc/vfs/mapfs
+golang.org/x/tools/godoc/vfs/zipfs
+golang.org/x/tools/internal/event
+golang.org/x/tools/internal/event/core
+golang.org/x/tools/internal/event/keys
+golang.org/x/tools/internal/event/label
+golang.org/x/tools/internal/event/tag
+golang.org/x/tools/internal/gcimporter
+golang.org/x/tools/internal/gocommand
+golang.org/x/tools/internal/gopathwalk
+golang.org/x/tools/internal/imports
+golang.org/x/tools/internal/pkgbits
+golang.org/x/tools/internal/tokeninternal
+golang.org/x/tools/internal/typeparams
+golang.org/x/tools/playground
