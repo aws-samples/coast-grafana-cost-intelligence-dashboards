@@ -12,8 +12,55 @@ Parameters:
     Default: https://raw.githubusercontent.com/aws-samples/COAST/main/grafana_dashboards/coast_executive_dashboard_v0.0.1.json
     Description: URL of COAST Executive Dashboard to be imported. See https://github.com/aws-samples/COAST/blob/main/README.md for dashboard overviews.
     AllowedPattern: 'https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&\/\/=]*).json'
-  
+  ReportingEnabled:
+    Type: String
+    Default: "yes"
+    AllowedValues:
+     - "yes"
+     - "no"
+    Description: Allow us to collect basic usage metrics about this deployment.
+
+Conditions:
+  isReportingEnabled: !Equals [!Ref ReportingEnabled, "yes"]
+
 Resources:
+  SendStatsCustomResource:
+    Type: AWS::CloudFormation::CustomResource
+    Properties: 
+      ServiceToken: !GetAtt SendReportingStatsFunction.Arn
+      accountId: !Sub ${AWS::AccountId}
+      awsRegion: !Sub ${AWS::Region}
+  SendReportingStatsFunction:
+    Type: AWS::Lambda::Function
+    Condition: isReportingEnabled
+    Properties:
+      Environment:
+        Variables:
+          REPORTING_URL: https://76fbm2fggd.execute-api.us-west-1.amazonaws.com/prod/coast-cfn-tracker
+      Handler: index.handler
+      Runtime: python3.8
+      Role: !GetAtt CURStatusLambdaRole.Arn
+      ReservedConcurrentExecutions: 1
+      Tags:
+        - Key: "deployment"
+          Value: "coast"
+      Code: 
+       ZipFile: |
+        import boto3, json, urllib3, os
+        import cfnresponse
+        def handler(event, context):
+          responseData = {}
+          cfnresponse.send(event, context, cfnresponse.SUCCESS, responseData)  
+          if event['RequestType'] == "Create":
+            try:
+              cf_data_json = json.dumps(event['ResourceProperties'])
+              http = urllib3.PoolManager()
+              response = http.request("POST", os.environ['REPORTING_URL'], headers={'Content-Type': 'application/json'}, body=cf_data_json)
+              if response.status != 200:
+                print(f"Received response status: {response.status}")
+            except Exception as e:
+              print(e)
+            return
   CURStatusLambdaRole: #CUR Status Lambda Role
     Type: 'AWS::IAM::Role'
     Properties:
