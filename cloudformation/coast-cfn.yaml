@@ -80,7 +80,7 @@ Resources:
               - 'sts:AssumeRole'
       Tags:
         - Key: "deployment"
-          Value: "coast"
+          Value: "coast "
 
       Path: /
       Policies:
