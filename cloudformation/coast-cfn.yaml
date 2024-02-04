@@ -738,6 +738,7 @@ Resources:
           Value: "coast"
       ManagedPolicyArns: 
         - 'arn:aws:iam::aws:policy/service-role/AmazonGrafanaAthenaAccess'
+        - 'arn:aws:iam::aws:policy/service-role/AmazonGrafanaCloudWatchAccess'
       Policies:
         - PolicyName: 'GrafanaAthenaS3Access'
           PolicyDocument:
@@ -841,13 +842,15 @@ Resources:
           class CoastGrafanaWorkspace:
               client=boto3.client('grafana')
               http=urllib3.PoolManager()
-              def __init__(self,athena_db,athena_region,athena_workgroup,datasource_name,key_name,workspace_id):
+              def __init__(self,athena_db,athena_region,athena_workgroup,datasource_name,key_name,workspace_id,plugin_list):
                   self.logger = logging.getLogger()
                   self.logger.setLevel(logging.DEBUG)
                   self.athena_db=athena_db
                   self.athena_region=athena_region
                   self.athena_workgroup=athena_workgroup
                   self.datasource_name=datasource_name
+                  self.plugin_list=plugin_list
+                  self.datasource_uid_list = []
                   self.workspace=self.get_workspace(workspace_id)
                   self.key=self.create_key(key_name)
                   self.common_headers={'Accept':'application/json','Content-Type':'application/json','Authorization':'Bearer '+self.key['key']}
@@ -873,11 +876,17 @@ Resources:
                   finally:
                       return self.client.create_workspace_api_key(keyName=key_name,keyRole='ADMIN',secondsToLive=60,workspaceId=self.workspace['id'])
               
-              def install_plugin(self):
+              def install_plugin(self,plugin) -> None:
                   '''install plugin, currently only required for Athena'''
-                  body = {}
-                  
-                  return self.grafana_api('POST','plugins/grafana-athena-datasource/install',bytes(json.dumps(body),encoding='utf-8'))
+                  if plugin == 'athena':
+                    body = {}
+                    
+                    install_athena = self.grafana_api('POST','plugins/grafana-athena-datasource/install',bytes(json.dumps(body),encoding='utf-8'))
+
+                    self.logger.info(f'Install Athena plugin status: {install_athena.status}')
+                    #self.logger.info(f'Install Athena Data: {install_athena.data}')
+
+                    return None
               
               def delete_datasource(self):
                   '''delete datasource, required for CFN template termination'''
@@ -892,25 +901,44 @@ Resources:
                   # Find the ID of the datasource by name
                   datasource_uid = None
                   for datasource in datasources:
-                      if datasource['name'] == self.datasource_name:
+                      #I harded coded CW here, I don't expect to have many more datasources
+                      #if we do in the future we should make this more dynamic
+                      if datasource['name'] == self.datasource_name or datasource['name'] == 'Cloudwatch':
                           datasource_uid = datasource['uid']
-                          break
                 
-                  return self.grafana_api('DELETE',f'datasources/uid/{datasource_uid}')
-                  
-                  #return 'unable to find matching datasource to delete'
+                          delete_plugin = self.grafana_api('DELETE',f'datasources/uid/{datasource_uid}')
+
+                          if delete_plugin.status != 200:
+                            success = False
+                            self.logger.info(f"Error deleting datasource: {delete_plugin.json()}")
+                            return success
+
+                  return success
               
-              def set_datasource_body(self):
+              def set_datasource_body(self, plugin, body=''):
                   '''return body needed for creation of datasource'''
-                  body = {'name':self.datasource_name,'type':'grafana-athena-datasource','access':'proxy','url':'','user':'','database':'','basicAuth':False,'isDefault':False,'jsonData':{'authType':'ec2_iam_role','catalog':'AwsDataCatalog','database':self.athena_db,'defaultRegion':self.athena_region,'provisionedBy':'COAST','workgroup':self.athena_workgroup},'readOnly':False}
+                  
+                  if plugin == 'athena':
+                    body = {'name':self.datasource_name,'type':'grafana-athena-datasource','access':'proxy','url':'','user':'','database':'','basicAuth':False,'isDefault':False,'jsonData':{'authType':'ec2_iam_role','catalog':'AwsDataCatalog','database':self.athena_db,'defaultRegion':self.athena_region,'provisionedBy':'COAST','workgroup':self.athena_workgroup},'readOnly':False}
+                  if plugin == 'cloudwatch':
+                    body = {'access': 'proxy', 'isDefault': True, 'name': 'Cloudwatch', 'type': plugin}
+              
                   return bytes(json.dumps(body),encoding='utf-8')
+
               def create_datasource(self):
-                  res = self.install_plugin()
-                  
-                  print('Status: '+str(res.status))
-                  print(res.data)
-                  
-                  return self.grafana_api('POST','datasources',self.set_datasource_body())
+                  success = True
+                  for plugin in self.plugin_list:
+                    #install plugin, only required for non-core plugins
+                    self.install_plugin(plugin)
+
+                    enable_plugin = self.grafana_api('POST','datasources',self.set_datasource_body(plugin))
+
+                    self.logger.info(f'Enable {plugin} plugin status: {enable_plugin.status}')
+
+                    if enable_plugin.status != 200:
+                      success = False
+                    
+                  return success
               
               def grafana_api(self,method,path,body=None):
                   url='https://'+self.workspace['endpoint']+'/api/'+path
@@ -924,33 +952,28 @@ Resources:
           def lambda_handler(event,context):
               print(json.dumps(event,indent=4))
               response_data={'Data': None}
+              plugin_list=['athena', 'cloudwatch']
               try:
                   id=event['PhysicalResourceId'] if 'PhysicalResourceId' in event else '0'
-                  ws=CoastGrafanaWorkspace(athena_db=event['ResourceProperties']['AthenaDB'],athena_region=event['ResourceProperties']['AthenaRegion'],athena_workgroup=event['ResourceProperties']['AthenaWorkgroup'],datasource_name=event['ResourceProperties']['DataSource'],key_name=event['ResourceProperties']['GrafanaKey'],workspace_id=event['ResourceProperties']['GrafanaWorkspace'])
+                  ws=CoastGrafanaWorkspace(athena_db=event['ResourceProperties']['AthenaDB'],athena_region=event['ResourceProperties']['AthenaRegion'],athena_workgroup=event['ResourceProperties']['AthenaWorkgroup'],datasource_name=event['ResourceProperties']['DataSource'],key_name=event['ResourceProperties']['GrafanaKey'],workspace_id=event['ResourceProperties']['GrafanaWorkspace'],plugin_list=plugin_list)
                   
                   if event['RequestType']=='Create':
-                      res=ws.create_datasource()
-                      
-                      print('Status: '+str(res.status))
-                      print(res.data)
-                      
-                      datasource_id=str(json.loads(res.data)['id']) 
-                      
-                      if res.status==200:
-                          cfnresponse.send(event,context,cfnresponse.SUCCESS,response_data,datasource_id)
+                      result=ws.create_datasource()
+                                            
+                      if result:
+                          cfnresponse.send(event,context,cfnresponse.SUCCESS,response_data)
                       else:
-                          cfnresponse.send(event,context,cfnresponse.FAILED,response_data,datasource_id)
+                          cfnresponse.send(event,context,cfnresponse.FAILED,response_data)
                   elif event['RequestType']=='Delete':
-                      res=ws.delete_datasource()
+                      result=ws.delete_datasource()
                       
-                      try:
-                        if res.status==200:
-                            cfnresponse.send(event,context,cfnresponse.SUCCESS,response_data)
-                        else:
-                            cfnresponse.send(event,context,cfnresponse.FAILED,response_data)
-                      except:
-                        logger.info(f"Failed attempting to delete datasource {event['ResourceProperties']['DataSource']}: {res} ")
-                        cfnresponse.send(event, context, cfnresponse.FAILED, response_data)
+                      if result:
+                          logger.info('Successfully deleted datasources')
+                          cfnresponse.send(event,context,cfnresponse.SUCCESS,response_data)
+                      else:
+                          logger.info('Failed to delete datasources')
+                          cfnresponse.send(event,context,cfnresponse.FAILED,response_data)
+
               except Exception as err:
                   print('Error:'+str(err))
                   cfnresponse.send(event,context,cfnresponse.FAILED,response_data,'0')
