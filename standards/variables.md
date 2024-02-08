@@ -26,7 +26,7 @@ Include multi-value or All option
 **Label**:Regions\
 **Data source**: Athena CUR \
 **Query**:\
-```SELECT DISTINCT(product_location) from $CurTable;```
+```SELECT DISTINCT(product_region) from $CurTable;```
 **Notes**: \
 Include multi-value or All option
 
