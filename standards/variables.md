@@ -1,6 +1,6 @@
 Variables created in each dashboard should be standardized to allow for creation of a library of panels which may be imported into each dashboard.
 
---
+--\
 **Variable Name**: CurTable\
 **Lable**: CUR Table\
 **Data source**: Athena CUR\
@@ -8,95 +8,94 @@ Variables created in each dashboard should be standardized to allow for creation
 ```show tables```\
 **Notes**: \
 Use regex to filter for:\
-```^(?!cost_and_usage_data_status).+$```\
+```^(?!cost_and_usage_data_status).+$```
 
-Do not include multi-value or All option\
+Do not include multi-value or All option
 
---
-**Variable Name**: LinkedAccounts
-**Label**:Linked Accounts
-**Data source**: Athena CUR 
-**Query**:
-```SELECT DISTINCT(line_item_usage_account_id) FROM $CurTable;```
-**Notes**: 
+--\
+**Variable Name**: LinkedAccounts\
+**Label**:Linked Accounts\
+**Data source**: Athena CUR \
+**Query**:\
+```SELECT DISTINCT(line_item_usage_account_id) FROM \$CurTable;```
+**Notes**: \
 Include multi-value or All option
 
---
-**Variable Name**: Regions
-**Label**:Regions
-**Data source**: Athena CUR 
-**Query**:
+--\
+**Variable Name**: Regions\
+**Label**:Regions\
+**Data source**: Athena CUR \
+**Query**:\
 ```SELECT DISTINCT(product_location) from $CurTable;```
-**Notes**: 
+**Notes**: \
 Include multi-value or All option
 
---
-**Variable Name**: Services
-**Label**:Services
-**Data source**: Athena CUR 
-**Query**:
+--\
+**Variable Name**: Services\
+**Label**:Services\
+**Data source**: Athena CUR \
+**Query**:\
 ```SELECT DISTINCT(line_item_product_code) from $CurTable;```
-**Notes**: 
+**Notes**: \
 Include multi-value or All option
 
---
-**Variable Name**: ChargeType
-**Label**:ChargeType
-**Data source**: Athena CUR 
-**Query**:
+--\
+**Variable Name**: ChargeType\
+**Label**:ChargeType\
+**Data source**: Athena CUR \
+**Query**:\
 ```SELECT DISTINCT(line_item_line_item_type) from $CurTable;```
-**Notes**: 
+**Notes**: \
 Include multi-value or All option
 
---
-**Variable Name**: TagKey
-**Label**:Tag Key
-**Data source**: Athena CUR 
-**Query**:
+--\
+**Variable Name**: TagKey\
+**Label**:Tag Key\
+**Data source**: Athena CUR \
+**Query**:\
 ```SHOW COLUMNS from $CurTable;```
-**Notes**: 
-Use regex to filter for:
+**Notes**: \
+Use regex to filter for:\
 ```/resource_tags_user_(.+)/```
 
 Do not include multi-value or All option
 
---
-**Variable Name**: TagValue
-**Label**:Tag Value
-**Data source**: Athena CUR 
-**Query**:
+--\
+**Variable Name**: TagValue\
+**Label**:Tag Value\
+**Data source**: Athena CUR \
+**Query**:\
 ```SELECT DISTINCT(resource_tags_user_$TagKey) FROM $CurTable;```
-**Notes**: 
+**Notes**: \
 Include multi-value or All option
 
---
-**Variable Name**: CostCategoryName
-**Label**:Cost Category Name
-**Data source**: Athena CUR 
-**Query**:
+--\
+**Variable Name**: CostCategoryName\
+**Label**:Cost Category Name\
+**Data source**: Athena CUR \
+**Query**:\
 ```SHOW COLUMNS from $CurTable;```
-**Notes**: 
-Use regex to filter for:
+**Notes**: \
+Use regex to filter for:\
 ```/cost_category_(.+)/```
 
 Do not include multi-value or All option
 
---
-**Variable Name**: CostCategoryValue
-**Label**:Cost Category Value
-**Data source**: Athena CUR 
-**Query**:
+--\
+**Variable Name**: CostCategoryValue\
+**Label**:Cost Category Value\
+**Data source**: Athena CUR \
+**Query**:\
 ```SELECT DISTINCT(cost_category_$CostCategoryName) FROM $CurTable;```
-**Notes**: 
+**Notes**: \
 Include multi-value or All option
 
---
-**Variable Name**: PanelTop25SpendPercentage
-**Label**:
-**Description**: Calculate the spend percentage from the top 25 accounts in the AWS Organization.
-
-**Data source**: Athena CUR 
-**Query**:
+--\
+**Variable Name**: PanelTop25SpendPercentage\
+**Label**:\
+**Description**: Calculate the spend percentage from the top 25 accounts in the AWS Organization.\
+**Data source**: Athena CUR \
+**Query**:\
 ```with total_spend as (
     SELECT
     line_item_usage_account_id as account,
@@ -129,30 +128,30 @@ FROM
     total_spend
 INNER JOIN top10_spend ON total_spend.account = top10_spend.account;
 ```
-**Notes**: 
+**Notes**: \
 Do not include multi-value or All option
 
---
-**Variable Name**: TotalAccountInOrganization
-**Label**:
-**Data source**: Athena CUR 
-**Query**:
+--\
+**Variable Name**: TotalAccountInOrganization\
+**Label**:\
+**Data source**: Athena CUR \
+**Query**:\
 ```SELECT 
 CAST(COUNT(DISTINCT(line_item_usage_account_id)) as VARCHAR) as account_count
 FROM 
 $CurTable
 ```
-**Notes**: 
+**Notes**: \
 Do not include multi-value or All option
 
---
-**Variable Name**: Granularity
-**Label**:Granularity
-**Data source**: Custom 
-**Query**:
-Custom Options:
+--\
+**Variable Name**: Granularity\
+**Label**:Granularity\
+**Data source**: Custom \
+**Query**:\
+Custom Options:\
 ```month,week,day,hour```
-**Notes**: 
+**Notes**: \
 Do not include multi-value or All option
 
 
