@@ -1,16 +1,16 @@
 Variables created in each dashboard should be standardized to allow for creation of a library of panels which may be imported into each dashboard.
 
 --
-**Variable Name**: CurTable
-**Lable**: CUR Table
-**Data source**: Athena CUR 
-**Query**:
-```show tables```
-**Notes**: 
-Use regex to filter for:
-```^(?!cost_and_usage_data_status).+$```
+**Variable Name**: CurTable\
+**Lable**: CUR Table\
+**Data source**: Athena CUR\
+**Query**:\
+```show tables```\
+**Notes**: \
+Use regex to filter for:\
+```^(?!cost_and_usage_data_status).+$```\
 
-Do not include multi-value or All option
+Do not include multi-value or All option\
 
 --
 **Variable Name**: LinkedAccounts
