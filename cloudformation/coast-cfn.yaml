@@ -705,6 +705,7 @@ Resources:
           - - 'coast-workgroup-'
             - !Ref AWS::StackName
       Description: 'Used for COAST'
+      RecursiveDeleteOption: true
       Tags:
         - Key: "GrafanaDataSource"
           Value: "false"
@@ -712,6 +713,7 @@ Resources:
           Value: "coast"
       WorkGroupConfiguration:
         EnforceWorkGroupConfiguration: true
+        PublishCloudWatchMetricsEnabled: true
         ResultConfiguration:
           EncryptionConfiguration:
             EncryptionOption: SSE_S3
