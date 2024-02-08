@@ -1,4 +1,4 @@
-Variables created in each dashboard should be standardized to allow for creation of a library of panels which may be imported into each dashboard.
+Variables created which are common to our dashboards should be standardized to allow for creation of a library of panels which may be imported into each dashboard.  Variables which are only relevant to one dashboard need not be logged in this standards document.
 
 --\
 **Variable Name**: CurTable\
