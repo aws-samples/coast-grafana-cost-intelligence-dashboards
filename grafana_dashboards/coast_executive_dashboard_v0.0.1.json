@@ -524,7 +524,7 @@
             "uid": "${Datasource}"
           },
           "format": 1,
-          "rawSQL": "with spend_difference as (\n    SELECT\n    line_item_usage_account_id as account,\n    SUM(\n        CASE\n        WHEN(bill_billing_period_start_date = date_add('MONTH', -1, DATE_TRUNC('MONTH', current_date))) THEN line_item_unblended_cost\n    END) as cost_one_month_ago,\n    SUM(\n        CASE\n        WHEN(bill_billing_period_start_date = date_add('MONTH', -2, DATE_TRUNC('MONTH', current_date))) THEN line_item_unblended_cost\n    END) as cost_two_months_ago\n    FROM\n    $CurTable\n    where\n    ( bill_billing_period_start_date = date_add('MONTH', -1, DATE_TRUNC('MONTH', current_date)) \n    OR bill_billing_period_start_date = date_add('MONTH', -2, DATE_TRUNC('MONTH', current_date)) )\n    AND product_location in ($Regions)\n    AND line_item_usage_account_id IN ($LinkedAccounts)\n    Group by \n    line_item_usage_account_id\n    ORDER BY \n    account DESC\n    LIMIT 10\n)\n\nSELECT\n    account,\n    (((cost_one_month_ago - cost_two_months_ago) / cost_two_months_ago) * 100) as spend_percentage_diff\nFROM\nspend_difference\nORDER BY spend_percentage_diff",
+          "rawSQL": "with spend_difference as (\n    SELECT\n    line_item_usage_account_id as account,\n    SUM(\n        CASE\n        WHEN(bill_billing_period_start_date = date_add('MONTH', -1, DATE_TRUNC('MONTH', current_date))) THEN line_item_unblended_cost\n    END) as cost_one_month_ago,\n    SUM(\n        CASE\n        WHEN(bill_billing_period_start_date = date_add('MONTH', -2, DATE_TRUNC('MONTH', current_date))) THEN line_item_unblended_cost\n    END) as cost_two_months_ago\n    FROM\n    $CurTable\n    where\n    ( bill_billing_period_start_date = date_add('MONTH', -1, DATE_TRUNC('MONTH', current_date)) \n    OR bill_billing_period_start_date = date_add('MONTH', -2, DATE_TRUNC('MONTH', current_date)) )\n    AND product_region in ($Regions)\n    AND line_item_usage_account_id IN ($LinkedAccounts)\n    Group by \n    line_item_usage_account_id\n    ORDER BY \n    account DESC\n    LIMIT 10\n)\n\nSELECT\n    account,\n    (((cost_one_month_ago - cost_two_months_ago) / cost_two_months_ago) * 100) as spend_percentage_diff\nFROM\nspend_difference\nORDER BY spend_percentage_diff",
           "refId": "A"
         }
       ],
@@ -664,7 +664,7 @@
             "uid": "${Datasource}"
           },
           "format": 1,
-          "rawSQL": "SELECT \nCAST(line_item_usage_account_id as varchar) as account,\nCAST(sum(line_item_unblended_cost) as integer) as spend\nFROM $CurTable\nwhere\nbill_billing_period_start_date = date_add('MONTH', -1, date_trunc('MONTH', current_date))\nAND product_location in ($Regions)\nAND line_item_usage_account_id IN ($LinkedAccounts)\nGROUP BY\nline_item_usage_account_id\nORDER BY \nspend DESC\nLIMIT 10\n",
+          "rawSQL": "SELECT \nCAST(line_item_usage_account_id as varchar) as account,\nCAST(sum(line_item_unblended_cost) as integer) as spend\nFROM $CurTable\nwhere\nbill_billing_period_start_date = date_add('MONTH', -1, date_trunc('MONTH', current_date))\nAND product_region in ($Regions)\nAND line_item_usage_account_id IN ($LinkedAccounts)\nGROUP BY\nline_item_usage_account_id\nORDER BY \nspend DESC\nLIMIT 10\n",
           "refId": "A"
         }
       ],
@@ -760,7 +760,7 @@
             "uid": "${Datasource}"
           },
           "format": 1,
-          "rawSQL": "SELECT \nCOUNT(DISTINCT(line_item_usage_account_id)) as Accounts,\nCOUNT(DISTINCT(product_location)) as Regions\nFROM $CurTable\nWHERE \nproduct_location in ($Regions)\nAND line_item_usage_account_id IN ($LinkedAccounts)",
+          "rawSQL": "SELECT \nCOUNT(DISTINCT(line_item_usage_account_id)) as Accounts,\nCOUNT(DISTINCT(product_region)) as Regions\nFROM $CurTable\nWHERE \nproduct_region in ($Regions)\nAND line_item_usage_account_id IN ($LinkedAccounts)",
           "refId": "A"
         }
       ],
@@ -871,7 +871,7 @@
             "uid": "${Datasource}"
           },
           "format": 1,
-          "rawSQL": "-- Output the bill sum from jan of this year and last month\nWITH bill_sum_ytd_and_last_month as (\n  SELECT \n  SUM(CASE\n        WHEN (bill_billing_period_start_date = date_add('YEAR', 0, DATE_TRUNC('YEAR', current_date))) THEN line_item_unblended_cost ELSE 0 \n      END) AS bill_january,\n  SUM(CASE\n        WHEN (bill_billing_period_start_date = date_add('MONTH', -1, DATE_TRUNC('MONTH', current_date))) THEN line_item_unblended_cost ELSE 0 \n      END) AS bill_one_month_ago\n  FROM $CurTable\n  where\n  ( bill_billing_period_start_date = date_add('YEAR', 0, DATE_TRUNC('YEAR', current_date))\n  OR bill_billing_period_start_date = date_add('MONTH', -1, DATE_TRUNC('MONTH', current_date)) )  \n  AND product_location in ($Regions)\n  AND line_item_usage_account_id IN ($LinkedAccounts)\n),\n\n-- output percentage change ytd\nbill_percentage_change as (\n  SELECT \n    bill_january,\n    bill_one_month_ago,\n    CAST(bill_one_month_ago - bill_january as double) as spend_difference,\n    CAST(((bill_one_month_ago - bill_january) / bill_january) * 100 as double) as percentage_change\n  FROM \n  bill_sum_ytd_and_last_month\n)\n\nSELECT \npercentage_change\nFROM \nbill_percentage_change",
+          "rawSQL": "-- Output the bill sum from jan of this year and last month\nWITH bill_sum_ytd_and_last_month as (\n  SELECT \n  SUM(CASE\n        WHEN (bill_billing_period_start_date = date_add('YEAR', 0, DATE_TRUNC('YEAR', current_date))) THEN line_item_unblended_cost ELSE 0 \n      END) AS bill_january,\n  SUM(CASE\n        WHEN (bill_billing_period_start_date = date_add('MONTH', -1, DATE_TRUNC('MONTH', current_date))) THEN line_item_unblended_cost ELSE 0 \n      END) AS bill_one_month_ago\n  FROM $CurTable\n  where\n  ( bill_billing_period_start_date = date_add('YEAR', 0, DATE_TRUNC('YEAR', current_date))\n  OR bill_billing_period_start_date = date_add('MONTH', -1, DATE_TRUNC('MONTH', current_date)) )  \n  AND product_region in ($Regions)\n  AND line_item_usage_account_id IN ($LinkedAccounts)\n),\n\n-- output percentage change ytd\nbill_percentage_change as (\n  SELECT \n    bill_january,\n    bill_one_month_ago,\n    CAST(bill_one_month_ago - bill_january as double) as spend_difference,\n    CAST(((bill_one_month_ago - bill_january) / bill_january) * 100 as double) as percentage_change\n  FROM \n  bill_sum_ytd_and_last_month\n)\n\nSELECT \npercentage_change\nFROM \nbill_percentage_change",
           "refId": "A"
         }
       ],
@@ -956,7 +956,7 @@
             "uid": "${Datasource}"
           },
           "format": 1,
-          "rawSQL": "-- Output the bill sum last two months\nWITH bill_sum_last_two_months as (\n  SELECT \n  SUM(CASE\n        WHEN (bill_billing_period_start_date = date_add('MONTH', -2, DATE_TRUNC('MONTH', current_date))) THEN line_item_unblended_cost ELSE 0 \n      END) AS bill_two_months_ago,\n  SUM(CASE\n        WHEN (bill_billing_period_start_date = date_add('MONTH', -1, DATE_TRUNC('MONTH', current_date))) THEN line_item_unblended_cost ELSE 0 \n      END) AS bill_one_month_ago\n  FROM $CurTable\n  where\n  ( bill_billing_period_start_date = date_add('MONTH', -2, DATE_TRUNC('MONTH', current_date))\n  OR bill_billing_period_start_date = date_add('MONTH', -1, DATE_TRUNC('MONTH', current_date)) )  \n  AND product_location in ($Regions)\n  AND line_item_usage_account_id IN ($LinkedAccounts)\n),\n\n-- output percentage change for bill in last two months\nbill_percentage_change as (\nSELECT \n  bill_two_months_ago,\n  bill_one_month_ago,\n  CAST(bill_one_month_ago - bill_two_months_ago as double) as spend_difference,\n  CAST(((bill_one_month_ago - bill_two_months_ago) / bill_two_months_ago) * 100 as double) as percentage_change\nFROM \nbill_sum_last_two_months\n)\n\nSELECT \npercentage_change\nFROM \nbill_percentage_change",
+          "rawSQL": "-- Output the bill sum last two months\nWITH bill_sum_last_two_months as (\n  SELECT \n  SUM(CASE\n        WHEN (bill_billing_period_start_date = date_add('MONTH', -2, DATE_TRUNC('MONTH', current_date))) THEN line_item_unblended_cost ELSE 0 \n      END) AS bill_two_months_ago,\n  SUM(CASE\n        WHEN (bill_billing_period_start_date = date_add('MONTH', -1, DATE_TRUNC('MONTH', current_date))) THEN line_item_unblended_cost ELSE 0 \n      END) AS bill_one_month_ago\n  FROM $CurTable\n  where\n  ( bill_billing_period_start_date = date_add('MONTH', -2, DATE_TRUNC('MONTH', current_date))\n  OR bill_billing_period_start_date = date_add('MONTH', -1, DATE_TRUNC('MONTH', current_date)) )  \n  AND product_region in ($Regions)\n  AND line_item_usage_account_id IN ($LinkedAccounts)\n),\n\n-- output percentage change for bill in last two months\nbill_percentage_change as (\nSELECT \n  bill_two_months_ago,\n  bill_one_month_ago,\n  CAST(bill_one_month_ago - bill_two_months_ago as double) as spend_difference,\n  CAST(((bill_one_month_ago - bill_two_months_ago) / bill_two_months_ago) * 100 as double) as percentage_change\nFROM \nbill_sum_last_two_months\n)\n\nSELECT \npercentage_change\nFROM \nbill_percentage_change",
           "refId": "A"
         }
       ],
@@ -1040,7 +1040,7 @@
             "uid": "${Datasource}"
           },
           "format": 1,
-          "rawSQL": "-- Output number for last months bill\nSELECT \nSUM(line_item_unblended_cost)\nFROM $CurTable\nwhere\nbill_billing_period_start_date = date_add('MONTH', -1, DATE_TRUNC('MONTH', current_date) )\nAND product_location in ($Regions)\nAND line_item_usage_account_id IN ($LinkedAccounts)",
+          "rawSQL": "-- Output number for last months bill\nSELECT \nSUM(line_item_unblended_cost)\nFROM $CurTable\nwhere\nbill_billing_period_start_date = date_add('MONTH', -1, DATE_TRUNC('MONTH', current_date) )\nAND product_region in ($Regions)\nAND line_item_usage_account_id IN ($LinkedAccounts)",
           "refId": "A"
         }
       ],
@@ -1124,7 +1124,7 @@
             "uid": "${Datasource}"
           },
           "format": 1,
-          "rawSQL": "-- Output number for last months bill\nSELECT \nSUM(line_item_unblended_cost)\nFROM $CurTable\nwhere\nbill_billing_period_start_date = date_add('MONTH', -2, DATE_TRUNC('MONTH', current_date) )\nAND product_location in ($Regions)\nAND line_item_usage_account_id IN ($LinkedAccounts)",
+          "rawSQL": "-- Output number for last months bill\nSELECT \nSUM(line_item_unblended_cost)\nFROM $CurTable\nwhere\nbill_billing_period_start_date = date_add('MONTH', -2, DATE_TRUNC('MONTH', current_date) )\nAND product_region in ($Regions)\nAND line_item_usage_account_id IN ($LinkedAccounts)",
           "refId": "A"
         }
       ],
@@ -1248,7 +1248,7 @@
             "uid": "${Datasource}"
           },
           "format": 1,
-          "rawSQL": "SELECT\n  date_trunc('$Granularity', line_item_usage_start_date),\n  sum(line_item_unblended_cost) AS cost\nfrom $CurTable\nWHERE\n  $__timeFilter(line_item_usage_start_date)\n  and product_location in ($Regions)\n  AND  line_item_product_code in ($Services)\n  AND line_item_usage_account_id IN ($LinkedAccounts)\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_line_item_type IN ($ChargeType)\nGROUP BY 1\nORDER BY 1\n;",
+          "rawSQL": "SELECT\n  date_trunc('$Granularity', line_item_usage_start_date),\n  sum(line_item_unblended_cost) AS cost\nfrom $CurTable\nWHERE\n  $__timeFilter(line_item_usage_start_date)\n  and product_region in ($Regions)\n  AND  line_item_product_code in ($Services)\n  AND line_item_usage_account_id IN ($LinkedAccounts)\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_line_item_type IN ($ChargeType)\nGROUP BY 1\nORDER BY 1\n;",
           "refId": "A"
         }
       ],
@@ -1528,7 +1528,7 @@
           },
           "format": 0,
           "hide": false,
-          "rawSQL": "WITH top_services AS (\nSELECT\nline_item_product_code,\nsum(line_item_unblended_cost)\n\nFROM $CurTable\n\nWHERE\n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code in ($Services)\n\nGROUP BY 1\nORDER BY 2 DESC\n\nLIMIT 5)\n\nSELECT\n  date_trunc('$Granularity', line_item_usage_start_date),\n  $CurTable.line_item_product_code as product,\n  sum($CurTable.line_item_unblended_cost) as cost\nfrom $CurTable join top_services on $CurTable.line_item_product_code = top_services.line_item_product_code\nWHERE\n  $__timeFilter(line_item_usage_start_date)\n  and product_location in ($Regions)\n  AND line_item_usage_account_id IN ($LinkedAccounts)\n  AND $CurTable .line_item_product_code in ($Services)\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_line_item_type IN ($ChargeType)\nGROUP BY 1, 2\nORDER BY 1\n;\n",
+          "rawSQL": "WITH top_services AS (\nSELECT\nline_item_product_code,\nsum(line_item_unblended_cost)\n\nFROM $CurTable\n\nWHERE\n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code in ($Services)\n\nGROUP BY 1\nORDER BY 2 DESC\n\nLIMIT 5)\n\nSELECT\n  date_trunc('$Granularity', line_item_usage_start_date),\n  $CurTable.line_item_product_code as product,\n  sum($CurTable.line_item_unblended_cost) as cost\nfrom $CurTable join top_services on $CurTable.line_item_product_code = top_services.line_item_product_code\nWHERE\n  $__timeFilter(line_item_usage_start_date)\n  and product_region in ($Regions)\n  AND line_item_usage_account_id IN ($LinkedAccounts)\n  AND $CurTable .line_item_product_code in ($Services)\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_line_item_type IN ($ChargeType)\nGROUP BY 1, 2\nORDER BY 1\n;\n",
           "refId": "A"
         },
         {
@@ -1545,7 +1545,7 @@
           },
           "format": 0,
           "hide": false,
-          "rawSQL": "WITH top_services AS (\nSELECT\nline_item_product_code,\nsum(line_item_unblended_cost)\n\nFROM $CurTable\n\nWHERE\n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code in ($Services)\n\nGROUP BY 1\nORDER BY 2 DESC\n\nLIMIT 5)\n\nSELECT\n  date_trunc('$Granularity', line_item_usage_start_date),\n  'Others' as product,\n  sum($CurTable.line_item_unblended_cost) as cost\nfrom $CurTable left outer join top_services on $CurTable.line_item_product_code = top_services.line_item_product_code\nWHERE\n  $__timeFilter(line_item_usage_start_date)\n  AND top_services.line_item_product_code IS NULL\n  and product_location in ($Regions)\n  AND line_item_usage_account_id IN ($LinkedAccounts)\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_line_item_type IN ($ChargeType)\nGROUP BY 1, 2\nORDER BY 1\n;\n",
+          "rawSQL": "WITH top_services AS (\nSELECT\nline_item_product_code,\nsum(line_item_unblended_cost)\n\nFROM $CurTable\n\nWHERE\n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code in ($Services)\n\nGROUP BY 1\nORDER BY 2 DESC\n\nLIMIT 5)\n\nSELECT\n  date_trunc('$Granularity', line_item_usage_start_date),\n  'Others' as product,\n  sum($CurTable.line_item_unblended_cost) as cost\nfrom $CurTable left outer join top_services on $CurTable.line_item_product_code = top_services.line_item_product_code\nWHERE\n  $__timeFilter(line_item_usage_start_date)\n  AND top_services.line_item_product_code IS NULL\n  and product_region in ($Regions)\n  AND line_item_usage_account_id IN ($LinkedAccounts)\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_line_item_type IN ($ChargeType)\nGROUP BY 1, 2\nORDER BY 1\n;\n",
           "refId": "B"
         }
       ],
@@ -1787,7 +1787,7 @@
           },
           "format": 0,
           "hide": false,
-          "rawSQL": "WITH top_regions AS (\nSELECT\nproduct_location,\nsum(line_item_unblended_cost)\n\nFROM $CurTable\n\nWHERE\n$__timeFilter(line_item_usage_start_date)\nAND product_location in ($Regions)\n\nGROUP BY 1\nORDER BY 2 DESC\n\nLIMIT 5)\n\nselect \n  date_trunc('$Granularity', line_item_usage_start_date),\n  product_location as location,\n  sum(line_item_unblended_cost) as cost\nfrom $CurTable join top_regions using (product_location)\n\nWHERE\n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_product_code in ($Services)\n  AND line_item_usage_account_id IN ($LinkedAccounts)\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_line_item_type IN ($ChargeType)\nGROUP BY 1, 2\nORDER BY 1\n;\n",
+          "rawSQL": "WITH top_regions AS (\nSELECT\nproduct_region,\nsum(line_item_unblended_cost)\n\nFROM $CurTable\n\nWHERE\n$__timeFilter(line_item_usage_start_date)\nAND product_region in ($Regions)\n\nGROUP BY 1\nORDER BY 2 DESC\n\nLIMIT 5)\n\nselect \n  date_trunc('$Granularity', line_item_usage_start_date),\n  product_region as location,\n  sum(line_item_unblended_cost) as cost\nfrom $CurTable join top_regions using (product_region)\n\nWHERE\n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_product_code in ($Services)\n  AND line_item_usage_account_id IN ($LinkedAccounts)\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_line_item_type IN ($ChargeType)\nGROUP BY 1, 2\nORDER BY 1\n;\n",
           "refId": "A"
         },
         {
@@ -1804,7 +1804,7 @@
           },
           "format": 0,
           "hide": false,
-          "rawSQL": "WITH top_regions AS (\nSELECT\nproduct_location,\nsum(line_item_unblended_cost)\n\nFROM $CurTable\n\nWHERE\n$__timeFilter(line_item_usage_start_date)\nAND product_location in ($Regions)\n\nGROUP BY 1\nORDER BY 2 DESC\n\nLIMIT 5)\n\nselect \n  date_trunc('$Granularity', line_item_usage_start_date),\n  'Others' as location,\n  sum($CurTable.line_item_unblended_cost) as cost\nfrom $CurTable left outer join top_regions on $CurTable.product_location = top_regions.product_location\n\nWHERE\n  $__timeFilter(line_item_usage_start_date)\n  AND top_regions.product_location IS NULL\n  AND line_item_product_code in ($Services)\n  AND line_item_usage_account_id IN ($LinkedAccounts)\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_line_item_type IN ($ChargeType)\nGROUP BY 1, 2\nORDER BY 1\n;\n",
+          "rawSQL": "WITH top_regions AS (\nSELECT\nproduct_region,\nsum(line_item_unblended_cost)\n\nFROM $CurTable\n\nWHERE\n$__timeFilter(line_item_usage_start_date)\nAND product_region in ($Regions)\n\nGROUP BY 1\nORDER BY 2 DESC\n\nLIMIT 5)\n\nselect \n  date_trunc('$Granularity', line_item_usage_start_date),\n  'Others' as location,\n  sum($CurTable.line_item_unblended_cost) as cost\nfrom $CurTable left outer join top_regions on $CurTable.product_region = top_regions.product_region\n\nWHERE\n  $__timeFilter(line_item_usage_start_date)\n  AND top_regions.product_region IS NULL\n  AND line_item_product_code in ($Services)\n  AND line_item_usage_account_id IN ($LinkedAccounts)\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_line_item_type IN ($ChargeType)\nGROUP BY 1, 2\nORDER BY 1\n;\n",
           "refId": "B"
         }
       ],
@@ -2040,7 +2040,7 @@
             "resultReuseMaxAgeInMinutes": 60
           },
           "format": 1,
-          "rawSQL": "select distinct product_location from $CurTable where product_location != '';"
+          "rawSQL": "select DISTINCT(product_region) from $CurTable;"
         },
         "refresh": 1,
         "regex": "",
@@ -2070,7 +2070,7 @@
             "resultReuseMaxAgeInMinutes": 60
           },
           "format": 1,
-          "rawSQL": "select distinct line_item_product_code from $CurTable;\n"
+          "rawSQL": "SELECT DISTINCT(line_item_product_code) from $CurTable;\n"
         },
         "refresh": 1,
         "regex": "",
@@ -2169,7 +2169,7 @@
             "resultReuseMaxAgeInMinutes": 60
           },
           "format": 1,
-          "rawSQL": "show columns from $CurTable;"
+          "rawSQL": "SHOW COLUMNS from $CurTable;"
         },
         "refresh": 1,
         "regex": "/resource_tags_user_(.+)/",
@@ -2199,7 +2199,7 @@
             "resultReuseMaxAgeInMinutes": 60
           },
           "format": 1,
-          "rawSQL": "select DISTINCT(resource_tags_user_$TagKey) \nFROM $CurTable;"
+          "rawSQL": "SELECT DISTINCT(resource_tags_user_$TagKey) \nFROM $CurTable;"
         },
         "refresh": 1,
         "regex": "",
@@ -2229,7 +2229,7 @@
             "resultReuseMaxAgeInMinutes": 60
           },
           "format": 1,
-          "rawSQL": "show columns from $CurTable;"
+          "rawSQL": "SHOW COLUMNS from $CurTable;"
         },
         "refresh": 1,
         "regex": "/cost_category_(.+)/",
@@ -2259,7 +2259,7 @@
             "resultReuseMaxAgeInMinutes": 60
           },
           "format": 1,
-          "rawSQL": "select DISTINCT(cost_category_$CostCategoryName) \nFROM $CurTable;"
+          "rawSQL": "SELECT DISTINCT(cost_category_$CostCategoryName) FROM $CurTable;"
         },
         "refresh": 1,
         "regex": "",
