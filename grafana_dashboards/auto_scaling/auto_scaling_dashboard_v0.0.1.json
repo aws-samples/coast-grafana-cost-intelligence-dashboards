@@ -117,7 +117,7 @@
   "liveNow": false,
   "panels": [
     {
-      "collapsed": true,
+      "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -125,204 +125,203 @@
         "y": 0
       },
       "id": 13,
-      "panels": [
-        {
-          "datasource": {
-            "type": "grafana-athena-datasource",
-            "uid": "${DS_COAST-2023-09-19}"
-          },
-          "description": "",
-          "gridPos": {
-            "h": 9,
-            "w": 12,
-            "x": 0,
-            "y": 1
-          },
-          "id": 15,
-          "options": {
-            "code": {
-              "language": "plaintext",
-              "showLineNumbers": false,
-              "showMiniMap": false
-            },
-            "content": "<span style='color: #AF69EE;font-size:20px'>Auto Scaling Dashboard</span>\n<p>\nCOAST is a collection of customizable Amazon Managed Grafana\ndashboards, offering both a high-level overview and detailed\nservice-specific insights based on the AWS Cost and Usage Report (CUR).\nDashboards cater to executive leadership, FinOps Practitioners, and DevOps/Engineering.\n</p><p>\nThe <span style='color: #AF69EE'>Auto Scaling Dashboard</span> is designed for specific workloads, leveraging <span style='color: #FF9900'>CloudWatch</span> metrics and <span style='color: #FF9900'>Cost and Usage Report (CUR)</span> data to present comprehensive visualizations. It includes vital components such as Auto Scaling Groups (ASG), Load Balancers, NAT Gateways, and EC2 Instances that operate within the ASG.\n</p><p>\nFor any inquiries or further assistance in interpreting the data or utilizing the dashboard's features, please contact your assigned Cloud Financial Analyst or FinOps Manager for guidance and support.\n</p>\n",
-            "mode": "html"
-          },
-          "pluginVersion": "9.4.7",
-          "targets": [
-            {
-              "datasource": {
-                "type": "grafana-athena-datasource",
-                "uid": "${DS_COAST-2023-09-19}"
-              },
-              "refId": "A"
-            }
-          ],
-          "title": " ",
-          "type": "text"
-        },
-        {
-          "datasource": {
-            "type": "grafana-athena-datasource",
-            "uid": "${DS_COAST-2023-09-19}"
-          },
-          "description": "",
-          "gridPos": {
-            "h": 9,
-            "w": 12,
-            "x": 12,
-            "y": 1
-          },
-          "id": 17,
-          "options": {
-            "code": {
-              "language": "plaintext",
-              "showLineNumbers": false,
-              "showMiniMap": false
-            },
-            "content": "<div style='font-size: 18px'>\nHow to Utilize this Dashboard\n</div>\nTo make the most of the <span style='color: #AF69EE'>Autoscaling Dashboard</span>, input the following parameters in the top parameter menu:\n<br><br>\n\n<ol>\n<li>Region: Select your region (note in the beta version of this dashboard only us-east-1 is supported).</li>\n\n<li>ASG Name: Fill in the name of your Auto Scaling Group (ASG).  The name is available on the ASG details page under \"Group Details\".</li>\n\n<li>Tags: Select the tag key for your resources.  The tag values will populate once the tag key is selected. The values for this drop down come from CUR with a lookback period of 3 days.</li>\n\n<li>Load Balancers: This drop down is populated automtically once you select your tag.  The values for this drop down come from CUR with a lookback period of 3 days.</li>\n\n<li>Nat Gateways: This drop down is populated automtically once you select your tag.  The values for this drop down come from CUR with a lookback period of 3 days.</li>\n\n<li>Granularity: This value is used only in CUR querys to smooth out data based on month, week, day or hour.  To match Cloudwatch, select hour.</li>\n</ol>\n",
-            "mode": "html"
-          },
-          "pluginVersion": "9.4.7",
-          "targets": [
-            {
-              "datasource": {
-                "type": "grafana-athena-datasource",
-                "uid": "${DS_COAST-2023-09-19}"
-              },
-              "refId": "A"
-            }
-          ],
-          "title": " ",
-          "type": "text"
-        },
-        {
-          "datasource": {
-            "type": "grafana-athena-datasource",
-            "uid": "${DS_COAST-2023-09-19}"
-          },
-          "description": "",
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 0,
-            "y": 10
-          },
-          "id": 60,
-          "options": {
-            "code": {
-              "language": "plaintext",
-              "showLineNumbers": false,
-              "showMiniMap": false
-            },
-            "content": "The <span style='color: #AF69EE'>Required Columns Validator</span> evaluates your CUR dataset to confirm the presence of essential columns. For the dashboard to operate accurately, the CUR dataset must include columns for:\n<br><br>\n<ul>\n  <li>Resource IDs - </li>Resource IDs rows in CUR help deep dive cost at the resource ARNs layer.  To setup your CUR with resource IDs see <a href=\"https://docs.aws.amazon.com/cur/latest/userguide/cur-create.html\">Creating Cost and Usage Report</a>\n  <li>Cost Allocation Tags - Defining a cost allocation tag results in its persistence in your CUR dataset. For our queries to function correctly, it is imperative to have at least one cost allocation tag enabled.  See <a href=\"https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/cost-alloc-tags.html\">Using Cost Allocation Tags</a>\n</ul>\n<br>\n<span style='color: #AF69EE'>VERIFIED</span> indicates the presence of the columns in your CUR. <span style='color: red'>FAILED</span> indicates the absence of these columns, and as a result, certain visuals in the dashboard may not function as expected.  If this is a new CUR it may take 24 hours for column data to populate.",
-            "mode": "html"
-          },
-          "pluginVersion": "9.4.7",
-          "targets": [
-            {
-              "datasource": {
-                "type": "grafana-athena-datasource",
-                "uid": "${DS_COAST-2023-09-19}"
-              },
-              "refId": "A"
-            }
-          ],
-          "title": " ",
-          "type": "text"
-        },
-        {
-          "datasource": {
-            "type": "grafana-athena-datasource",
-            "uid": "${DS_COAST-2023-09-19}"
-          },
-          "description": "This table will display TRUE if the required savings plans, reservation and cost allocation columns exist within your dataset.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
-              "custom": {
-                "align": "auto",
-                "cellOptions": {
-                  "type": "color-text"
-                },
-                "inspect": false
-              },
-              "mappings": [
-                {
-                  "options": {
-                    "FAILED": {
-                      "color": "semi-dark-red",
-                      "index": 1
-                    },
-                    "VERIFIED": {
-                      "color": "semi-dark-purple",
-                      "index": 0
-                    }
-                  },
-                  "type": "value"
-                }
-              ],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 12,
-            "y": 10
-          },
-          "id": 59,
-          "options": {
-            "footer": {
-              "countRows": false,
-              "fields": "",
-              "reducer": [
-                "sum"
-              ],
-              "show": false
-            },
-            "showHeader": true
-          },
-          "pluginVersion": "9.4.7",
-          "targets": [
-            {
-              "connectionArgs": {
-                "catalog": "__default",
-                "database": "__default",
-                "region": "__default",
-                "resultReuseEnabled": false,
-                "resultReuseMaxAgeInMinutes": 60
-              },
-              "datasource": {
-                "type": "grafana-athena-datasource",
-                "uid": "${DS_COAST-2023-09-19}"
-              },
-              "format": 1,
-              "rawSQL": "with user_tag_columns as ( -- count cost allocation tags\nSELECT \nCOUNT(*) OVER (PARTITION BY column_name) AS user_tag_column_count\nFROM information_schema.columns\nWHERE \ntable_name = '$CurTable'\nAND column_name LIKE 'resource_tags_user_%'  \n),\n\nresource_columns_query as ( -- check for savings plans column\nSELECT \nCOUNT(*) OVER (PARTITION BY column_name) AS resource_column_count\nFROM information_schema.columns\nWHERE \ntable_name = '$CurTable'\nAND column_name = 'line_item_resource_id'  \n)\n\nSELECT \nCASE\n    WHEN (SELECT SUM(user_tag_column_count) FROM user_tag_columns) > 0 THEN 'VERIFIED' ELSE 'FAILED' \nEND AS cost_allocation_tags,\nCASE \n    WHEN (SELECT SUM(resource_column_count) FROM resource_columns_query) > 0 THEN 'VERIFIED' ELSE 'FAILED' \nEND AS resource_id_columns",
-              "refId": "A"
-            }
-          ],
-          "title": "CUR Columns Validator",
-          "type": "table"
-        }
-      ],
+      "panels": [],
       "title": "Instructions",
       "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "grafana-athena-datasource",
+        "uid": "${DS_COAST-2023-09-19}"
+      },
+      "description": "",
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 1
+      },
+      "id": 15,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "<span style='color: #AF69EE;font-size:20px'>Auto Scaling Dashboard</span>\n<p>\nCOAST is a collection of customizable Amazon Managed Grafana\ndashboards, offering both a high-level overview and detailed\nservice-specific insights based on the AWS Cost and Usage Report (CUR).\nDashboards cater to executive leadership, FinOps Practitioners, and DevOps/Engineering.\n</p><p>\nThe <span style='color: #AF69EE'>Auto Scaling Dashboard</span> is designed for specific workloads, leveraging <span style='color: #FF9900'>CloudWatch</span> metrics and <span style='color: #FF9900'>Cost and Usage Report (CUR)</span> data to present comprehensive visualizations. It includes vital components such as Auto Scaling Groups (ASG), Load Balancers, NAT Gateways, and EC2 Instances that operate within the ASG.\n</p><p>\nFor any inquiries or further assistance in interpreting the data or utilizing the dashboard's features, please contact your assigned Cloud Financial Analyst or FinOps Manager for guidance and support.\n</p>\n",
+        "mode": "html"
+      },
+      "pluginVersion": "9.4.7",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${DS_COAST-2023-09-19}"
+          },
+          "refId": "A"
+        }
+      ],
+      "title": " ",
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "grafana-athena-datasource",
+        "uid": "${DS_COAST-2023-09-19}"
+      },
+      "description": "",
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 1
+      },
+      "id": 17,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "<div style='font-size: 18px'>\nHow to Utilize this Dashboard\n</div>\nFor additional instructions see the <a href=\"https://github.com/aws-samples/coast-grafana-cost-intelligence-dashboards/tree/main/grafana_dashboards/auto_scaling\" target=\"_blank\">Github Readme file</a>.<br><br>\n\nTo make the most of the <span style='color: #AF69EE'>Autoscaling Dashboard</span>, input the following parameters in the top parameter menu:\n<br><br>\n\n<ol>\n<li>Region: Select your region (note in the beta version of this dashboard only us-east-1 is supported).</li>\n\n<li>ASG Name: Fill in the name of your Auto Scaling Group (ASG).  The name is available on the ASG details page under \"Group Details\".</li>\n\n<li>Tags: Select the tag key for your resources.  The tag values will populate once the tag key is selected. The values for this drop down come from CUR with a lookback period of 3 days.</li>\n\n<li>Load Balancers: This drop down is populated automtically once you select your tag.  The values for this drop down come from CUR with a lookback period of 3 days.</li>\n\n<li>Nat Gateways: This drop down is populated automtically once you select your tag.  The values for this drop down come from CUR with a lookback period of 3 days.</li>\n\n<li>Granularity: This value is used only in CUR querys to smooth out data based on month, week, day or hour.  To match Cloudwatch, select hour.</li>\n</ol>\n",
+        "mode": "html"
+      },
+      "pluginVersion": "9.4.7",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${DS_COAST-2023-09-19}"
+          },
+          "refId": "A"
+        }
+      ],
+      "title": " ",
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "grafana-athena-datasource",
+        "uid": "${DS_COAST-2023-09-19}"
+      },
+      "description": "",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 10
+      },
+      "id": 60,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "The <span style='color: #AF69EE'>Required Columns Validator</span> evaluates your CUR dataset to confirm the presence of essential columns. For the dashboard to operate accurately, the CUR dataset must include columns for:\n<br><br>\n<ul>\n  <li>Resource IDs - </li>Resource IDs rows in CUR help deep dive cost at the resource ARNs layer.  To setup your CUR with resource IDs see <a href=\"https://docs.aws.amazon.com/cur/latest/userguide/cur-create.html\">Creating Cost and Usage Report</a>\n  <li>Cost Allocation Tags - Defining a cost allocation tag results in its persistence in your CUR dataset. For our queries to function correctly, it is imperative to have at least one cost allocation tag enabled.  See <a href=\"https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/cost-alloc-tags.html\">Using Cost Allocation Tags</a>\n</ul>\n<br>\n<span style='color: #AF69EE'>VERIFIED</span> indicates the presence of the columns in your CUR. <span style='color: red'>FAILED</span> indicates the absence of these columns, and as a result, certain visuals in the dashboard may not function as expected.  If this is a new CUR it may take 24 hours for column data to populate.",
+        "mode": "html"
+      },
+      "pluginVersion": "9.4.7",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${DS_COAST-2023-09-19}"
+          },
+          "refId": "A"
+        }
+      ],
+      "title": " ",
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "grafana-athena-datasource",
+        "uid": "${DS_COAST-2023-09-19}"
+      },
+      "description": "This table will display TRUE if the required savings plans, reservation and cost allocation columns exist within your dataset.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "color-text"
+            },
+            "inspect": false
+          },
+          "mappings": [
+            {
+              "options": {
+                "FAILED": {
+                  "color": "semi-dark-red",
+                  "index": 1
+                },
+                "VERIFIED": {
+                  "color": "semi-dark-purple",
+                  "index": 0
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 10
+      },
+      "id": 59,
+      "options": {
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "9.4.7",
+      "targets": [
+        {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${DS_COAST-2023-09-19}"
+          },
+          "format": 1,
+          "rawSQL": "with user_tag_columns as ( -- count cost allocation tags\nSELECT \nCOUNT(*) OVER (PARTITION BY column_name) AS user_tag_column_count\nFROM information_schema.columns\nWHERE \ntable_name = '$CurTable'\nAND column_name LIKE 'resource_tags_user_%'  \n),\n\nresource_columns_query as ( -- check for savings plans column\nSELECT \nCOUNT(*) OVER (PARTITION BY column_name) AS resource_column_count\nFROM information_schema.columns\nWHERE \ntable_name = '$CurTable'\nAND column_name = 'line_item_resource_id'  \n)\n\nSELECT \nCASE\n    WHEN (SELECT SUM(user_tag_column_count) FROM user_tag_columns) > 0 THEN 'VERIFIED' ELSE 'FAILED' \nEND AS cost_allocation_tags,\nCASE \n    WHEN (SELECT SUM(resource_column_count) FROM resource_columns_query) > 0 THEN 'VERIFIED' ELSE 'FAILED' \nEND AS resource_id_columns",
+          "refId": "A"
+        }
+      ],
+      "title": "CUR Columns Validator",
+      "type": "table"
     },
     {
       "collapsed": true,
@@ -330,7 +329,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 1
+        "y": 18
       },
       "id": 28,
       "panels": [
@@ -399,8 +398,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "#5d5d5d",
@@ -447,8 +445,7 @@
                       "mode": "absolute",
                       "steps": [
                         {
-                          "color": "super-light-green",
-                          "value": null
+                          "color": "super-light-green"
                         },
                         {
                           "color": "red",
@@ -554,8 +551,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "#5d5d5d",
@@ -602,8 +598,7 @@
                       "mode": "percentage",
                       "steps": [
                         {
-                          "color": "super-light-green",
-                          "value": null
+                          "color": "super-light-green"
                         },
                         {
                           "color": "red",
@@ -709,8 +704,7 @@
                 "mode": "percentage",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "#5d5d5d",
@@ -757,8 +751,7 @@
                       "mode": "percentage",
                       "steps": [
                         {
-                          "color": "super-light-green",
-                          "value": null
+                          "color": "super-light-green"
                         },
                         {
                           "color": "red",
@@ -864,8 +857,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "#5d5d5d",
@@ -912,8 +904,7 @@
                       "mode": "percentage",
                       "steps": [
                         {
-                          "color": "super-light-green",
-                          "value": null
+                          "color": "super-light-green"
                         },
                         {
                           "color": "red",
@@ -1056,8 +1047,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -1197,8 +1187,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -1315,8 +1304,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -1391,7 +1379,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 2
+        "y": 19
       },
       "id": 11,
       "panels": [
@@ -1517,14 +1505,14 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 11
+            "y": 3
           },
           "id": 6,
           "links": [
             {
               "targetBlank": true,
               "title": "Cloudwatch",
-              "url": "https://$regions.console.aws.amazon.com/cloudwatch/home?region=$regions#metricsV2?graph=~(view~'timeSeries~stacked~false~region~'us-east-1~start~'-PT168H~end~'P0D~metrics~(~(~'AWS*2fAutoScaling~'GroupDesiredCapacity~'AutoScalingGroupName~'$ASGName)~(~'.~'GroupTotalCapacity~'.~'.)))&query=~'*7bAWS*2fAutoScaling*2cAutoScalingGroupName*7d*20$ASGName"
+              "url": "https://$Regions.console.aws.amazon.com/cloudwatch/home?region=$Regions#metricsV2?graph=~(view~'timeSeries~stacked~false~region~'us-east-1~start~'-PT168H~end~'P0D~metrics~(~(~'AWS*2fAutoScaling~'GroupDesiredCapacity~'AutoScalingGroupName~'$ASGName)~(~'.~'GroupTotalCapacity~'.~'.)))&query=~'*7bAWS*2fAutoScaling*2cAutoScalingGroupName*7d*20$ASGName"
             }
           ],
           "options": {
@@ -1557,7 +1545,7 @@
               },
               "format": 1,
               "hide": false,
-              "rawSQL": "-- When troubleshooting a query, it helps to use the Query Inspector button and copy the query into Athena \nSELECT\n  date_trunc('$Granularity', line_item_usage_start_date),\n  SUM(line_item_unblended_cost) as Cost\nFROM $CurTable\nWHERE\n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_product_code = 'AmazonEC2'\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_operation = 'RunInstances'\n  AND line_item_usage_type Like '%Usage%'\n  --and product_location in ($Regions) -- future use\n  --AND line_item_usage_account_id IN ($LinkedAccounts) --future use\n  --AND $CurTable .line_item_product_code in ($Services) --future use\nGROUP BY 1",
+              "rawSQL": "-- When troubleshooting a query, it helps to use the Query Inspector button and copy the query into Athena \nSELECT\n  date_trunc('$Granularity', line_item_usage_start_date),\n  SUM(line_item_unblended_cost) as Cost\nFROM $CurTable\nWHERE\n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_product_code = 'AmazonEC2'\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_operation = 'RunInstances'\n  AND line_item_usage_type Like '%Usage%'\n  AND product_region in ($Regions) \n  --AND line_item_usage_account_id IN ($LinkedAccounts) --future use\n  --AND $CurTable .line_item_product_code in ($Services) --future use\nGROUP BY 1",
               "refId": "CUR Compute Query"
             },
             {
@@ -1709,14 +1697,14 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 11
+            "y": 3
           },
           "id": 9,
           "links": [
             {
               "targetBlank": true,
               "title": "Cloudwatch",
-              "url": "https://$regions.console.aws.amazon.com/cloudwatch/home?region=$regions#metricsV2?graph=~(view~'timeSeries~stacked~false~region~'us-east-1~start~'-PT168H~end~'P0D~metrics~(~(~'AWS*2fEC2~'CPUUtilization~'AutoScalingGroupName~'$ASGName)))&query=~'*7bAWS*2fEC2*2cAutoScalingGroupName*7d*20$ASGName"
+              "url": "https://$Regions.console.aws.amazon.com/cloudwatch/home?region=$Regions#metricsV2?graph=~(view~'timeSeries~stacked~false~region~'us-east-1~start~'-PT168H~end~'P0D~metrics~(~(~'AWS*2fEC2~'CPUUtilization~'AutoScalingGroupName~'$ASGName)))&query=~'*7bAWS*2fEC2*2cAutoScalingGroupName*7d*20$ASGName"
             }
           ],
           "options": {
@@ -1749,7 +1737,7 @@
               },
               "format": 1,
               "hide": false,
-              "rawSQL": "-- When troubleshooting a query, it helps to use the Query Inspector button and copy the query into Athena \nSELECT\n  date_trunc('$Granularity', line_item_usage_start_date),\n  SUM(line_item_unblended_cost) as cost\nfrom $CurTable\nWHERE\n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_product_code = 'AmazonEC2'\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_operation = 'RunInstances'\n  AND line_item_usage_type Like '%Usage%'\n  --AND product_location in ($Regions) --future use\n  --AND line_item_usage_account_id IN ($LinkedAccounts) --future use\n  --AND $CurTable .line_item_product_code in ($Services) -- future use\nGROUP BY 1\nORDER BY 1",
+              "rawSQL": "-- When troubleshooting a query, it helps to use the Query Inspector button and copy the query into Athena \nSELECT\n  date_trunc('$Granularity', line_item_usage_start_date),\n  SUM(line_item_unblended_cost) as cost\nfrom $CurTable\nWHERE\n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_product_code = 'AmazonEC2'\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_operation = 'RunInstances'\n  AND line_item_usage_type Like '%Usage%'\n  AND product_region in ($Regions) \n  --AND line_item_usage_account_id IN ($LinkedAccounts) --future use\n  --AND $CurTable .line_item_product_code in ($Services) -- future use\nGROUP BY 1\nORDER BY 1",
               "refId": "CUR Compute Query"
             },
             {
@@ -1879,14 +1867,14 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 19
+            "y": 11
           },
           "id": 20,
           "links": [
             {
               "targetBlank": true,
               "title": "Cloudwatch",
-              "url": "https://$regions.console.aws.amazon.com/cloudwatch/home?region=$regions#metricsV2?graph=~(view~'timeSeries~stacked~false~region~'us-east-1~start~'-PT168H~end~'P0D~metrics~(~(~'AWS*2fEC2~'StatusCheckFailed~'AutoScalingGroupName~'$ASGName)))&query=~'*7bAWS*2fEC2*2cAutoScalingGroupName*7d*20$ASGName"
+              "url": "https://$Regions.console.aws.amazon.com/cloudwatch/home?region=$Regions#metricsV2?graph=~(view~'timeSeries~stacked~false~region~'us-east-1~start~'-PT168H~end~'P0D~metrics~(~(~'AWS*2fEC2~'StatusCheckFailed~'AutoScalingGroupName~'$ASGName)))&query=~'*7bAWS*2fEC2*2cAutoScalingGroupName*7d*20$ASGName"
             }
           ],
           "options": {
@@ -1919,7 +1907,7 @@
               },
               "format": 1,
               "hide": false,
-              "rawSQL": "-- When troubleshooting a query, it helps to use the Query Inspector button and copy the query into Athena\n-- To view resource names add in line_item_resource_id to the SELECT and GROUP BY statements\nSELECT\n  date_trunc('$Granularity', line_item_usage_start_date),\n  SUM(line_item_unblended_cost) as cost\nfrom $CurTable\nWHERE\n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_product_code = 'AmazonEC2'\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_operation = 'RunInstances'\n  AND line_item_usage_type Like '%Usage%'\n  --AND product_location in ($Regions)\n  --AND line_item_usage_account_id IN ($LinkedAccounts)\n  --AND $CurTable .line_item_product_code in ($Services)\nGROUP BY 1\nORDER BY 1",
+              "rawSQL": "-- When troubleshooting a query, it helps to use the Query Inspector button and copy the query into Athena\n-- To view resource names add in line_item_resource_id to the SELECT and GROUP BY statements\nSELECT\n  date_trunc('$Granularity', line_item_usage_start_date),\n  SUM(line_item_unblended_cost) as cost\nfrom $CurTable\nWHERE\n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_product_code = 'AmazonEC2'\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_operation = 'RunInstances'\n  AND line_item_usage_type Like '%Usage%'\n  AND product_region in ($Regions) \n  --AND line_item_usage_account_id IN ($LinkedAccounts)\n  --AND $CurTable .line_item_product_code in ($Services)\nGROUP BY 1\nORDER BY 1",
               "refId": "CUR Compute Query"
             },
             {
@@ -2049,14 +2037,14 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 19
+            "y": 11
           },
           "id": 21,
           "links": [
             {
               "targetBlank": true,
               "title": "Cloudwatch",
-              "url": "https://$regions.console.aws.amazon.com/cloudwatch/home?region=us-east-1#metricsV2?graph=~(view~'timeSeries~stacked~false~region~'$regions~start~'-PT168H~end~'P0D~metrics~(~(~'AWS*2fEC2~'CPUCreditBalance~'AutoScalingGroupName~'$ASGName)~(~'.~'CPUCreditUsage~'.~'.)))&query=~'*7bAWS*2fEC2*2cAutoScalingGroupName*7d*20$ASGName"
+              "url": "https://$Regions.console.aws.amazon.com/cloudwatch/home?region=us-east-1#metricsV2?graph=~(view~'timeSeries~stacked~false~region~'$Regions~start~'-PT168H~end~'P0D~metrics~(~(~'AWS*2fEC2~'CPUCreditBalance~'AutoScalingGroupName~'$ASGName)~(~'.~'CPUCreditUsage~'.~'.)))&query=~'*7bAWS*2fEC2*2cAutoScalingGroupName*7d*20$ASGName"
             }
           ],
           "options": {
@@ -2089,7 +2077,7 @@
               },
               "format": 1,
               "hide": false,
-              "rawSQL": "-- When troubleshooting a query, it helps to use the Query Inspector button and copy the query into Athena\n-- To view resource names add in line_item_resource_id to the SELECT and GROUP BY statements\nSELECT\n  date_trunc('$Granularity', line_item_usage_start_date),\n  SUM(line_item_unblended_cost) as cost\nfrom $CurTable\nWHERE\n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_product_code = 'AmazonEC2'\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_operation = 'RunInstances'\n  AND line_item_usage_type Like '%Usage%'\n  --AND product_location in ($Regions) --future use\n  --AND line_item_usage_account_id IN ($LinkedAccounts) -- future use\n  --AND $CurTable .line_item_product_code in ($Services) -- future use\nGROUP BY 1\nORDER BY 1",
+              "rawSQL": "-- When troubleshooting a query, it helps to use the Query Inspector button and copy the query into Athena\n-- To view resource names add in line_item_resource_id to the SELECT and GROUP BY statements\nSELECT\n  date_trunc('$Granularity', line_item_usage_start_date),\n  SUM(line_item_unblended_cost) as cost\nfrom $CurTable\nWHERE\n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_product_code = 'AmazonEC2'\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_operation = 'RunInstances'\n  AND line_item_usage_type Like '%Usage%'\n  AND product_region in ($Regions) \n  --AND line_item_usage_account_id IN ($LinkedAccounts) -- future use\n  --AND $CurTable .line_item_product_code in ($Services) -- future use\nGROUP BY 1\nORDER BY 1",
               "refId": "Compute Cost"
             },
             {
@@ -2152,7 +2140,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 3
+        "y": 20
       },
       "id": 24,
       "panels": [
@@ -2255,7 +2243,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 36
+            "y": 4
           },
           "id": 22,
           "options": {
@@ -2288,7 +2276,7 @@
               },
               "format": 1,
               "hide": false,
-              "rawSQL": "-- When troubleshooting a query, it helps to use the Query Inspector button and copy the query into Athena\n-- To view resource names add in line_item_resource_id to the SELECT and GROUP BY statements\nSELECT \n  date_trunc('$Granularity', line_item_usage_start_date),\n  SUM(line_item_unblended_cost) as cost\nFROM\n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_product_code = 'AmazonEC2'\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  -- AND line_item_operation = 'RunInstances'\n  AND line_item_usage_type LIKE '%AWS%Bytes%'\nGROUP BY \n1\nHAVING SUM(line_item_unblended_cost) > 0\n\n",
+              "rawSQL": "-- When troubleshooting a query, it helps to use the Query Inspector button and copy the query into Athena\n-- To view resource names add in line_item_resource_id to the SELECT and GROUP BY statements\nSELECT \n  date_trunc('$Granularity', line_item_usage_start_date),\n  SUM(line_item_unblended_cost) as cost\nFROM\n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_product_code = 'AmazonEC2'\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  -- AND line_item_operation = 'RunInstances'\n  AND line_item_usage_type LIKE '%AWS%Bytes%'\n  AND product_region in ($Regions) \nGROUP BY \n1\nHAVING SUM(line_item_unblended_cost) > 0\n\n",
               "refId": "EC2 Compute Cost Query"
             },
             {
@@ -2417,7 +2405,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 36
+            "y": 4
           },
           "id": 41,
           "options": {
@@ -2450,7 +2438,7 @@
               },
               "format": 1,
               "hide": false,
-              "rawSQL": "-- When troubleshooting a query, it helps to use the Query Inspector button and copy the query into Athena\n-- To view resource names add in line_item_resource_id to the SELECT and GROUP BY statements\nSELECT \n  date_trunc('$Granularity', line_item_usage_start_date),\n  SUM(line_item_unblended_cost) as cost\nFROM\n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_product_code = 'AmazonEC2'\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  -- AND line_item_operation = 'RunInstances'\n  AND line_item_usage_type LIKE '%AWS%Bytes%'\nGROUP BY \n1\nHAVING SUM(line_item_unblended_cost) > 0\n\n",
+              "rawSQL": "-- When troubleshooting a query, it helps to use the Query Inspector button and copy the query into Athena\n-- To view resource names add in line_item_resource_id to the SELECT and GROUP BY statements\nSELECT \n  date_trunc('$Granularity', line_item_usage_start_date),\n  SUM(line_item_unblended_cost) as cost\nFROM\n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_product_code = 'AmazonEC2'\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  -- AND line_item_operation = 'RunInstances'\n  AND line_item_usage_type LIKE '%AWS%Bytes%'\n  AND product_region in ($Regions) \nGROUP BY \n1\nHAVING SUM(line_item_unblended_cost) > 0\n\n",
               "refId": "EC2 Compute Cost Query"
             },
             {
@@ -2490,7 +2478,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 4
+        "y": 21
       },
       "id": 48,
       "panels": [
@@ -2608,7 +2596,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 37
+            "y": 5
           },
           "id": 49,
           "options": {
@@ -2641,7 +2629,7 @@
               },
               "format": 1,
               "hide": false,
-              "rawSQL": "-- When troubleshooting a query, it helps to use the Query Inspector button and copy the query into Athena\n-- To view resource names add in line_item_resource_id to the SELECT and GROUP BY statements\nSELECT \n  date_trunc('$Granularity', line_item_usage_start_date),\n  SUM(line_item_unblended_cost) as cost\nFROM\n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_product_code = 'AmazonEC2'\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_usage_type Like '%VolumeUsage%'\nGROUP BY \n1\nHAVING SUM(line_item_unblended_cost) > 0",
+              "rawSQL": "-- When troubleshooting a query, it helps to use the Query Inspector button and copy the query into Athena\n-- To view resource names add in line_item_resource_id to the SELECT and GROUP BY statements\nSELECT \n  date_trunc('$Granularity', line_item_usage_start_date),\n  SUM(line_item_unblended_cost) as cost\nFROM\n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_product_code = 'AmazonEC2'\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_usage_type Like '%VolumeUsage%'\n  AND product_region in ($Regions) \nGROUP BY \n1\nHAVING SUM(line_item_unblended_cost) > 0",
               "refId": "EBS Volume Cost"
             },
             {
@@ -2808,7 +2796,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 37
+            "y": 5
           },
           "id": 50,
           "options": {
@@ -2841,7 +2829,7 @@
               },
               "format": 1,
               "hide": false,
-              "rawSQL": "-- When troubleshooting a query, it helps to use the Query Inspector button and copy the query into Athena\n-- To view resource names add in line_item_resource_id to the SELECT and GROUP BY statements\nSELECT \n  date_trunc('$Granularity', line_item_usage_start_date),\n  SUM(line_item_unblended_cost) as cost\nFROM\n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_product_code = 'AmazonEC2'\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_usage_type Like '%VolumeUsage%'\nGROUP BY \n1\nHAVING SUM(line_item_unblended_cost) > 0",
+              "rawSQL": "-- When troubleshooting a query, it helps to use the Query Inspector button and copy the query into Athena\n-- To view resource names add in line_item_resource_id to the SELECT and GROUP BY statements\nSELECT \n  date_trunc('$Granularity', line_item_usage_start_date),\n  SUM(line_item_unblended_cost) as cost\nFROM\n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_product_code = 'AmazonEC2'\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_usage_type Like '%VolumeUsage%'\n  AND product_region in ($Regions) \nGROUP BY \n1\nHAVING SUM(line_item_unblended_cost) > 0",
               "refId": "EBS Volume Cost"
             },
             {
@@ -2904,7 +2892,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 5
+        "y": 22
       },
       "id": 38,
       "panels": [
@@ -3012,7 +3000,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 22
+            "y": 6
           },
           "id": 40,
           "links": [
@@ -3052,7 +3040,7 @@
               },
               "format": 1,
               "hide": false,
-              "rawSQL": "-- When troubleshooting a query, it helps to use the Query Inspector button and copy the query into Athena\n-- To view resource names add in line_item_resource_id to the SELECT and GROUP BY statements\nSELECT\ndate_trunc('$Granularity', line_item_usage_start_date),\nSUM(line_item_unblended_cost) as cost\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date) \n  AND line_item_product_code = 'AWSELB'\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND (line_item_usage_type = 'LCUUsage' OR line_item_usage_type = 'NLCUUsage')\n  AND line_item_operation LIKE '%LoadBalancing%'\n  AND line_item_resource_id LIKE CONCAT('%', '$LBName')\n  GROUP BY\n  1\n  HAVING SUM(line_item_unblended_cost) > 0 \n",
+              "rawSQL": "-- When troubleshooting a query, it helps to use the Query Inspector button and copy the query into Athena\n-- To view resource names add in line_item_resource_id to the SELECT and GROUP BY statements\nSELECT\ndate_trunc('$Granularity', line_item_usage_start_date),\nSUM(line_item_unblended_cost) as cost\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date) \n  AND line_item_product_code = 'AWSELB'\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND (line_item_usage_type = 'LCUUsage' OR line_item_usage_type = 'NLCUUsage')\n  AND line_item_operation LIKE '%LoadBalancing%'\n  AND line_item_resource_id LIKE CONCAT('%', '$LBName')\n  AND product_region in ($Regions) \n  GROUP BY\n  1\n  HAVING SUM(line_item_unblended_cost) > 0 \n",
               "refId": "LCUUsage"
             },
             {
@@ -3187,7 +3175,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 22
+            "y": 6
           },
           "id": 39,
           "links": [
@@ -3227,7 +3215,7 @@
               },
               "format": 1,
               "hide": false,
-              "rawSQL": "-- When troubleshooting a query, it helps to use the Query Inspector button and copy the query into Athena\n-- To view resource names add in line_item_resource_id to the SELECT and GROUP BY statements\nSELECT\ndate_trunc('$Granularity', line_item_usage_start_date),\nSUM(line_item_unblended_cost) as cost\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date) \n  AND line_item_product_code = 'AWSELB'\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_usage_type = 'LoadBalancerUsage' \n  AND line_item_operation LIKE '%LoadBalancing%'\n  AND line_item_resource_id LIKE CONCAT('%', '$LBName')\n  GROUP BY\n  1\n  HAVING SUM(line_item_unblended_cost) > 0 \n",
+              "rawSQL": "-- When troubleshooting a query, it helps to use the Query Inspector button and copy the query into Athena\n-- To view resource names add in line_item_resource_id to the SELECT and GROUP BY statements\nSELECT\ndate_trunc('$Granularity', line_item_usage_start_date),\nSUM(line_item_unblended_cost) as cost\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date) \n  AND line_item_product_code = 'AWSELB'\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_usage_type = 'LoadBalancerUsage' \n  AND line_item_operation LIKE '%LoadBalancing%'\n  AND line_item_resource_id LIKE CONCAT('%', '$LBName')\n  AND product_region in ($Regions) \n  GROUP BY\n  1\n  HAVING SUM(line_item_unblended_cost) > 0 \n",
               "refId": "LCUUsage"
             },
             {
@@ -3270,7 +3258,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 6
+        "y": 23
       },
       "id": 53,
       "panels": [
@@ -3378,7 +3366,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 15
+            "y": 7
           },
           "id": 51,
           "links": [
@@ -3418,7 +3406,7 @@
               },
               "format": 1,
               "hide": false,
-              "rawSQL": "-- When troubleshooting a query, it helps to use the Query Inspector button and copy the query into Athena\n-- To view resource names add in line_item_resource_id to the SELECT and GROUP BY statements\nSELECT\ndate_trunc('$Granularity', line_item_usage_start_date),\nSUM(line_item_unblended_cost) as cost\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date) \n  AND line_item_product_code = 'AmazonEC2'\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_usage_type = 'NatGateway-Bytes'\n  AND line_item_operation = 'NatGateway'\n  AND line_item_resource_id LIKE CONCAT('%', '$NGWName')\n  GROUP BY\n  1\n",
+              "rawSQL": "-- When troubleshooting a query, it helps to use the Query Inspector button and copy the query into Athena\n-- To view resource names add in line_item_resource_id to the SELECT and GROUP BY statements\nSELECT\ndate_trunc('$Granularity', line_item_usage_start_date),\nSUM(line_item_unblended_cost) as cost\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date) \n  AND line_item_product_code = 'AmazonEC2'\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_usage_type = 'NatGateway-Bytes'\n  AND line_item_operation = 'NatGateway'\n  AND line_item_resource_id LIKE CONCAT('%', '$NGWName')\n  AND product_region in ($Regions) \n  GROUP BY\n  1\n",
               "refId": "NGWTraffic"
             },
             {
@@ -3558,7 +3546,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 15
+            "y": 7
           },
           "id": 54,
           "links": [
@@ -3598,7 +3586,7 @@
               },
               "format": 1,
               "hide": false,
-              "rawSQL": "-- When troubleshooting a query, it helps to use the Query Inspector button and copy the query into Athena\n-- To view resource names add in line_item_resource_id to the SELECT and GROUP BY statements\nSELECT\ndate_trunc('$Granularity', line_item_usage_start_date),\nSUM(line_item_unblended_cost) as cost\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date) \n  AND line_item_product_code = 'AmazonEC2'\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_usage_type = 'NatGateway-Hours'\n  AND line_item_operation = 'NatGateway'\n  AND line_item_resource_id LIKE CONCAT('%', '$NGWName')\n  GROUP BY\n  1\n",
+              "rawSQL": "-- When troubleshooting a query, it helps to use the Query Inspector button and copy the query into Athena\n-- To view resource names add in line_item_resource_id to the SELECT and GROUP BY statements\nSELECT\ndate_trunc('$Granularity', line_item_usage_start_date),\nSUM(line_item_unblended_cost) as cost\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date) \n  AND line_item_product_code = 'AmazonEC2'\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_usage_type = 'NatGateway-Hours'\n  AND line_item_operation = 'NatGateway'\n  AND line_item_resource_id LIKE CONCAT('%', '$NGWName')\n  AND product_region in ($Regions) \n  GROUP BY\n  1\n",
               "refId": "NGWHourly"
             },
             {
@@ -3641,7 +3629,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 7
+        "y": 24
       },
       "id": 83,
       "panels": [
@@ -3654,7 +3642,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 49
+            "y": 8
           },
           "id": 71,
           "options": {
@@ -3703,7 +3691,7 @@
             "h": 7,
             "w": 24,
             "x": 0,
-            "y": 58
+            "y": 17
           },
           "id": 81,
           "options": {
@@ -3753,7 +3741,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 8
+        "y": 25
       },
       "id": 90,
       "panels": [
@@ -3822,20 +3810,27 @@
       {
         "current": {},
         "datasource": {
-          "type": "cloudwatch",
-          "uid": "${DS_CLOUDWATCH}"
+          "type": "grafana-athena-datasource",
+          "uid": "${DS_COAST-2023-09-19}"
         },
         "definition": "",
+        "description": "Return all regions within the CUR ",
         "hide": 0,
         "includeAll": true,
         "label": "Regions",
         "multi": true,
-        "name": "regions",
+        "name": "Regions",
         "options": [],
         "query": {
-          "queryType": "regions",
-          "refId": "CloudWatchVariableQueryEditor-VariableQuery",
-          "region": "default"
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "format": 1,
+          "rawSQL": "SELECT DISTINCT(product_region) from $CurTable;"
         },
         "refresh": 1,
         "regex": "",
@@ -3887,7 +3882,7 @@
             "resultReuseMaxAgeInMinutes": 60
           },
           "format": 1,
-          "rawSQL": "SELECT \n  DISTINCT(line_item_resource_id)\nFROM\n  $CurTable\nWHERE \n  line_item_usage_start_date >= (current_date - interval '3' day) --lookback period\n  AND line_item_product_code = 'AWSELB'\n  AND resource_tags_user_project IN ($TagValue)\n"
+          "rawSQL": "SELECT \n  DISTINCT(line_item_resource_id)\nFROM\n  $CurTable\nWHERE \n  line_item_usage_start_date >= (current_date - interval '3' day) --lookback period\n  AND line_item_product_code = 'AWSELB'\n  AND resource_tags_user_$TagKey IN ($TagValue)\n"
         },
         "refresh": 1,
         "regex": "/.*loadbalancer\\/([^]*).*/",
@@ -3948,7 +3943,7 @@
             "resultReuseMaxAgeInMinutes": 60
           },
           "format": 1,
-          "rawSQL": "show columns from $CurTable;"
+          "rawSQL": "SHOW COLUMNS FROM $CurTable;"
         },
         "refresh": 1,
         "regex": "/resource_tags_user_(.+)/",
@@ -3964,7 +3959,7 @@
         },
         "definition": "",
         "hide": 0,
-        "includeAll": false,
+        "includeAll": true,
         "label": "Tag Value",
         "multi": true,
         "name": "TagValue",
@@ -3978,7 +3973,7 @@
             "resultReuseMaxAgeInMinutes": 60
           },
           "format": 1,
-          "rawSQL": "select DISTINCT(resource_tags_user_$TagKey) \nFROM $CurTable;"
+          "rawSQL": "SELECT DISTINCT(resource_tags_user_$TagKey) FROM $CurTable;"
         },
         "refresh": 1,
         "regex": "",
@@ -4041,6 +4036,7 @@
           "uid": "${DS_COAST-2023-09-19}"
         },
         "definition": "",
+        "description": "Linked accounts pulled from CUR",
         "hide": 2,
         "includeAll": true,
         "label": "Linked Accounts",
@@ -4173,6 +4169,6 @@
   "timezone": "",
   "title": "Autoscaling Dashboard",
   "uid": "G9CQ3OpIzfda",
-  "version": 21,
+  "version": 8,
   "weekStart": ""
 }
