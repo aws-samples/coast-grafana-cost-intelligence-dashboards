@@ -13,8 +13,7 @@ To effectively utilize this dashboard, it necessitates the specification of your
 Currently the COAST Autoscaling Dashboard is in a proof of concept phase.  It has been certified for workloads which are operating in the same account same region as the COAST deployment.  We are working to make the COAST Autoscaling Dashboard operational across regions and across accounts.
 
 ## Layout
-```
-mermaid
+```mermaid
 block-beta
 
   block:Instructions:4
