@@ -19,9 +19,9 @@ The values for the NAT Gateway and Load Balancer menus will populate based on yo
 Currently the COAST Autoscaling Dashboard is in a proof of concept phase.  It has been certified for workloads which are operating in the same account same region as the COAST deployment.  We are working to make the COAST Autoscaling Dashboard operational across regions and across accounts.
 
 ## Layout
-Type: [unblended|amortized] - how are the costs displated unblended or amortized
-TagSupport: [Yes|No] -  If the panel requires tags
-DependsOn: If the panel depends on any menu selection items
+- Type: [unblended|amortized] How are the costs displated unblended or amortized
+- TagSupport: [Yes|No] If the panel requires tags
+- DependsOn: If the panel depends on any menu selection items
 
 ```mermaid
 block-beta
