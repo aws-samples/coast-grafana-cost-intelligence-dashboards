@@ -7,11 +7,11 @@ Parameters:
       Optional: Name of existing Cost and Usage (CUR) report to be utilized by COAST.  
       This CUR report should be configurated as parquet with a granularity of HOURLY.
     Default: "optional_change_if_report_exists"
-  DashboardURL:
+  DashboardUrlList:
     Type: String
-    Default: https://raw.githubusercontent.com/aws-samples/COAST/main/grafana_dashboards/coast_executive_dashboard_v0.0.1.json
+    Default: '["https://raw.githubusercontent.com/aws-samples/COAST/main/grafana_dashboards/coast_executive_dashboard_v0.0.1.json","https://raw.githubusercontent.com/aws-samples/coast-grafana-cost-intelligence-dashboards/main/grafana_dashboards/coast_engineering_dashboard_v0.0.1.json","https://raw.githubusercontent.com/aws-samples/coast-grafana-cost-intelligence-dashboards/main/grafana_dashboards/coast_finops_dashboard_v0.0.2.json"]'
     Description: URL of COAST Executive Dashboard to be imported. See https://github.com/aws-samples/COAST/blob/main/README.md for dashboard overviews.
-    AllowedPattern: 'https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&\/\/=]*).json'
+    AllowedPattern: '^\[\"https:\/\/raw\.githubusercontent\.com\/aws-samples\/COAST\/main\/grafana_dashboards\/coast_executive_dashboard_v0\.0\.1\.json\",\"https:\/\/raw\.githubusercontent\.com\/aws-samples\/coast-grafana-cost-intelligence-dashboards\/main\/grafana_dashboards\/coast_engineering_dashboard_v0\.0\.1\.json\",\"https:\/\/raw\.githubusercontent\.com\/aws-samples\/coast-grafana-cost-intelligence-dashboards\/main\/grafana_dashboards\/coast_finops_dashboard_v0\.0\.2\.json\"\]$'
   ReportingEnabled:
     Type: String
     Default: "yes"
@@ -26,7 +26,7 @@ Conditions:
 Resources:
   SendStatsCustomResource:
     Type: AWS::CloudFormation::CustomResource
-    Properties: 
+    Properties:   
       ServiceToken: !GetAtt SendReportingStatsFunction.Arn
       accountId: !Sub ${AWS::AccountId}
       awsRegion: !Sub ${AWS::Region}
@@ -1062,28 +1062,31 @@ Resources:
                   return self.grafana_api('DELETE','dashboards/uid/'+uid)
           def lambda_handler(event,context):
               print(json.dumps(event,indent=4))
+              params =event['ResourceProperties']['DashboardUrlList']
+              lst = json.loads(params)
               response_data={'Data': None}
               try:
-                  uid=event['PhysicalResourceId'] if 'PhysicalResourceId' in event else '0'
-                  ws=CoastGrafanaDashboard(dashboard_name=event['ResourceProperties']['DashboardName'],dashboard_url=event['ResourceProperties']['DashboardURL'],key_name=event['ResourceProperties']['GrafanaKey'],workspace_id=event['ResourceProperties']['GrafanaWorkspace'])
-                  if event['RequestType']=='Create':
-                      res=ws.create_dashboard()
-                  elif event['RequestType']=='Update':
-                      ws.delete_dashboard(uid)
-                      res=ws.create_dashboard()
-                  elif event['RequestType']=='Delete':
-                      res=ws.delete_dashboard(uid)
-                      cfnresponse.send(event,context,cfnresponse.SUCCESS,response_data)
-                  print('Status: '+str(res.status))
-                  print(res.data)
-                  if 'uid' in json.loads(res.data):
-                      dashboard_uid=str(json.loads(res.data)['uid']) 
-                  else:
-                      dashboard_uid='0'
-                  if res.status==200 or (event['RequestType']=='Delete' and uid=='0'):
-                      cfnresponse.send(event,context,cfnresponse.SUCCESS,response_data,dashboard_uid)
-                  else:
-                      cfnresponse.send(event,context,cfnresponse.FAILED,response_data,dashboard_uid)
+                  for dashboardUrl in lst:
+                    uid=event['PhysicalResourceId'] if 'PhysicalResourceId' in event else '0'
+                    ws=CoastGrafanaDashboard(dashboard_name=event['ResourceProperties']['DashboardName'],dashboard_url=str(dashboardUrl),key_name=event['ResourceProperties']['GrafanaKey'],workspace_id=event['ResourceProperties']['GrafanaWorkspace'])
+                    if event['RequestType']=='Create':
+                        res=ws.create_dashboard()
+                    elif event['RequestType']=='Update':
+                        ws.delete_dashboard(uid)
+                        res=ws.create_dashboard()
+                    elif event['RequestType']=='Delete':
+                        res=ws.delete_dashboard(uid)
+                        cfnresponse.send(event,context,cfnresponse.SUCCESS,response_data)
+                    print('Status: '+str(res.status))
+                    print(res.data)
+                    if 'uid' in json.loads(res.data):
+                       dashboard_uid=str(json.loads(res.data)['uid']) 
+                    else:
+                        dashboard_uid='0'
+                    if res.status==200 or (event['RequestType']=='Delete' and uid=='0'):
+                        cfnresponse.send(event,context,cfnresponse.SUCCESS,response_data,dashboard_uid)
+                    else:
+                        cfnresponse.send(event,context,cfnresponse.FAILED,response_data,dashboard_uid)
               except Exception as err:
                   print('Error:'+str(err))
                   cfnresponse.send(event,context,cfnresponse.FAILED,response_data,'0')
@@ -1108,7 +1111,7 @@ Resources:
     Properties:
       ServiceToken: !GetAtt COASTDashboardFunction.Arn
       DashboardName: !Sub 'COAST-${AWS::StackName}'
-      DashboardURL: !Ref DashboardURL
+      DashboardUrlList: !Ref DashboardUrlList
       DashboardDatasource: !Ref GrafanaDatasource
       GrafanaKey: !Ref AWS::StackName
       GrafanaWorkspace: !Ref GrafanaWorkspace
