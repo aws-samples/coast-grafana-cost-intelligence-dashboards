@@ -11,7 +11,6 @@ Parameters:
     Type: String
     Default: '["https://raw.githubusercontent.com/aws-samples/COAST/main/grafana_dashboards/persona_dashboards/finops/finops_dashboard_v1.json","https://raw.githubusercontent.com/aws-samples/COAST/main/grafana_dashboards/persona_dashboards/executive/executive_dashboard_v1.json","https://raw.githubusercontent.com/aws-samples/COAST/main/grafana_dashboards/persona_dashboards/executive/executive_dashboard_v1.json","https://raw.githubusercontent.com/aws-samples/COAST/main/grafana_dashboards/auto_scaling/auto_scaling_dashboard_v1.json"]'
     Description: URL of COAST Executive Dashboard to be imported. See https://github.com/aws-samples/COAST/blob/main/README.md for dashboard overviews.
-    AllowedPattern: '^\[\"https:\/\/raw\.githubusercontent\.com\/aws-samples\/COAST\/main\/grafana_dashboards\/coast_executive_dashboard_v0\.0\.1\.json\",\"https:\/\/raw\.githubusercontent\.com\/aws-samples\/coast-grafana-cost-intelligence-dashboards\/main\/grafana_dashboards\/coast_engineering_dashboard_v0\.0\.1\.json\",\"https:\/\/raw\.githubusercontent\.com\/aws-samples\/coast-grafana-cost-intelligence-dashboards\/main\/grafana_dashboards\/coast_finops_dashboard_v0\.0\.2\.json\"\]$'
   ReportingEnabled:
     Type: String
     Default: "yes"
