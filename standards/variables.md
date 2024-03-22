@@ -28,7 +28,7 @@ Include multi-value or All option
 **Query**:\
 ```SELECT DISTINCT(product_region) from $CurTable;```
 **Notes**: \
-Include multi-value or All option
+Include multi-value or All option in most dashboards.  Some dashboards require this varialbe to be single select.
 
 --\
 **Variable Name**: Services\

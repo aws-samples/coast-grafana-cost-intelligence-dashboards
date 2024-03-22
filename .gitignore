@@ -1,0 +1,5 @@
+.venv/
+*.sh
+*.psd
+*.py
+.DS_Store
