@@ -65,7 +65,7 @@ Do not include multi-value or All option
 **Label**:Tag Value\
 **Data source**: Athena CUR \
 **Query**:\
-```SELECT DISTINCT(resource_tags_user_$TagKey) FROM $CurTable;```
+```SELECT DISTINCT(resource_tags_user_$TagKey) FROM $CurTable WHERE resource_tags_user_$TagKey IS NOT NULL AND NOT resource_tags_user_$TagKey = '';```
 **Notes**: \
 Include multi-value or All option
 

@@ -2199,7 +2199,7 @@
             "resultReuseMaxAgeInMinutes": 60
           },
           "format": 1,
-          "rawSQL": "SELECT DISTINCT(resource_tags_user_$TagKey) \nFROM $CurTable;"
+          "rawSQL": "SELECT DISTINCT(resource_tags_user_$TagKey) FROM $CurTable WHERE resource_tags_user_$TagKey IS NOT NULL AND NOT resource_tags_user_$TagKey = '';"
         },
         "refresh": 1,
         "regex": "",
