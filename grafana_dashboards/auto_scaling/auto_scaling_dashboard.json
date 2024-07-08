@@ -41,13 +41,13 @@
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "9.4.7"
+      "version": "10.4.1"
     },
     {
       "type": "datasource",
       "id": "grafana-athena-datasource",
       "name": "Amazon Athena",
-      "version": "2.13.6"
+      "version": "2.17.0"
     },
     {
       "type": "panel",
@@ -151,7 +151,7 @@
         "content": "<span style='color: #AF69EE;font-size:20px'>Auto Scaling Dashboard</span>\n<br><br>\n<p>\nThe <span style='color: #AF69EE'>Auto Scaling Dashboard</span> leverages <span style='color: #FF9900'>\nCloudWatch</span> metrics and <span style='color: #FF9900'>Cost and Usage Report (CUR)</span> data to \npresent comprehensive cost over performance metric visualizations. It includes vital components such as \nAuto Scaling Groups (ASG), Load Balancers, NAT Gateways, and EC2 Instances that operate within the ASG.\nAll of these resource must share one common tag.  This tag must also be enabled as a \n<span style='color: #FF9900'>Cost Allocation Tag</span>.\n</p>\n\n<p>\nThis dashboard presents all cost information as <span style='color: #FF9900'>unblended cost</span> and \nwill not reflect discount savings realized by Savings Plans or Reserved Instances.\n</p>\n\n<p>\nFor any inquiries or further assistance in interpreting the data or utilizing the dashboard's features, \nplease contact your assigned Cloud Financial Analyst or FinOps Manager for guidance and support.\n</p>\n",
         "mode": "html"
       },
-      "pluginVersion": "9.4.7",
+      "pluginVersion": "10.4.1",
       "targets": [
         {
           "datasource": {
@@ -186,7 +186,7 @@
         "content": "<div style='font-size: 18px'>\nHow to Utilize this Dashboard\n</div>\nFor additional instructions see the <a href=\"https://github.com/aws-samples/coast-grafana-cost-intelligence-dashboards/tree/main/grafana_dashboards/auto_scaling\" target=\"_blank\">Github Readme file</a>.<br><br>\n\nTo make the most of the <span style='color: #AF69EE'>Autoscaling Dashboard</span>, input the following parameters in the top parameter menu:\n<br><br>\n\n<ol>\n<li>Region: Select your region (note in the beta version of this dashboard only us-east-1 is supported).</li>\n\n<li>ASG Name: Fill in the name of your Auto Scaling Group (ASG).  The name is available on the ASG details page under \"Group Details\".</li>\n\n<li>Tags: Select the tag key for your resources.  The tag values will populate once the tag key is selected. The values for this drop down come from CUR with a lookback period of 3 days.</li>\n\n<li>Load Balancers: This drop down is populated automtically once you select your tag.  The values for this drop down come from CUR with a lookback period of 3 days.</li>\n\n<li>Nat Gateways: This drop down is populated automtically once you select your tag.  The values for this drop down come from CUR with a lookback period of 3 days.</li>\n\n<li>Granularity: This value is used only in CUR querys to smooth out data based on month, week, day or hour.  To match Cloudwatch, select hour.</li>\n</ol>\n",
         "mode": "html"
       },
-      "pluginVersion": "9.4.7",
+      "pluginVersion": "10.4.1",
       "targets": [
         {
           "datasource": {
@@ -221,7 +221,7 @@
         "content": "The <span style='color: #AF69EE'>Required Columns Validator</span> evaluates your CUR dataset to confirm the presence of essential columns. For the dashboard to operate accurately, the CUR dataset must include columns for:\n<br><br>\n<ul>\n  <li>Resource IDs - </li>Resource IDs rows in CUR help deep dive cost at the resource ARNs layer.  To setup your CUR with resource IDs see <a href=\"https://docs.aws.amazon.com/cur/latest/userguide/cur-create.html\">Creating Cost and Usage Report</a>\n  <li>Cost Allocation Tags - Defining a cost allocation tag results in its persistence in your CUR dataset. For our queries to function correctly, it is imperative to have at least one cost allocation tag enabled.  See <a href=\"https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/cost-alloc-tags.html\">Using Cost Allocation Tags</a>\n</ul>\n<br>\n<span style='color: #AF69EE'>VERIFIED</span> indicates the presence of the columns in your CUR. <span style='color: red'>FAILED</span> indicates the absence of these columns, and as a result, certain visuals in the dashboard may not function as expected.  If this is a new CUR it may take 24 hours for column data to populate.",
         "mode": "html"
       },
-      "pluginVersion": "9.4.7",
+      "pluginVersion": "10.4.1",
       "targets": [
         {
           "datasource": {
@@ -291,6 +291,7 @@
       },
       "id": 59,
       "options": {
+        "cellHeight": "sm",
         "footer": {
           "countRows": false,
           "fields": "",
@@ -301,7 +302,7 @@
         },
         "showHeader": true
       },
-      "pluginVersion": "9.4.7",
+      "pluginVersion": "10.4.1",
       "targets": [
         {
           "connectionArgs": {
@@ -398,8 +399,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "#5d5d5d",
@@ -446,8 +446,7 @@
                       "mode": "absolute",
                       "steps": [
                         {
-                          "color": "super-light-green",
-                          "value": null
+                          "color": "super-light-green"
                         },
                         {
                           "color": "red",
@@ -553,8 +552,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "#5d5d5d",
@@ -601,8 +599,7 @@
                       "mode": "percentage",
                       "steps": [
                         {
-                          "color": "super-light-green",
-                          "value": null
+                          "color": "super-light-green"
                         },
                         {
                           "color": "red",
@@ -708,8 +705,7 @@
                 "mode": "percentage",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "#5d5d5d",
@@ -756,8 +752,7 @@
                       "mode": "percentage",
                       "steps": [
                         {
-                          "color": "super-light-green",
-                          "value": null
+                          "color": "super-light-green"
                         },
                         {
                           "color": "red",
@@ -863,8 +858,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "#5d5d5d",
@@ -911,8 +905,7 @@
                       "mode": "percentage",
                       "steps": [
                         {
-                          "color": "super-light-green",
-                          "value": null
+                          "color": "super-light-green"
                         },
                         {
                           "color": "red",
@@ -1055,8 +1048,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -1196,8 +1188,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -1314,8 +1305,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -1385,7 +1375,7 @@
       "type": "row"
     },
     {
-      "collapsed": true,
+      "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -1393,2256 +1383,768 @@
         "y": 19
       },
       "id": 11,
-      "panels": [
-        {
-          "datasource": {
-            "type": "datasource",
-            "uid": "-- Mixed --"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "continuous-BlPu"
-              },
-              "custom": {
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "Instances",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "drawStyle": "line",
-                "fillOpacity": 30,
-                "gradientMode": "scheme",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "lineInterpolation": "smooth",
-                "lineStyle": {
-                  "dash": [
-                    0,
-                    10
-                  ],
-                  "fill": "dot"
-                },
-                "lineWidth": 2,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "none"
-            },
-            "overrides": [
-              {
-                "matcher": {
-                  "id": "byFrameRefID",
-                  "options": "CUR Compute Query"
-                },
-                "properties": [
-                  {
-                    "id": "color",
-                    "value": {
-                      "mode": "continuous-RdYlGr"
-                    }
-                  },
-                  {
-                    "id": "custom.fillOpacity",
-                    "value": 0
-                  },
-                  {
-                    "id": "unit",
-                    "value": "currencyUSD"
-                  },
-                  {
-                    "id": "custom.axisLabel",
-                    "value": "Compute Cost"
-                  },
-                  {
-                    "id": "custom.showPoints",
-                    "value": "always"
-                  },
-                  {
-                    "id": "displayName",
-                    "value": "Compute Cost"
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byFrameRefID",
-                  "options": "GroupDesiredCapacity"
-                },
-                "properties": [
-                  {
-                    "id": "custom.fillOpacity",
-                    "value": 0
-                  },
-                  {
-                    "id": "color",
-                    "value": {
-                      "fixedColor": "yellow",
-                      "mode": "fixed"
-                    }
-                  }
-                ]
-              }
-            ]
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 0,
-            "y": 3
-          },
-          "id": 6,
-          "links": [
-            {
-              "targetBlank": true,
-              "title": "Cloudwatch",
-              "url": "https://$Regions.console.aws.amazon.com/cloudwatch/home?region=$Regions#metricsV2?graph=~(view~'timeSeries~stacked~false~region~'us-east-1~start~'-PT168H~end~'P0D~metrics~(~(~'AWS*2fAutoScaling~'GroupDesiredCapacity~'AutoScalingGroupName~'$ASGName)~(~'.~'GroupTotalCapacity~'.~'.)))&query=~'*7bAWS*2fAutoScaling*2cAutoScalingGroupName*7d*20$ASGName"
-            }
-          ],
-          "options": {
-            "legend": {
-              "calcs": [
-                "max",
-                "min"
-              ],
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "multi",
-              "sort": "none"
-            }
-          },
-          "targets": [
-            {
-              "connectionArgs": {
-                "catalog": "__default",
-                "database": "__default",
-                "region": "__default",
-                "resultReuseEnabled": false,
-                "resultReuseMaxAgeInMinutes": 60
-              },
-              "datasource": {
-                "type": "grafana-athena-datasource",
-                "uid": "${DS_COAST-2023-09-19}"
-              },
-              "format": 1,
-              "hide": false,
-              "rawSQL": "-- When troubleshooting a query, it helps to use the Query Inspector button and copy the query into Athena \nSELECT\n  date_trunc('$Granularity', line_item_usage_start_date),\n  SUM(line_item_unblended_cost) as Cost\nFROM $CurTable\nWHERE\n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_product_code = 'AmazonEC2'\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_operation = 'RunInstances'\n  AND line_item_usage_type Like '%Usage%'\n  AND product_region = '$Regions' \n  --AND line_item_usage_account_id IN ($LinkedAccounts) --future use\n  --AND $CurTable .line_item_product_code in ($Services) --future use\nGROUP BY 1",
-              "refId": "CUR Compute Query"
-            },
-            {
-              "datasource": {
-                "type": "cloudwatch",
-                "uid": "${DS_CLOUDWATCH}"
-              },
-              "dimensions": {},
-              "expression": "SEARCH('{AWS/AutoScaling,AutoScalingGroupName} MetricName=\"GroupTotalInstances\" \"$ASGName\"', 'Average', 300)",
-              "id": "",
-              "label": "",
-              "logGroups": [],
-              "matchExact": true,
-              "metricEditorMode": 1,
-              "metricName": "",
-              "metricQueryType": 0,
-              "namespace": "",
-              "period": "",
-              "queryMode": "Metrics",
-              "refId": "A",
-              "region": "$Regions",
-              "sqlExpression": "",
-              "statistic": "Average"
-            },
-            {
-              "datasource": {
-                "type": "cloudwatch",
-                "uid": "${DS_CLOUDWATCH}"
-              },
-              "dimensions": {},
-              "expression": "SEARCH('{AWS/AutoScaling,AutoScalingGroupName} MetricName=\"GroupDesiredCapacity\" \"$ASGName\"', 'Average', 300)",
-              "hide": false,
-              "id": "",
-              "label": "",
-              "logGroups": [],
-              "matchExact": true,
-              "metricEditorMode": 1,
-              "metricName": "",
-              "metricQueryType": 0,
-              "namespace": "",
-              "period": "",
-              "queryMode": "Metrics",
-              "refId": "GroupDesiredCapacity",
-              "region": "$Regions",
-              "sqlExpression": "",
-              "statistic": "Average"
-            }
-          ],
-          "title": "Scaling Activity - ASG: $ASGName",
-          "transparent": true,
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "datasource",
-            "uid": "-- Mixed --"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "continuous-BlPu"
-              },
-              "custom": {
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "Instances",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "drawStyle": "line",
-                "fillOpacity": 30,
-                "gradientMode": "scheme",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "lineInterpolation": "smooth",
-                "lineStyle": {
-                  "dash": [
-                    0,
-                    10
-                  ],
-                  "fill": "dot"
-                },
-                "lineWidth": 2,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "none"
-            },
-            "overrides": [
-              {
-                "matcher": {
-                  "id": "byFrameRefID",
-                  "options": "CUR Compute Query"
-                },
-                "properties": [
-                  {
-                    "id": "color",
-                    "value": {
-                      "mode": "continuous-GrYlRd"
-                    }
-                  },
-                  {
-                    "id": "custom.fillOpacity",
-                    "value": 0
-                  },
-                  {
-                    "id": "unit",
-                    "value": "currencyUSD"
-                  },
-                  {
-                    "id": "custom.axisLabel",
-                    "value": "Compute Cost"
-                  },
-                  {
-                    "id": "custom.showPoints",
-                    "value": "always"
-                  }
-                ]
-              }
-            ]
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 12,
-            "y": 3
-          },
-          "id": 9,
-          "links": [
-            {
-              "targetBlank": true,
-              "title": "Cloudwatch",
-              "url": "https://$Regions.console.aws.amazon.com/cloudwatch/home?region=$Regions#metricsV2?graph=~(view~'timeSeries~stacked~false~region~'us-east-1~start~'-PT168H~end~'P0D~metrics~(~(~'AWS*2fEC2~'CPUUtilization~'AutoScalingGroupName~'$ASGName)))&query=~'*7bAWS*2fEC2*2cAutoScalingGroupName*7d*20$ASGName"
-            }
-          ],
-          "options": {
-            "legend": {
-              "calcs": [
-                "max",
-                "min"
-              ],
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "multi",
-              "sort": "none"
-            }
-          },
-          "targets": [
-            {
-              "connectionArgs": {
-                "catalog": "__default",
-                "database": "__default",
-                "region": "__default",
-                "resultReuseEnabled": false,
-                "resultReuseMaxAgeInMinutes": 60
-              },
-              "datasource": {
-                "type": "grafana-athena-datasource",
-                "uid": "${DS_COAST-2023-09-19}"
-              },
-              "format": 1,
-              "hide": false,
-              "rawSQL": "-- When troubleshooting a query, it helps to use the Query Inspector button and copy the query into Athena \nSELECT\n  date_trunc('$Granularity', line_item_usage_start_date),\n  SUM(line_item_unblended_cost) as cost\nfrom $CurTable\nWHERE\n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_product_code = 'AmazonEC2'\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_operation = 'RunInstances'\n  AND line_item_usage_type Like '%Usage%'\n  AND product_region = '$Regions'\n  --AND line_item_usage_account_id IN ($LinkedAccounts) --future use\n  --AND $CurTable .line_item_product_code in ($Services) -- future use\nGROUP BY 1\nORDER BY 1",
-              "refId": "CUR Compute Query"
-            },
-            {
-              "datasource": {
-                "type": "cloudwatch",
-                "uid": "${DS_CLOUDWATCH}"
-              },
-              "dimensions": {},
-              "expression": "REMOVE_EMPTY(SEARCH('{\"AWS/EC2\",\"AutoScalingGroupName\"} MetricName=\"CPUUtilization\" \"$ASGName\"', 'Average', 300))",
-              "id": "",
-              "label": "",
-              "logGroups": [],
-              "matchExact": true,
-              "metricEditorMode": 1,
-              "metricName": "",
-              "metricQueryType": 0,
-              "namespace": "",
-              "period": "",
-              "queryMode": "Metrics",
-              "refId": "CPUUtilization",
-              "region": "$Regions",
-              "sqlExpression": "",
-              "statistic": "Average"
-            }
-          ],
-          "title": "Average CPU - ASG: $ASGName",
-          "transparent": true,
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "datasource",
-            "uid": "-- Mixed --"
-          },
-          "description": "Status failure Metrics for the entire ASG. This metric reports whether the instance has passed both the instance status check and the system status check in the last minute. This metric can be either 0 (passed) or 1 (failed). By default, this metric is available at a 1-minute frequency at no charge.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "continuous-BlPu"
-              },
-              "custom": {
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "Failed Checks",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "drawStyle": "line",
-                "fillOpacity": 30,
-                "gradientMode": "scheme",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "lineInterpolation": "smooth",
-                "lineStyle": {
-                  "dash": [
-                    0,
-                    10
-                  ],
-                  "fill": "dot"
-                },
-                "lineWidth": 2,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "none"
-            },
-            "overrides": [
-              {
-                "matcher": {
-                  "id": "byFrameRefID",
-                  "options": "CUR Compute Query"
-                },
-                "properties": [
-                  {
-                    "id": "color",
-                    "value": {
-                      "mode": "continuous-GrYlRd"
-                    }
-                  },
-                  {
-                    "id": "custom.fillOpacity",
-                    "value": 0
-                  },
-                  {
-                    "id": "unit",
-                    "value": "currencyUSD"
-                  },
-                  {
-                    "id": "custom.axisLabel",
-                    "value": "Compute Cost"
-                  },
-                  {
-                    "id": "custom.showPoints",
-                    "value": "always"
-                  }
-                ]
-              }
-            ]
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 0,
-            "y": 11
-          },
-          "id": 20,
-          "links": [
-            {
-              "targetBlank": true,
-              "title": "Cloudwatch",
-              "url": "https://$Regions.console.aws.amazon.com/cloudwatch/home?region=$Regions#metricsV2?graph=~(view~'timeSeries~stacked~false~region~'us-east-1~start~'-PT168H~end~'P0D~metrics~(~(~'AWS*2fEC2~'StatusCheckFailed~'AutoScalingGroupName~'$ASGName)))&query=~'*7bAWS*2fEC2*2cAutoScalingGroupName*7d*20$ASGName"
-            }
-          ],
-          "options": {
-            "legend": {
-              "calcs": [
-                "max",
-                "min"
-              ],
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "multi",
-              "sort": "none"
-            }
-          },
-          "targets": [
-            {
-              "connectionArgs": {
-                "catalog": "__default",
-                "database": "__default",
-                "region": "__default",
-                "resultReuseEnabled": false,
-                "resultReuseMaxAgeInMinutes": 60
-              },
-              "datasource": {
-                "type": "grafana-athena-datasource",
-                "uid": "${DS_COAST-2023-09-19}"
-              },
-              "format": 1,
-              "hide": false,
-              "rawSQL": "-- When troubleshooting a query, it helps to use the Query Inspector button and copy the query into Athena\n-- To view resource names add in line_item_resource_id to the SELECT and GROUP BY statements\nSELECT\n  date_trunc('$Granularity', line_item_usage_start_date),\n  SUM(line_item_unblended_cost) as cost\nfrom $CurTable\nWHERE\n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_product_code = 'AmazonEC2'\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_operation = 'RunInstances'\n  AND line_item_usage_type Like '%Usage%'\n  AND product_region = '$Regions' \n  --AND line_item_usage_account_id IN ($LinkedAccounts)\n  --AND $CurTable .line_item_product_code in ($Services)\nGROUP BY 1\nORDER BY 1",
-              "refId": "CUR Compute Query"
-            },
-            {
-              "datasource": {
-                "type": "cloudwatch",
-                "uid": "${DS_CLOUDWATCH}"
-              },
-              "dimensions": {},
-              "expression": "SEARCH('{\"AWS/EC2\",\"AutoScalingGroupName\"} MetricName=\"StatusCheckFailed\" \"$ASGName\"', 'Average', 300)",
-              "id": "",
-              "label": "",
-              "logGroups": [],
-              "matchExact": true,
-              "metricEditorMode": 1,
-              "metricName": "",
-              "metricQueryType": 0,
-              "namespace": "",
-              "period": "",
-              "queryMode": "Metrics",
-              "refId": "StatusCheckFailed",
-              "region": "$Regions",
-              "sqlExpression": "",
-              "statistic": "Average"
-            }
-          ],
-          "title": "Instance Status Check Failed - ASG: $ASGName",
-          "transparent": true,
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "datasource",
-            "uid": "-- Mixed --"
-          },
-          "description": "The number of earned CPU credits (T instances) that an instance(s) have accrued since they were launched or started for the named Auto Scaling Group. Credits are accrued in the credit balance after they are earned, and removed from the credit balance when they are spent. The credit balance has a maximum limit, determined by the instance size. ",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "continuous-BlPu"
-              },
-              "custom": {
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "CPU Credit",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "drawStyle": "line",
-                "fillOpacity": 30,
-                "gradientMode": "scheme",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "lineInterpolation": "smooth",
-                "lineStyle": {
-                  "dash": [
-                    0,
-                    10
-                  ],
-                  "fill": "dot"
-                },
-                "lineWidth": 2,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "none"
-            },
-            "overrides": [
-              {
-                "matcher": {
-                  "id": "byFrameRefID",
-                  "options": "Compute Cost"
-                },
-                "properties": [
-                  {
-                    "id": "color",
-                    "value": {
-                      "mode": "continuous-GrYlRd"
-                    }
-                  },
-                  {
-                    "id": "custom.fillOpacity",
-                    "value": 0
-                  },
-                  {
-                    "id": "custom.axisLabel",
-                    "value": "Compute Cost"
-                  },
-                  {
-                    "id": "unit",
-                    "value": "currencyUSD"
-                  },
-                  {
-                    "id": "custom.showPoints",
-                    "value": "always"
-                  }
-                ]
-              }
-            ]
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 12,
-            "y": 11
-          },
-          "id": 21,
-          "links": [
-            {
-              "targetBlank": true,
-              "title": "Cloudwatch",
-              "url": "https://$Regions.console.aws.amazon.com/cloudwatch/home?region=us-east-1#metricsV2?graph=~(view~'timeSeries~stacked~false~region~'$Regions~start~'-PT168H~end~'P0D~metrics~(~(~'AWS*2fEC2~'CPUCreditBalance~'AutoScalingGroupName~'$ASGName)~(~'.~'CPUCreditUsage~'.~'.)))&query=~'*7bAWS*2fEC2*2cAutoScalingGroupName*7d*20$ASGName"
-            }
-          ],
-          "options": {
-            "legend": {
-              "calcs": [
-                "max",
-                "min"
-              ],
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "multi",
-              "sort": "none"
-            }
-          },
-          "targets": [
-            {
-              "connectionArgs": {
-                "catalog": "__default",
-                "database": "__default",
-                "region": "__default",
-                "resultReuseEnabled": false,
-                "resultReuseMaxAgeInMinutes": 60
-              },
-              "datasource": {
-                "type": "grafana-athena-datasource",
-                "uid": "${DS_COAST-2023-09-19}"
-              },
-              "format": 1,
-              "hide": false,
-              "rawSQL": "-- When troubleshooting a query, it helps to use the Query Inspector button and copy the query into Athena\n-- To view resource names add in line_item_resource_id to the SELECT and GROUP BY statements\nSELECT\n  date_trunc('$Granularity', line_item_usage_start_date),\n  SUM(line_item_unblended_cost) as cost\nfrom $CurTable\nWHERE\n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_product_code = 'AmazonEC2'\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_operation = 'RunInstances'\n  AND line_item_usage_type Like '%Usage%'\n  AND product_region = '$Regions' \n  --AND line_item_usage_account_id IN ($LinkedAccounts) -- future use\n  --AND $CurTable .line_item_product_code in ($Services) -- future use\nGROUP BY 1\nORDER BY 1",
-              "refId": "Compute Cost"
-            },
-            {
-              "datasource": {
-                "type": "cloudwatch",
-                "uid": "${DS_CLOUDWATCH}"
-              },
-              "dimensions": {},
-              "expression": "SEARCH('{\"AWS/EC2\",\"AutoScalingGroupName\"} MetricName=\"CPUCreditUsage\" \"$ASGName\"', 'Average', 300)",
-              "id": "",
-              "label": "",
-              "logGroups": [],
-              "matchExact": true,
-              "metricEditorMode": 1,
-              "metricName": "",
-              "metricQueryType": 0,
-              "namespace": "",
-              "period": "",
-              "queryMode": "Metrics",
-              "refId": "CPUCreditUsage",
-              "region": "$Regions",
-              "sqlExpression": "",
-              "statistic": "Average"
-            },
-            {
-              "datasource": {
-                "type": "cloudwatch",
-                "uid": "${DS_CLOUDWATCH}"
-              },
-              "dimensions": {},
-              "expression": "SEARCH('{\"AWS/EC2\",\"AutoScalingGroupName\"} MetricName=\"CPUCreditBalance\" \"$ASGName\"', 'Average', 300)",
-              "hide": false,
-              "id": "",
-              "label": "",
-              "logGroups": [],
-              "matchExact": true,
-              "metricEditorMode": 1,
-              "metricName": "",
-              "metricQueryType": 0,
-              "namespace": "",
-              "period": "",
-              "queryMode": "Metrics",
-              "refId": "CPUCreditBalance",
-              "region": "$Regions",
-              "sqlExpression": "",
-              "statistic": "Average"
-            }
-          ],
-          "title": "CPU Credit Balance - ASG: $ASGName",
-          "transparent": true,
-          "type": "timeseries"
-        }
-      ],
+      "panels": [],
       "title": "Compute - Autoscaling Group: $ASGName",
       "type": "row"
     },
     {
-      "collapsed": true,
+      "datasource": {
+        "type": "datasource",
+        "uid": "-- Mixed --"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-BlPu"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "Total Instances",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 30,
+            "gradientMode": "scheme",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "smooth",
+            "lineStyle": {
+              "dash": [
+                0,
+                10
+              ],
+              "fill": "dot"
+            },
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "CUR Compute Query"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "continuous-RdYlGr"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "unit",
+                "value": "currencyUSD"
+              },
+              {
+                "id": "custom.axisLabel",
+                "value": "Compute Cost"
+              },
+              {
+                "id": "custom.showPoints",
+                "value": "always"
+              },
+              {
+                "id": "displayName",
+                "value": "Compute Cost"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "GroupDesiredCapacity"
+            },
+            "properties": [
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
       "gridPos": {
-        "h": 1,
-        "w": 24,
+        "h": 8,
+        "w": 12,
         "x": 0,
         "y": 20
       },
-      "id": 24,
-      "panels": [
+      "id": 6,
+      "links": [
         {
-          "datasource": {
-            "type": "datasource",
-            "uid": "-- Mixed --"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "continuous-BlPu"
-              },
-              "custom": {
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "MBytes",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "drawStyle": "line",
-                "fillOpacity": 30,
-                "gradientMode": "scheme",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "lineInterpolation": "smooth",
-                "lineStyle": {
-                  "dash": [
-                    0,
-                    10
-                  ],
-                  "fill": "dot"
-                },
-                "lineWidth": 2,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green"
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "none"
-            },
-            "overrides": [
-              {
-                "matcher": {
-                  "id": "byFrameRefID",
-                  "options": "EC2 Compute Cost Query"
-                },
-                "properties": [
-                  {
-                    "id": "color",
-                    "value": {
-                      "mode": "continuous-GrYlRd"
-                    }
-                  },
-                  {
-                    "id": "custom.fillOpacity",
-                    "value": 0
-                  },
-                  {
-                    "id": "unit",
-                    "value": "currencyUSD"
-                  },
-                  {
-                    "id": "custom.axisLabel",
-                    "value": "EC2 Networking Cost"
-                  },
-                  {
-                    "id": "displayName",
-                    "value": "EC2 Networking Cost"
-                  }
-                ]
-              }
-            ]
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 0,
-            "y": 37
-          },
-          "id": 22,
-          "options": {
-            "legend": {
-              "calcs": [
-                "max",
-                "min"
-              ],
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "multi",
-              "sort": "none"
-            }
-          },
-          "targets": [
-            {
-              "connectionArgs": {
-                "catalog": "__default",
-                "database": "__default",
-                "region": "__default",
-                "resultReuseEnabled": false,
-                "resultReuseMaxAgeInMinutes": 60
-              },
-              "datasource": {
-                "type": "grafana-athena-datasource",
-                "uid": "${DS_COAST-2023-09-19}"
-              },
-              "format": 1,
-              "hide": false,
-              "rawSQL": "-- When troubleshooting a query, it helps to use the Query Inspector button and copy the query into Athena\n-- To view resource names add in line_item_resource_id to the SELECT and GROUP BY statements\nSELECT \n  date_trunc('$Granularity', line_item_usage_start_date),\n  SUM(line_item_unblended_cost) as cost\nFROM\n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_product_code = 'AmazonEC2'\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  -- AND line_item_operation = 'RunInstances'\n  AND line_item_usage_type LIKE '%AWS%Bytes%'\n  AND product_region = '$Regions' \nGROUP BY \n1\nHAVING SUM(line_item_unblended_cost) > 0\n\n",
-              "refId": "EC2 Compute Cost Query"
-            },
-            {
-              "datasource": {
-                "type": "cloudwatch",
-                "uid": "${DS_CLOUDWATCH}"
-              },
-              "dimensions": {},
-              "expression": "SEARCH('{\"AWS/EC2\",\"AutoScalingGroupName\"} MetricName=\"NetworkOut\" \"$ASGName\"', 'Average', 300)",
-              "id": "",
-              "label": "",
-              "logGroups": [],
-              "matchExact": true,
-              "metricEditorMode": 1,
-              "metricName": "",
-              "metricQueryType": 0,
-              "namespace": "",
-              "period": "",
-              "queryMode": "Metrics",
-              "refId": "A",
-              "region": "$Regions",
-              "sqlExpression": "",
-              "statistic": "Average"
-            }
+          "targetBlank": true,
+          "title": "Cloudwatch",
+          "url": "https://$Regions.console.aws.amazon.com/cloudwatch/home?region=$Regions#metricsV2?graph=~(view~'timeSeries~stacked~false~region~'us-east-1~start~'-PT168H~end~'P0D~metrics~(~(~'AWS*2fAutoScaling~'GroupDesiredCapacity~'AutoScalingGroupName~'$ASGName)~(~'.~'GroupTotalCapacity~'.~'.)))&query=~'*7bAWS*2fAutoScaling*2cAutoScalingGroupName*7d*20$ASGName"
+        }
+      ],
+      "options": {
+        "legend": {
+          "calcs": [
+            "max",
+            "min"
           ],
-          "title": "EC2 Networking Bytes Out- ASG: $ASGName",
-          "transparent": true,
-          "type": "timeseries"
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${DS_COAST-2023-09-19}"
+          },
+          "format": 1,
+          "hide": false,
+          "rawSQL": "-- When troubleshooting a query, it helps to use the Query Inspector button and copy the query into Athena \nSELECT\n  date_trunc('$Granularity', line_item_usage_start_date),\n  SUM(line_item_unblended_cost) as Cost\nFROM $CurTable\nWHERE\n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_product_code = 'AmazonEC2'\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_operation = 'RunInstances'\n  AND line_item_usage_type Like '%Usage%'\n  AND product_region = '$Regions' \n  --AND line_item_usage_account_id IN ($LinkedAccounts) --future use\n  --AND $CurTable .line_item_product_code in ($Services) --future use\nGROUP BY 1",
+          "refId": "CUR Compute Query"
         },
         {
           "datasource": {
-            "type": "datasource",
-            "uid": "-- Mixed --"
+            "type": "cloudwatch",
+            "uid": "${DS_CLOUDWATCH}"
           },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "continuous-BlPu"
-              },
-              "custom": {
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "Packets",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "drawStyle": "line",
-                "fillOpacity": 30,
-                "gradientMode": "scheme",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "lineInterpolation": "smooth",
-                "lineStyle": {
-                  "dash": [
-                    0,
-                    10
-                  ],
-                  "fill": "dot"
-                },
-                "lineWidth": 2,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green"
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "none"
-            },
-            "overrides": [
-              {
-                "matcher": {
-                  "id": "byFrameRefID",
-                  "options": "EC2 Compute Cost Query"
-                },
-                "properties": [
-                  {
-                    "id": "color",
-                    "value": {
-                      "mode": "continuous-GrYlRd"
-                    }
-                  },
-                  {
-                    "id": "custom.fillOpacity",
-                    "value": 0
-                  },
-                  {
-                    "id": "unit",
-                    "value": "currencyUSD"
-                  },
-                  {
-                    "id": "custom.axisLabel",
-                    "value": "EC2 Networking Cost"
-                  },
-                  {
-                    "id": "displayName",
-                    "value": "EC2 Networking Cost"
-                  }
-                ]
-              }
-            ]
+          "dimensions": {},
+          "expression": "SEARCH('{AWS/AutoScaling,AutoScalingGroupName} MetricName=\"GroupTotalInstances\" \"$ASGName\"', 'Average', 300)",
+          "id": "",
+          "label": "",
+          "logGroups": [],
+          "matchExact": true,
+          "metricEditorMode": 1,
+          "metricName": "",
+          "metricQueryType": 0,
+          "namespace": "",
+          "period": "",
+          "queryMode": "Metrics",
+          "refId": "A",
+          "region": "$Regions",
+          "sqlExpression": "",
+          "statistic": "Average"
+        },
+        {
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "${DS_CLOUDWATCH}"
           },
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 12,
-            "y": 37
-          },
-          "id": 41,
-          "options": {
-            "legend": {
-              "calcs": [
-                "max",
-                "min"
-              ],
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "multi",
-              "sort": "none"
-            }
-          },
-          "targets": [
-            {
-              "connectionArgs": {
-                "catalog": "__default",
-                "database": "__default",
-                "region": "__default",
-                "resultReuseEnabled": false,
-                "resultReuseMaxAgeInMinutes": 60
-              },
-              "datasource": {
-                "type": "grafana-athena-datasource",
-                "uid": "${DS_COAST-2023-09-19}"
-              },
-              "format": 1,
-              "hide": false,
-              "rawSQL": "-- When troubleshooting a query, it helps to use the Query Inspector button and copy the query into Athena\n-- To view resource names add in line_item_resource_id to the SELECT and GROUP BY statements\nSELECT \n  date_trunc('$Granularity', line_item_usage_start_date),\n  SUM(line_item_unblended_cost) as cost\nFROM\n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_product_code = 'AmazonEC2'\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  -- AND line_item_operation = 'RunInstances'\n  AND line_item_usage_type LIKE '%AWS%Bytes%'\n  AND product_region = '$Regions' \nGROUP BY \n1\nHAVING SUM(line_item_unblended_cost) > 0\n\n",
-              "refId": "EC2 Compute Cost Query"
-            },
-            {
-              "datasource": {
-                "type": "cloudwatch",
-                "uid": "${DS_CLOUDWATCH}"
-              },
-              "dimensions": {},
-              "expression": "SEARCH('{\"AWS/EC2\",\"AutoScalingGroupName\"} MetricName=\"NetworkPacketsOut\" \"$ASGName\"', 'Average', 300)",
-              "id": "",
-              "label": "",
-              "logGroups": [],
-              "matchExact": true,
-              "metricEditorMode": 1,
-              "metricName": "",
-              "metricQueryType": 0,
-              "namespace": "",
-              "period": "",
-              "queryMode": "Metrics",
-              "refId": "A",
-              "region": "$Regions",
-              "sqlExpression": "",
-              "statistic": "Average"
-            }
-          ],
-          "title": "EC2 Networking Packets Out - ASG: $ASGName",
-          "transparent": true,
-          "type": "timeseries"
+          "dimensions": {},
+          "expression": "SEARCH('{AWS/AutoScaling,AutoScalingGroupName} MetricName=\"GroupDesiredCapacity\" \"$ASGName\"', 'Average', 300)",
+          "hide": false,
+          "id": "",
+          "label": "",
+          "logGroups": [],
+          "matchExact": true,
+          "metricEditorMode": 1,
+          "metricName": "",
+          "metricQueryType": 0,
+          "namespace": "",
+          "period": "",
+          "queryMode": "Metrics",
+          "refId": "GroupDesiredCapacity",
+          "region": "$Regions",
+          "sqlExpression": "",
+          "statistic": "Average"
         }
       ],
-      "title": "Network - Autoscaling Group: $ASGName",
-      "type": "row"
+      "title": "Scaling Activity - ASG: $ASGName",
+      "transparent": true,
+      "type": "timeseries"
     },
     {
-      "collapsed": true,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 21
+      "datasource": {
+        "type": "datasource",
+        "uid": "-- Mixed --"
       },
-      "id": 48,
-      "panels": [
-        {
-          "datasource": {
-            "type": "datasource",
-            "uid": "-- Mixed --"
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-BlPu"
           },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "continuous-BlPu"
-              },
-              "custom": {
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "MBytes",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "drawStyle": "line",
-                "fillOpacity": 30,
-                "gradientMode": "scheme",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "lineInterpolation": "smooth",
-                "lineStyle": {
-                  "dash": [
-                    0,
-                    10
-                  ],
-                  "fill": "dot"
-                },
-                "lineWidth": 2,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "bytes"
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "CPU Utilization",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 30,
+            "gradientMode": "scheme",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
             },
-            "overrides": [
+            "insertNulls": false,
+            "lineInterpolation": "smooth",
+            "lineStyle": {
+              "dash": [
+                0,
+                10
+              ],
+              "fill": "dot"
+            },
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
               {
-                "matcher": {
-                  "id": "byFrameRefID",
-                  "options": "EBS Volume Cost"
-                },
-                "properties": [
-                  {
-                    "id": "color",
-                    "value": {
-                      "mode": "continuous-GrYlRd"
-                    }
-                  },
-                  {
-                    "id": "custom.fillOpacity",
-                    "value": 0
-                  },
-                  {
-                    "id": "unit",
-                    "value": "currencyUSD"
-                  },
-                  {
-                    "id": "custom.axisLabel",
-                    "value": "EBS Volume Cost"
-                  },
-                  {
-                    "id": "displayName",
-                    "value": "EBS Volume Cost"
-                  }
-                ]
+                "color": "green",
+                "value": null
               },
               {
-                "matcher": {
-                  "id": "byFrameRefID",
-                  "options": "EBSWriteBytes"
-                },
-                "properties": [
-                  {
-                    "id": "color",
-                    "value": {
-                      "fixedColor": "dark-purple",
-                      "mode": "fixed"
-                    }
-                  }
-                ]
+                "color": "red",
+                "value": 80
               }
             ]
           },
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 0,
-            "y": 38
-          },
-          "id": 49,
-          "options": {
-            "legend": {
-              "calcs": [
-                "max",
-                "min"
-              ],
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true
+          "unit": "none"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "CUR Compute Query"
             },
-            "tooltip": {
-              "mode": "multi",
-              "sort": "none"
-            }
-          },
-          "targets": [
-            {
-              "connectionArgs": {
-                "catalog": "__default",
-                "database": "__default",
-                "region": "__default",
-                "resultReuseEnabled": false,
-                "resultReuseMaxAgeInMinutes": 60
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "continuous-GrYlRd"
+                }
               },
-              "datasource": {
-                "type": "grafana-athena-datasource",
-                "uid": "${DS_COAST-2023-09-19}"
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
               },
-              "format": 1,
-              "hide": false,
-              "rawSQL": "-- When troubleshooting a query, it helps to use the Query Inspector button and copy the query into Athena\n-- To view resource names add in line_item_resource_id to the SELECT and GROUP BY statements\nSELECT \n  date_trunc('$Granularity', line_item_usage_start_date),\n  SUM(line_item_unblended_cost) as cost\nFROM\n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_product_code = 'AmazonEC2'\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_usage_type Like '%VolumeUsage%'\n  AND product_region = '$Regions' \nGROUP BY \n1\nHAVING SUM(line_item_unblended_cost) > 0",
-              "refId": "EBS Volume Cost"
-            },
-            {
-              "datasource": {
-                "type": "cloudwatch",
-                "uid": "${DS_CLOUDWATCH}"
+              {
+                "id": "unit",
+                "value": "currencyUSD"
               },
-              "dimensions": {},
-              "expression": "SEARCH('{\"AWS/EC2\",\"AutoScalingGroupName\"} MetricName=\"EBSReadBytes\" \"$ASGName\"', 'Average', 300)",
-              "id": "",
-              "label": "",
-              "logGroups": [],
-              "matchExact": true,
-              "metricEditorMode": 1,
-              "metricName": "",
-              "metricQueryType": 0,
-              "namespace": "",
-              "period": "",
-              "queryMode": "Metrics",
-              "refId": "EBSReadBytes",
-              "region": "$Regions",
-              "sqlExpression": "",
-              "statistic": "Average"
-            },
-            {
-              "datasource": {
-                "type": "cloudwatch",
-                "uid": "${DS_CLOUDWATCH}"
+              {
+                "id": "custom.axisLabel",
+                "value": "Compute Cost"
               },
-              "dimensions": {},
-              "expression": "SEARCH('{\"AWS/EC2\",\"AutoScalingGroupName\"} MetricName=\"EBSWriteBytes\" \"$ASGName\"', 'Average', 300)",
-              "hide": false,
-              "id": "",
-              "label": "",
-              "logGroups": [],
-              "matchExact": true,
-              "metricEditorMode": 1,
-              "metricName": "",
-              "metricQueryType": 0,
-              "namespace": "",
-              "period": "",
-              "queryMode": "Metrics",
-              "refId": "EBSWriteBytes",
-              "region": "$Regions",
-              "sqlExpression": "",
-              "statistic": "Average"
-            }
+              {
+                "id": "custom.showPoints",
+                "value": "always"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 20
+      },
+      "id": 9,
+      "links": [
+        {
+          "targetBlank": true,
+          "title": "Cloudwatch",
+          "url": "https://$Regions.console.aws.amazon.com/cloudwatch/home?region=$Regions#metricsV2?graph=~(view~'timeSeries~stacked~false~region~'us-east-1~start~'-PT168H~end~'P0D~metrics~(~(~'AWS*2fEC2~'CPUUtilization~'AutoScalingGroupName~'$ASGName)))&query=~'*7bAWS*2fEC2*2cAutoScalingGroupName*7d*20$ASGName"
+        }
+      ],
+      "options": {
+        "legend": {
+          "calcs": [
+            "max",
+            "min"
           ],
-          "title": "EBS Volume Read/Write- ASG: $ASGName",
-          "transparent": true,
-          "type": "timeseries"
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${DS_COAST-2023-09-19}"
+          },
+          "format": 1,
+          "hide": false,
+          "rawSQL": "-- When troubleshooting a query, it helps to use the Query Inspector button and copy the query into Athena \nSELECT\n  date_trunc('$Granularity', line_item_usage_start_date),\n  SUM(line_item_unblended_cost) as cost\nfrom $CurTable\nWHERE\n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_product_code = 'AmazonEC2'\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_operation = 'RunInstances'\n  AND line_item_usage_type Like '%Usage%'\n  AND product_region = '$Regions'\n  --AND line_item_usage_account_id IN ($LinkedAccounts) --future use\n  --AND $CurTable .line_item_product_code in ($Services) -- future use\nGROUP BY 1\nORDER BY 1",
+          "refId": "CUR Compute Query"
         },
         {
           "datasource": {
-            "type": "datasource",
-            "uid": "-- Mixed --"
+            "type": "cloudwatch",
+            "uid": "${DS_CLOUDWATCH}"
           },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "continuous-BlPu"
-              },
-              "custom": {
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "MBytes",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "drawStyle": "line",
-                "fillOpacity": 30,
-                "gradientMode": "scheme",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "lineInterpolation": "smooth",
-                "lineStyle": {
-                  "dash": [
-                    0,
-                    10
-                  ],
-                  "fill": "dot"
-                },
-                "lineWidth": 2,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "bytes"
-            },
-            "overrides": [
-              {
-                "matcher": {
-                  "id": "byFrameRefID",
-                  "options": "EBS Volume Cost"
-                },
-                "properties": [
-                  {
-                    "id": "color",
-                    "value": {
-                      "mode": "continuous-GrYlRd"
-                    }
-                  },
-                  {
-                    "id": "custom.fillOpacity",
-                    "value": 0
-                  },
-                  {
-                    "id": "unit",
-                    "value": "currencyUSD"
-                  },
-                  {
-                    "id": "custom.axisLabel",
-                    "value": "EBS Volume Cost"
-                  },
-                  {
-                    "id": "displayName",
-                    "value": "EBS Volume Cost"
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byFrameRefID",
-                  "options": "EBSWriteBytes"
-                },
-                "properties": [
-                  {
-                    "id": "color",
-                    "value": {
-                      "fixedColor": "dark-purple",
-                      "mode": "fixed"
-                    }
-                  }
-                ]
-              }
-            ]
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 12,
-            "y": 38
-          },
-          "id": 50,
-          "options": {
-            "legend": {
-              "calcs": [
-                "max",
-                "min"
-              ],
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "multi",
-              "sort": "none"
-            }
-          },
-          "targets": [
-            {
-              "connectionArgs": {
-                "catalog": "__default",
-                "database": "__default",
-                "region": "__default",
-                "resultReuseEnabled": false,
-                "resultReuseMaxAgeInMinutes": 60
-              },
-              "datasource": {
-                "type": "grafana-athena-datasource",
-                "uid": "${DS_COAST-2023-09-19}"
-              },
-              "format": 1,
-              "hide": false,
-              "rawSQL": "-- When troubleshooting a query, it helps to use the Query Inspector button and copy the query into Athena\n-- To view resource names add in line_item_resource_id to the SELECT and GROUP BY statements\nSELECT \n  date_trunc('$Granularity', line_item_usage_start_date),\n  SUM(line_item_unblended_cost) as cost\nFROM\n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_product_code = 'AmazonEC2'\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_usage_type Like '%VolumeUsage%'\n  AND product_region = '$Regions' \nGROUP BY \n1\nHAVING SUM(line_item_unblended_cost) > 0",
-              "refId": "EBS Volume Cost"
-            },
-            {
-              "datasource": {
-                "type": "cloudwatch",
-                "uid": "${DS_CLOUDWATCH}"
-              },
-              "dimensions": {},
-              "expression": "SEARCH('{\"AWS/EC2\",\"AutoScalingGroupName\"} MetricName=\"EBSReadOps\" \"$ASGName\"', 'Average', 300)",
-              "id": "",
-              "label": "",
-              "logGroups": [],
-              "matchExact": true,
-              "metricEditorMode": 1,
-              "metricName": "",
-              "metricQueryType": 0,
-              "namespace": "",
-              "period": "",
-              "queryMode": "Metrics",
-              "refId": "EBSReadIO",
-              "region": "$Regions",
-              "sqlExpression": "",
-              "statistic": "Average"
-            },
-            {
-              "datasource": {
-                "type": "cloudwatch",
-                "uid": "${DS_CLOUDWATCH}"
-              },
-              "dimensions": {},
-              "expression": "SEARCH('{\"AWS/EC2\",\"AutoScalingGroupName\"} MetricName=\"EBSWriteOps\" \"$ASGName\"', 'Average', 300)",
-              "hide": false,
-              "id": "",
-              "label": "",
-              "logGroups": [],
-              "matchExact": true,
-              "metricEditorMode": 1,
-              "metricName": "",
-              "metricQueryType": 0,
-              "namespace": "",
-              "period": "",
-              "queryMode": "Metrics",
-              "refId": "EBSWriteIO",
-              "region": "$Regions",
-              "sqlExpression": "",
-              "statistic": "Average"
-            }
-          ],
-          "title": "EBS Volume Read/Write IOPS ASG: $ASGName",
-          "transparent": true,
-          "type": "timeseries"
+          "dimensions": {},
+          "expression": "REMOVE_EMPTY(SEARCH('{\"AWS/EC2\",\"AutoScalingGroupName\"} MetricName=\"CPUUtilization\" \"$ASGName\"', 'Average', 300))",
+          "id": "",
+          "label": "",
+          "logGroups": [],
+          "matchExact": true,
+          "metricEditorMode": 1,
+          "metricName": "",
+          "metricQueryType": 0,
+          "namespace": "",
+          "period": "",
+          "queryMode": "Metrics",
+          "refId": "CPUUtilization",
+          "region": "$Regions",
+          "sqlExpression": "",
+          "statistic": "Average"
         }
       ],
-      "title": "EBS Activity - $ASGName",
-      "type": "row"
+      "title": "Average CPU - ASG: $ASGName",
+      "transparent": true,
+      "type": "timeseries"
     },
     {
-      "collapsed": true,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 22
+      "datasource": {
+        "type": "datasource",
+        "uid": "-- Mixed --"
       },
-      "id": 38,
-      "panels": [
-        {
-          "datasource": {
-            "type": "datasource",
-            "uid": "-- Mixed --"
+      "description": "Status failure Metrics for the entire ASG. This metric reports whether the instance has passed both the instance status check and the system status check in the last minute. This metric can be either 0 (passed) or 1 (failed). By default, this metric is available at a 1-minute frequency at no charge.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-BlPu"
           },
-          "description": "Load Balancer LCU Usage for $LBName - Be sure to update the Load Balancer Name variable at the top of the dashboard.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "continuous-BlPu"
-              },
-              "custom": {
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "MBytes",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "drawStyle": "line",
-                "fillOpacity": 30,
-                "gradientMode": "scheme",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "lineInterpolation": "smooth",
-                "lineStyle": {
-                  "dash": [
-                    0,
-                    10
-                  ],
-                  "fill": "dot"
-                },
-                "lineWidth": 2,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "none"
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "Failed Checks",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 30,
+            "gradientMode": "scheme",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
             },
-            "overrides": [
+            "insertNulls": false,
+            "lineInterpolation": "smooth",
+            "lineStyle": {
+              "dash": [
+                0,
+                10
+              ],
+              "fill": "dot"
+            },
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
               {
-                "matcher": {
-                  "id": "byFrameRefID",
-                  "options": "LCUUsage"
-                },
-                "properties": [
-                  {
-                    "id": "color",
-                    "value": {
-                      "mode": "continuous-GrYlRd"
-                    }
-                  },
-                  {
-                    "id": "custom.fillOpacity",
-                    "value": 0
-                  },
-                  {
-                    "id": "unit",
-                    "value": "currencyUSD"
-                  },
-                  {
-                    "id": "custom.axisLabel",
-                    "value": "ELB Networking Cost"
-                  },
-                  {
-                    "id": "displayName",
-                    "value": "ELB Networking Cost"
-                  },
-                  {
-                    "id": "custom.showPoints",
-                    "value": "always"
-                  }
-                ]
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
               }
             ]
           },
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 0,
-            "y": 39
-          },
-          "id": 40,
-          "links": [
-            {
-              "targetBlank": true,
-              "title": "ELB Pricing Page",
-              "url": "https://aws.amazon.com/elasticloadbalancing/pricing/"
-            }
-          ],
-          "options": {
-            "legend": {
-              "calcs": [
-                "max",
-                "min"
-              ],
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true
+          "unit": "none"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "CUR Compute Query"
             },
-            "tooltip": {
-              "mode": "multi",
-              "sort": "none"
-            }
-          },
-          "targets": [
-            {
-              "connectionArgs": {
-                "catalog": "__default",
-                "database": "__default",
-                "region": "__default",
-                "resultReuseEnabled": false,
-                "resultReuseMaxAgeInMinutes": 60
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "continuous-GrYlRd"
+                }
               },
-              "datasource": {
-                "type": "grafana-athena-datasource",
-                "uid": "${DS_COAST-2023-09-19}"
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
               },
-              "format": 1,
-              "hide": false,
-              "rawSQL": "-- When troubleshooting a query, it helps to use the Query Inspector button and copy the query into Athena\n-- To view resource names add in line_item_resource_id to the SELECT and GROUP BY statements\nSELECT\ndate_trunc('$Granularity', line_item_usage_start_date),\nSUM(line_item_unblended_cost) as cost\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date) \n  AND line_item_product_code = 'AWSELB'\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND (line_item_usage_type LIKE '%LCUUsage' OR line_item_usage_type LIKE '%NLCUUsage')\n  AND line_item_operation LIKE '%LoadBalancing%'\n  AND line_item_resource_id LIKE CONCAT('%', '$LBName')\n  AND product_region = '$Regions' \n  GROUP BY\n  1\n  HAVING SUM(line_item_unblended_cost) > 0 \n",
-              "refId": "LCUUsage"
-            },
-            {
-              "datasource": {
-                "type": "cloudwatch",
-                "uid": "${DS_CLOUDWATCH}"
+              {
+                "id": "unit",
+                "value": "currencyUSD"
               },
-              "dimensions": {},
-              "expression": "SEARCH('{\"AWS/ApplicationELB\",\"LoadBalancer\"} MetricName=\"ConsumedLCUs\" \"$LBName\"', 'Average', 300)",
-              "id": "",
-              "label": "",
-              "logGroups": [],
-              "matchExact": true,
-              "metricEditorMode": 1,
-              "metricName": "",
-              "metricQueryType": 0,
-              "namespace": "",
-              "period": "",
-              "queryMode": "Metrics",
-              "refId": "ConsumedLCUs",
-              "region": "$Regions",
-              "sqlExpression": "",
-              "statistic": "Average"
-            }
+              {
+                "id": "custom.axisLabel",
+                "value": "Compute Cost"
+              },
+              {
+                "id": "custom.showPoints",
+                "value": "always"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 28
+      },
+      "id": 20,
+      "links": [
+        {
+          "targetBlank": true,
+          "title": "Cloudwatch",
+          "url": "https://$Regions.console.aws.amazon.com/cloudwatch/home?region=$Regions#metricsV2?graph=~(view~'timeSeries~stacked~false~region~'us-east-1~start~'-PT168H~end~'P0D~metrics~(~(~'AWS*2fEC2~'StatusCheckFailed~'AutoScalingGroupName~'$ASGName)))&query=~'*7bAWS*2fEC2*2cAutoScalingGroupName*7d*20$ASGName"
+        }
+      ],
+      "options": {
+        "legend": {
+          "calcs": [
+            "max",
+            "min"
           ],
-          "title": "LCU Metrics  - ELB: $LBName",
-          "transformations": [],
-          "transparent": true,
-          "type": "timeseries"
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${DS_COAST-2023-09-19}"
+          },
+          "format": 1,
+          "hide": false,
+          "rawSQL": "-- When troubleshooting a query, it helps to use the Query Inspector button and copy the query into Athena\n-- To view resource names add in line_item_resource_id to the SELECT and GROUP BY statements\nSELECT\n  date_trunc('$Granularity', line_item_usage_start_date),\n  SUM(line_item_unblended_cost) as cost\nfrom $CurTable\nWHERE\n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_product_code = 'AmazonEC2'\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_operation = 'RunInstances'\n  AND line_item_usage_type Like '%Usage%'\n  AND product_region = '$Regions' \n  --AND line_item_usage_account_id IN ($LinkedAccounts)\n  --AND $CurTable .line_item_product_code in ($Services)\nGROUP BY 1\nORDER BY 1",
+          "refId": "CUR Compute Query"
         },
         {
           "datasource": {
-            "type": "datasource",
-            "uid": "-- Mixed --"
+            "type": "cloudwatch",
+            "uid": "${DS_CLOUDWATCH}"
           },
-          "description": "Load Balancer LCU Usage for ELB $LBName - Be sure to update the Load Balancer Name variable at the top of the dashboard.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "continuous-BlPu"
-              },
-              "custom": {
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "MBytes",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "drawStyle": "line",
-                "fillOpacity": 30,
-                "gradientMode": "scheme",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "lineInterpolation": "smooth",
-                "lineStyle": {
-                  "dash": [
-                    0,
-                    10
-                  ],
-                  "fill": "dot"
-                },
-                "lineWidth": 2,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "none"
-            },
-            "overrides": [
-              {
-                "matcher": {
-                  "id": "byFrameRefID",
-                  "options": "LCUUsage"
-                },
-                "properties": [
-                  {
-                    "id": "color",
-                    "value": {
-                      "mode": "continuous-GrYlRd"
-                    }
-                  },
-                  {
-                    "id": "custom.fillOpacity",
-                    "value": 0
-                  },
-                  {
-                    "id": "unit",
-                    "value": "currencyUSD"
-                  },
-                  {
-                    "id": "custom.axisLabel",
-                    "value": "ELB Hourly Cost"
-                  },
-                  {
-                    "id": "displayName",
-                    "value": "ELB Hourly Cost"
-                  },
-                  {
-                    "id": "custom.showPoints",
-                    "value": "always"
-                  }
-                ]
-              }
-            ]
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 12,
-            "y": 39
-          },
-          "id": 39,
-          "links": [
-            {
-              "targetBlank": true,
-              "title": "ELB Pricing Page",
-              "url": "https://aws.amazon.com/elasticloadbalancing/pricing/"
-            }
-          ],
-          "options": {
-            "legend": {
-              "calcs": [
-                "max",
-                "min"
-              ],
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "multi",
-              "sort": "none"
-            }
-          },
-          "targets": [
-            {
-              "connectionArgs": {
-                "catalog": "__default",
-                "database": "__default",
-                "region": "__default",
-                "resultReuseEnabled": false,
-                "resultReuseMaxAgeInMinutes": 60
-              },
-              "datasource": {
-                "type": "grafana-athena-datasource",
-                "uid": "${DS_COAST-2023-09-19}"
-              },
-              "format": 1,
-              "hide": false,
-              "rawSQL": "-- When troubleshooting a query, it helps to use the Query Inspector button and copy the query into Athena\n-- To view resource names add in line_item_resource_id to the SELECT and GROUP BY statements\nSELECT\ndate_trunc('$Granularity', line_item_usage_start_date),\nSUM(line_item_unblended_cost) as cost\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date) \n  AND line_item_product_code = 'AWSELB'\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_usage_type LIKE '%LoadBalancerUsage' \n  AND line_item_operation LIKE '%LoadBalancing%'\n  AND line_item_resource_id LIKE CONCAT('%', '$LBName')\n  AND product_region = '$Regions' \n  GROUP BY\n  1\n  HAVING SUM(line_item_unblended_cost) > 0 \n",
-              "refId": "LCUUsage"
-            },
-            {
-              "datasource": {
-                "type": "cloudwatch",
-                "uid": "${DS_CLOUDWATCH}"
-              },
-              "dimensions": {},
-              "expression": "SEARCH('{\"AWS/ApplicationELB\",\"LoadBalancer\"} MetricName=\"ConsumedLCUs\" \"$LBName\"', 'Average', 300)",
-              "id": "",
-              "label": "",
-              "logGroups": [],
-              "matchExact": true,
-              "metricEditorMode": 1,
-              "metricName": "",
-              "metricQueryType": 0,
-              "namespace": "",
-              "period": "",
-              "queryMode": "Metrics",
-              "refId": "ConsumedLCUs",
-              "region": "$Regions",
-              "sqlExpression": "",
-              "statistic": "Average"
-            }
-          ],
-          "title": "Hourly Cost and Requests  - ELB: $LBName",
-          "transformations": [],
-          "transparent": true,
-          "type": "timeseries"
+          "dimensions": {},
+          "expression": "SEARCH('{\"AWS/EC2\",\"AutoScalingGroupName\"} MetricName=\"StatusCheckFailed\" \"$ASGName\"', 'Average', 300)",
+          "id": "",
+          "label": "",
+          "logGroups": [],
+          "matchExact": true,
+          "metricEditorMode": 1,
+          "metricName": "",
+          "metricQueryType": 0,
+          "namespace": "",
+          "period": "",
+          "queryMode": "Metrics",
+          "refId": "StatusCheckFailed",
+          "region": "$Regions",
+          "sqlExpression": "",
+          "statistic": "Average"
         }
       ],
-      "repeat": "LBName",
-      "repeatDirection": "h",
-      "title": "ELB Networking - TagValue: $TagValue - LBName: $LBName",
-      "type": "row"
+      "title": "Instance Status Check Failed - ASG: $ASGName",
+      "transparent": true,
+      "type": "timeseries"
     },
     {
-      "collapsed": true,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 23
+      "datasource": {
+        "type": "datasource",
+        "uid": "-- Mixed --"
       },
-      "id": 53,
-      "panels": [
-        {
-          "datasource": {
-            "type": "datasource",
-            "uid": "-- Mixed --"
+      "description": "The number of earned CPU credits (T instances) that an instance(s) have accrued since they were launched or started for the named Auto Scaling Group. Credits are accrued in the credit balance after they are earned, and removed from the credit balance when they are spent. The credit balance has a maximum limit, determined by the instance size. ",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-BlPu"
           },
-          "description": "",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "continuous-BlPu"
-              },
-              "custom": {
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "MBytes",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "drawStyle": "line",
-                "fillOpacity": 30,
-                "gradientMode": "scheme",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "lineInterpolation": "smooth",
-                "lineStyle": {
-                  "dash": [
-                    0,
-                    10
-                  ],
-                  "fill": "dot"
-                },
-                "lineWidth": 2,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "none"
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "CPU Credit",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 30,
+            "gradientMode": "scheme",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
             },
-            "overrides": [
+            "insertNulls": false,
+            "lineInterpolation": "smooth",
+            "lineStyle": {
+              "dash": [
+                0,
+                10
+              ],
+              "fill": "dot"
+            },
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
               {
-                "matcher": {
-                  "id": "byFrameRefID",
-                  "options": "NGWTraffic"
-                },
-                "properties": [
-                  {
-                    "id": "color",
-                    "value": {
-                      "mode": "continuous-GrYlRd"
-                    }
-                  },
-                  {
-                    "id": "custom.fillOpacity",
-                    "value": 0
-                  },
-                  {
-                    "id": "displayName",
-                    "value": "Nat Gateway Traffic Cost"
-                  },
-                  {
-                    "id": "custom.showPoints",
-                    "value": "always"
-                  },
-                  {
-                    "id": "custom.axisLabel",
-                    "value": "Traffic Cost"
-                  },
-                  {
-                    "id": "unit",
-                    "value": "currencyUSD"
-                  }
-                ]
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
               }
             ]
           },
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 0,
-            "y": 40
-          },
-          "id": 51,
-          "links": [
-            {
-              "targetBlank": true,
-              "title": "ELB Pricing Page",
-              "url": "https://aws.amazon.com/elasticloadbalancing/pricing/"
-            }
-          ],
-          "options": {
-            "legend": {
-              "calcs": [
-                "max",
-                "min"
-              ],
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true
+          "unit": "none"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "Compute Cost"
             },
-            "tooltip": {
-              "mode": "multi",
-              "sort": "none"
-            }
-          },
-          "targets": [
-            {
-              "connectionArgs": {
-                "catalog": "__default",
-                "database": "__default",
-                "region": "__default",
-                "resultReuseEnabled": false,
-                "resultReuseMaxAgeInMinutes": 60
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "continuous-GrYlRd"
+                }
               },
-              "datasource": {
-                "type": "grafana-athena-datasource",
-                "uid": "${DS_COAST-2023-09-19}"
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
               },
-              "format": 1,
-              "hide": false,
-              "rawSQL": "-- When troubleshooting a query, it helps to use the Query Inspector button and copy the query into Athena\n-- To view resource names add in line_item_resource_id to the SELECT and GROUP BY statements\nSELECT\ndate_trunc('$Granularity', line_item_usage_start_date),\nSUM(line_item_unblended_cost) as cost\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date) \n  AND line_item_product_code = 'AmazonEC2'\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_usage_type = 'NatGateway-Bytes'\n  AND line_item_operation = 'NatGateway'\n  AND line_item_resource_id LIKE CONCAT('%', '$NGWName')\n  AND product_region = '$Regions' \n  GROUP BY\n  1\n",
-              "refId": "NGWTraffic"
-            },
-            {
-              "datasource": {
-                "type": "cloudwatch",
-                "uid": "${DS_CLOUDWATCH}"
+              {
+                "id": "custom.axisLabel",
+                "value": "Compute Cost"
               },
-              "dimensions": {},
-              "expression": "SEARCH('{\"AWS/NATGateway\",\"NatGatewayId\"} MetricName=\"BytesOutToDestination\" \"$NGWName\"', 'Average', 300)",
-              "id": "",
-              "label": "",
-              "logGroups": [],
-              "matchExact": true,
-              "metricEditorMode": 1,
-              "metricName": "",
-              "metricQueryType": 0,
-              "namespace": "",
-              "period": "",
-              "queryMode": "Metrics",
-              "refId": "BytesOutToDestination",
-              "region": "$Regions",
-              "sqlExpression": "",
-              "statistic": "Average"
-            }
+              {
+                "id": "unit",
+                "value": "currencyUSD"
+              },
+              {
+                "id": "custom.showPoints",
+                "value": "always"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 28
+      },
+      "id": 21,
+      "links": [
+        {
+          "targetBlank": true,
+          "title": "Cloudwatch",
+          "url": "https://$Regions.console.aws.amazon.com/cloudwatch/home?region=us-east-1#metricsV2?graph=~(view~'timeSeries~stacked~false~region~'$Regions~start~'-PT168H~end~'P0D~metrics~(~(~'AWS*2fEC2~'CPUCreditBalance~'AutoScalingGroupName~'$ASGName)~(~'.~'CPUCreditUsage~'.~'.)))&query=~'*7bAWS*2fEC2*2cAutoScalingGroupName*7d*20$ASGName"
+        }
+      ],
+      "options": {
+        "legend": {
+          "calcs": [
+            "max",
+            "min"
           ],
-          "title": "NatGateway Traffic Cost",
-          "transformations": [],
-          "transparent": true,
-          "type": "timeseries"
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${DS_COAST-2023-09-19}"
+          },
+          "format": 1,
+          "hide": false,
+          "rawSQL": "-- When troubleshooting a query, it helps to use the Query Inspector button and copy the query into Athena\n-- To view resource names add in line_item_resource_id to the SELECT and GROUP BY statements\nSELECT\n  date_trunc('$Granularity', line_item_usage_start_date),\n  SUM(line_item_unblended_cost) as cost\nfrom $CurTable\nWHERE\n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_product_code = 'AmazonEC2'\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_operation = 'RunInstances'\n  AND line_item_usage_type Like '%Usage%'\n  AND product_region = '$Regions' \n  --AND line_item_usage_account_id IN ($LinkedAccounts) -- future use\n  --AND $CurTable .line_item_product_code in ($Services) -- future use\nGROUP BY 1\nORDER BY 1",
+          "refId": "Compute Cost"
         },
         {
           "datasource": {
-            "type": "datasource",
-            "uid": "-- Mixed --"
+            "type": "cloudwatch",
+            "uid": "${DS_CLOUDWATCH}"
           },
-          "description": "",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "continuous-BlPu"
-              },
-              "custom": {
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "MBytes",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "drawStyle": "line",
-                "fillOpacity": 30,
-                "gradientMode": "scheme",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "lineInterpolation": "smooth",
-                "lineStyle": {
-                  "dash": [
-                    0,
-                    10
-                  ],
-                  "fill": "dot"
-                },
-                "lineWidth": 2,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "none"
-            },
-            "overrides": [
-              {
-                "matcher": {
-                  "id": "byFrameRefID",
-                  "options": "NGWHourly"
-                },
-                "properties": [
-                  {
-                    "id": "color",
-                    "value": {
-                      "fixedColor": "yellow",
-                      "mode": "fixed"
-                    }
-                  },
-                  {
-                    "id": "custom.fillOpacity",
-                    "value": 0
-                  },
-                  {
-                    "id": "unit",
-                    "value": "currencyUSD"
-                  },
-                  {
-                    "id": "displayName",
-                    "value": "NatGateway Hourly Cost"
-                  },
-                  {
-                    "id": "custom.showPoints",
-                    "value": "always"
-                  },
-                  {
-                    "id": "unit",
-                    "value": "currencyUSD"
-                  },
-                  {
-                    "id": "custom.axisLabel",
-                    "value": "NatGateway Hourly Cost"
-                  }
-                ]
-              }
-            ]
+          "dimensions": {},
+          "expression": "SEARCH('{\"AWS/EC2\",\"AutoScalingGroupName\"} MetricName=\"CPUCreditUsage\" \"$ASGName\"', 'Average', 300)",
+          "id": "",
+          "label": "",
+          "logGroups": [],
+          "matchExact": true,
+          "metricEditorMode": 1,
+          "metricName": "",
+          "metricQueryType": 0,
+          "namespace": "",
+          "period": "",
+          "queryMode": "Metrics",
+          "refId": "CPUCreditUsage",
+          "region": "$Regions",
+          "sqlExpression": "",
+          "statistic": "Average"
+        },
+        {
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "${DS_CLOUDWATCH}"
           },
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 12,
-            "y": 40
-          },
-          "id": 54,
-          "links": [
-            {
-              "targetBlank": true,
-              "title": "ELB Pricing Page",
-              "url": "https://aws.amazon.com/elasticloadbalancing/pricing/"
-            }
-          ],
-          "options": {
-            "legend": {
-              "calcs": [
-                "max",
-                "min"
-              ],
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "multi",
-              "sort": "none"
-            }
-          },
-          "targets": [
-            {
-              "connectionArgs": {
-                "catalog": "__default",
-                "database": "__default",
-                "region": "__default",
-                "resultReuseEnabled": false,
-                "resultReuseMaxAgeInMinutes": 60
-              },
-              "datasource": {
-                "type": "grafana-athena-datasource",
-                "uid": "${DS_COAST-2023-09-19}"
-              },
-              "format": 1,
-              "hide": false,
-              "rawSQL": "-- When troubleshooting a query, it helps to use the Query Inspector button and copy the query into Athena\n-- To view resource names add in line_item_resource_id to the SELECT and GROUP BY statements\nSELECT\ndate_trunc('$Granularity', line_item_usage_start_date),\nSUM(line_item_unblended_cost) as cost\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date) \n  AND line_item_product_code = 'AmazonEC2'\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_usage_type = 'NatGateway-Hours'\n  AND line_item_operation = 'NatGateway'\n  AND line_item_resource_id LIKE CONCAT('%', '$NGWName')\n  AND product_region = '$Regions' \n  GROUP BY\n  1\n",
-              "refId": "NGWHourly"
-            },
-            {
-              "datasource": {
-                "type": "cloudwatch",
-                "uid": "${DS_CLOUDWATCH}"
-              },
-              "dimensions": {},
-              "expression": "SEARCH('{\"AWS/NATGateway\",\"NatGatewayId\"} MetricName=\"BytesOutToDestination\" \"$NGWName\"', 'Average', 300)",
-              "id": "",
-              "label": "",
-              "logGroups": [],
-              "matchExact": true,
-              "metricEditorMode": 1,
-              "metricName": "",
-              "metricQueryType": 0,
-              "namespace": "",
-              "period": "",
-              "queryMode": "Metrics",
-              "refId": "BytesOutToDestination",
-              "region": "$Regions",
-              "sqlExpression": "",
-              "statistic": "Average"
-            }
-          ],
-          "title": "NatGateway Test",
-          "transformations": [],
-          "transparent": true,
-          "type": "timeseries"
+          "dimensions": {},
+          "expression": "SEARCH('{\"AWS/EC2\",\"AutoScalingGroupName\"} MetricName=\"CPUCreditBalance\" \"$ASGName\"', 'Average', 300)",
+          "hide": false,
+          "id": "",
+          "label": "",
+          "logGroups": [],
+          "matchExact": true,
+          "metricEditorMode": 1,
+          "metricName": "",
+          "metricQueryType": 0,
+          "namespace": "",
+          "period": "",
+          "queryMode": "Metrics",
+          "refId": "CPUCreditBalance",
+          "region": "$Regions",
+          "sqlExpression": "",
+          "statistic": "Average"
         }
       ],
-      "repeat": "NGWName",
-      "repeatDirection": "h",
-      "title": "NatGateway - TagValue: $TagValue - NGWName - $NGWName",
-      "type": "row"
+      "title": "CPU Credit Balance - ASG: $ASGName",
+      "transparent": true,
+      "type": "timeseries"
     },
     {
       "collapsed": false,
@@ -3650,7 +2152,1512 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 24
+        "y": 36
+      },
+      "id": 24,
+      "panels": [],
+      "title": "Network - Autoscaling Group: $ASGName",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "datasource",
+        "uid": "-- Mixed --"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-BlPu"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "Network Out",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 30,
+            "gradientMode": "scheme",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "smooth",
+            "lineStyle": {
+              "dash": [
+                0,
+                10
+              ],
+              "fill": "dot"
+            },
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "EC2 Compute Cost Query"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "continuous-GrYlRd"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "unit",
+                "value": "currencyUSD"
+              },
+              {
+                "id": "custom.axisLabel",
+                "value": "EC2 Networking Cost"
+              },
+              {
+                "id": "displayName",
+                "value": "EC2 Networking Cost"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 37
+      },
+      "id": 22,
+      "options": {
+        "legend": {
+          "calcs": [
+            "max",
+            "min"
+          ],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${DS_COAST-2023-09-19}"
+          },
+          "format": 1,
+          "hide": false,
+          "rawSQL": "-- When troubleshooting a query, it helps to use the Query Inspector button and copy the query into Athena\n-- To view resource names add in line_item_resource_id to the SELECT and GROUP BY statements\nSELECT \n  date_trunc('$Granularity', line_item_usage_start_date),\n  SUM(line_item_unblended_cost) as cost\nFROM\n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_product_code = 'AmazonEC2'\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  -- AND line_item_operation = 'RunInstances'\n  AND line_item_usage_type LIKE '%AWS%Bytes%'\n  AND product_region = '$Regions' \nGROUP BY \n1\nHAVING SUM(line_item_unblended_cost) > 0\n\n",
+          "refId": "EC2 Compute Cost Query"
+        },
+        {
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "${DS_CLOUDWATCH}"
+          },
+          "dimensions": {},
+          "expression": "SEARCH('{\"AWS/EC2\",\"AutoScalingGroupName\"} MetricName=\"NetworkOut\" \"$ASGName\"', 'Average', 300)",
+          "id": "",
+          "label": "",
+          "logGroups": [],
+          "matchExact": true,
+          "metricEditorMode": 1,
+          "metricName": "",
+          "metricQueryType": 0,
+          "namespace": "",
+          "period": "",
+          "queryMode": "Metrics",
+          "refId": "A",
+          "region": "$Regions",
+          "sqlExpression": "",
+          "statistic": "Average"
+        }
+      ],
+      "title": "EC2 Networking Bytes Out- ASG: $ASGName",
+      "transparent": true,
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "datasource",
+        "uid": "-- Mixed --"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-BlPu"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "Packets Out",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 30,
+            "gradientMode": "scheme",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "smooth",
+            "lineStyle": {
+              "dash": [
+                0,
+                10
+              ],
+              "fill": "dot"
+            },
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "EC2 Compute Cost Query"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "continuous-GrYlRd"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "unit",
+                "value": "currencyUSD"
+              },
+              {
+                "id": "custom.axisLabel",
+                "value": "EC2 Networking Cost"
+              },
+              {
+                "id": "displayName",
+                "value": "EC2 Networking Cost"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 37
+      },
+      "id": 41,
+      "options": {
+        "legend": {
+          "calcs": [
+            "max",
+            "min"
+          ],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${DS_COAST-2023-09-19}"
+          },
+          "format": 1,
+          "hide": false,
+          "rawSQL": "-- When troubleshooting a query, it helps to use the Query Inspector button and copy the query into Athena\n-- To view resource names add in line_item_resource_id to the SELECT and GROUP BY statements\nSELECT \n  date_trunc('$Granularity', line_item_usage_start_date),\n  SUM(line_item_unblended_cost) as cost\nFROM\n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_product_code = 'AmazonEC2'\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  -- AND line_item_operation = 'RunInstances'\n  AND line_item_usage_type LIKE '%AWS%Bytes%'\n  AND product_region = '$Regions' \nGROUP BY \n1\nHAVING SUM(line_item_unblended_cost) > 0\n\n",
+          "refId": "EC2 Compute Cost Query"
+        },
+        {
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "${DS_CLOUDWATCH}"
+          },
+          "dimensions": {},
+          "expression": "SEARCH('{\"AWS/EC2\",\"AutoScalingGroupName\"} MetricName=\"NetworkPacketsOut\" \"$ASGName\"', 'Average', 300)",
+          "id": "",
+          "label": "",
+          "logGroups": [],
+          "matchExact": true,
+          "metricEditorMode": 1,
+          "metricName": "",
+          "metricQueryType": 0,
+          "namespace": "",
+          "period": "",
+          "queryMode": "Metrics",
+          "refId": "A",
+          "region": "$Regions",
+          "sqlExpression": "",
+          "statistic": "Average"
+        }
+      ],
+      "title": "EC2 Networking Packets Out - ASG: $ASGName",
+      "transparent": true,
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 45
+      },
+      "id": 48,
+      "panels": [],
+      "title": "EBS Activity - $ASGName",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "datasource",
+        "uid": "-- Mixed --"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-BlPu"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "Read/Write MBytes",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 30,
+            "gradientMode": "scheme",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "smooth",
+            "lineStyle": {
+              "dash": [
+                0,
+                10
+              ],
+              "fill": "dot"
+            },
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "EBS Volume Cost"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "continuous-GrYlRd"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "unit",
+                "value": "currencyUSD"
+              },
+              {
+                "id": "custom.axisLabel",
+                "value": "EBS Volume Cost"
+              },
+              {
+                "id": "displayName",
+                "value": "EBS Volume Cost"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "EBSWriteBytes"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-purple",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 46
+      },
+      "id": 49,
+      "options": {
+        "legend": {
+          "calcs": [
+            "max",
+            "min"
+          ],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${DS_COAST-2023-09-19}"
+          },
+          "format": 1,
+          "hide": false,
+          "rawSQL": "-- When troubleshooting a query, it helps to use the Query Inspector button and copy the query into Athena\n-- To view resource names add in line_item_resource_id to the SELECT and GROUP BY statements\nSELECT \n  date_trunc('$Granularity', line_item_usage_start_date),\n  SUM(line_item_unblended_cost) as cost\nFROM\n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_product_code = 'AmazonEC2'\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_usage_type Like '%VolumeUsage%'\n  AND product_region = '$Regions' \nGROUP BY \n1\nHAVING SUM(line_item_unblended_cost) > 0",
+          "refId": "EBS Volume Cost"
+        },
+        {
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "${DS_CLOUDWATCH}"
+          },
+          "dimensions": {},
+          "expression": "SEARCH('{\"AWS/EC2\",\"AutoScalingGroupName\"} MetricName=\"EBSReadBytes\" \"$ASGName\"', 'Average', 300)",
+          "id": "",
+          "label": "",
+          "logGroups": [],
+          "matchExact": true,
+          "metricEditorMode": 1,
+          "metricName": "",
+          "metricQueryType": 0,
+          "namespace": "",
+          "period": "",
+          "queryMode": "Metrics",
+          "refId": "EBSReadBytes",
+          "region": "$Regions",
+          "sqlExpression": "",
+          "statistic": "Average"
+        },
+        {
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "${DS_CLOUDWATCH}"
+          },
+          "dimensions": {},
+          "expression": "SEARCH('{\"AWS/EC2\",\"AutoScalingGroupName\"} MetricName=\"EBSWriteBytes\" \"$ASGName\"', 'Average', 300)",
+          "hide": false,
+          "id": "",
+          "label": "",
+          "logGroups": [],
+          "matchExact": true,
+          "metricEditorMode": 1,
+          "metricName": "",
+          "metricQueryType": 0,
+          "namespace": "",
+          "period": "",
+          "queryMode": "Metrics",
+          "refId": "EBSWriteBytes",
+          "region": "$Regions",
+          "sqlExpression": "",
+          "statistic": "Average"
+        }
+      ],
+      "title": "EBS Volume Read/Write- ASG: $ASGName",
+      "transparent": true,
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "datasource",
+        "uid": "-- Mixed --"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-BlPu"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "Read/Write Ops",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 30,
+            "gradientMode": "scheme",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "smooth",
+            "lineStyle": {
+              "dash": [
+                0,
+                10
+              ],
+              "fill": "dot"
+            },
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "EBS Volume Cost"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "continuous-GrYlRd"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "unit",
+                "value": "currencyUSD"
+              },
+              {
+                "id": "custom.axisLabel",
+                "value": "EBS Volume Cost"
+              },
+              {
+                "id": "displayName",
+                "value": "EBS Volume Cost"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "EBSWriteBytes"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-purple",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 46
+      },
+      "id": 50,
+      "options": {
+        "legend": {
+          "calcs": [
+            "max",
+            "min"
+          ],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${DS_COAST-2023-09-19}"
+          },
+          "format": 1,
+          "hide": false,
+          "rawSQL": "-- When troubleshooting a query, it helps to use the Query Inspector button and copy the query into Athena\n-- To view resource names add in line_item_resource_id to the SELECT and GROUP BY statements\nSELECT \n  date_trunc('$Granularity', line_item_usage_start_date),\n  SUM(line_item_unblended_cost) as cost\nFROM\n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_product_code = 'AmazonEC2'\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_usage_type Like '%VolumeUsage%'\n  AND product_region = '$Regions' \nGROUP BY \n1\nHAVING SUM(line_item_unblended_cost) > 0",
+          "refId": "EBS Volume Cost"
+        },
+        {
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "${DS_CLOUDWATCH}"
+          },
+          "dimensions": {},
+          "expression": "SEARCH('{\"AWS/EC2\",\"AutoScalingGroupName\"} MetricName=\"EBSReadOps\" \"$ASGName\"', 'Average', 300)",
+          "id": "",
+          "label": "",
+          "logGroups": [],
+          "matchExact": true,
+          "metricEditorMode": 1,
+          "metricName": "",
+          "metricQueryType": 0,
+          "namespace": "",
+          "period": "",
+          "queryMode": "Metrics",
+          "refId": "EBSReadIO",
+          "region": "$Regions",
+          "sqlExpression": "",
+          "statistic": "Average"
+        },
+        {
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "${DS_CLOUDWATCH}"
+          },
+          "dimensions": {},
+          "expression": "SEARCH('{\"AWS/EC2\",\"AutoScalingGroupName\"} MetricName=\"EBSWriteOps\" \"$ASGName\"', 'Average', 300)",
+          "hide": false,
+          "id": "",
+          "label": "",
+          "logGroups": [],
+          "matchExact": true,
+          "metricEditorMode": 1,
+          "metricName": "",
+          "metricQueryType": 0,
+          "namespace": "",
+          "period": "",
+          "queryMode": "Metrics",
+          "refId": "EBSWriteIO",
+          "region": "$Regions",
+          "sqlExpression": "",
+          "statistic": "Average"
+        }
+      ],
+      "title": "EBS Volume Read/Write IOPS ASG: $ASGName",
+      "transparent": true,
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 54
+      },
+      "id": 38,
+      "panels": [],
+      "repeat": "LBName",
+      "repeatDirection": "h",
+      "title": "ELB Networking - TagValue: $TagValue - LBName: $LBName",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "datasource",
+        "uid": "-- Mixed --"
+      },
+      "description": "Load Balancer LCU Usage for $LBName - Be sure to update the Load Balancer Name variable at the top of the dashboard.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-BlPu"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "LCUs",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 30,
+            "gradientMode": "scheme",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "smooth",
+            "lineStyle": {
+              "dash": [
+                0,
+                10
+              ],
+              "fill": "dot"
+            },
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "LCUUsage"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "continuous-GrYlRd"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "unit",
+                "value": "currencyUSD"
+              },
+              {
+                "id": "custom.axisLabel",
+                "value": "ELB Networking Cost"
+              },
+              {
+                "id": "displayName",
+                "value": "ELB Networking Cost"
+              },
+              {
+                "id": "custom.showPoints",
+                "value": "always"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 55
+      },
+      "id": 40,
+      "links": [
+        {
+          "targetBlank": true,
+          "title": "ELB Pricing Page",
+          "url": "https://aws.amazon.com/elasticloadbalancing/pricing/"
+        }
+      ],
+      "options": {
+        "legend": {
+          "calcs": [
+            "max",
+            "min"
+          ],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${DS_COAST-2023-09-19}"
+          },
+          "format": 1,
+          "hide": false,
+          "rawSQL": "-- When troubleshooting a query, it helps to use the Query Inspector button and copy the query into Athena\n-- To view resource names add in line_item_resource_id to the SELECT and GROUP BY statements\nSELECT\ndate_trunc('$Granularity', line_item_usage_start_date),\nSUM(line_item_unblended_cost) as cost\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date) \n  AND line_item_product_code = 'AWSELB'\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND (line_item_usage_type LIKE '%LCUUsage' OR line_item_usage_type LIKE '%NLCUUsage')\n  AND line_item_operation LIKE '%LoadBalancing%'\n  AND line_item_resource_id LIKE CONCAT('%', '$LBName')\n  AND product_region = '$Regions' \n  GROUP BY\n  1\n  HAVING SUM(line_item_unblended_cost) > 0 \n",
+          "refId": "LCUUsage"
+        },
+        {
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "${DS_CLOUDWATCH}"
+          },
+          "dimensions": {},
+          "expression": "SEARCH('{\"AWS/ApplicationELB\",\"LoadBalancer\"} MetricName=\"ConsumedLCUs\" \"$LBName\"', 'Average', 300)",
+          "id": "",
+          "label": "",
+          "logGroups": [],
+          "matchExact": true,
+          "metricEditorMode": 1,
+          "metricName": "",
+          "metricQueryType": 0,
+          "namespace": "",
+          "period": "",
+          "queryMode": "Metrics",
+          "refId": "ConsumedLCUs",
+          "region": "$Regions",
+          "sqlExpression": "",
+          "statistic": "Average"
+        }
+      ],
+      "title": "LCU Metrics  - ELB: $LBName",
+      "transparent": true,
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "datasource",
+        "uid": "-- Mixed --"
+      },
+      "description": "Load Balancer LCU Usage for ELB $LBName - Be sure to update the Load Balancer Name variable at the top of the dashboard.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-BlPu"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "LCUs",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 30,
+            "gradientMode": "scheme",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "smooth",
+            "lineStyle": {
+              "dash": [
+                0,
+                10
+              ],
+              "fill": "dot"
+            },
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "LCUUsage"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "continuous-GrYlRd"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "unit",
+                "value": "currencyUSD"
+              },
+              {
+                "id": "custom.axisLabel",
+                "value": "ELB Hourly Cost"
+              },
+              {
+                "id": "displayName",
+                "value": "ELB Hourly Cost"
+              },
+              {
+                "id": "custom.showPoints",
+                "value": "always"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 55
+      },
+      "id": 39,
+      "links": [
+        {
+          "targetBlank": true,
+          "title": "ELB Pricing Page",
+          "url": "https://aws.amazon.com/elasticloadbalancing/pricing/"
+        }
+      ],
+      "options": {
+        "legend": {
+          "calcs": [
+            "max",
+            "min"
+          ],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${DS_COAST-2023-09-19}"
+          },
+          "format": 1,
+          "hide": false,
+          "rawSQL": "-- When troubleshooting a query, it helps to use the Query Inspector button and copy the query into Athena\n-- To view resource names add in line_item_resource_id to the SELECT and GROUP BY statements\nSELECT\ndate_trunc('$Granularity', line_item_usage_start_date),\nSUM(line_item_unblended_cost) as cost\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date) \n  AND line_item_product_code = 'AWSELB'\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_usage_type LIKE '%LoadBalancerUsage' \n  AND line_item_operation LIKE '%LoadBalancing%'\n  AND line_item_resource_id LIKE CONCAT('%', '$LBName')\n  AND product_region = '$Regions' \n  GROUP BY\n  1\n  HAVING SUM(line_item_unblended_cost) > 0 \n",
+          "refId": "LCUUsage"
+        },
+        {
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "${DS_CLOUDWATCH}"
+          },
+          "dimensions": {},
+          "expression": "SEARCH('{\"AWS/ApplicationELB\",\"LoadBalancer\"} MetricName=\"ConsumedLCUs\" \"$LBName\"', 'Average', 300)",
+          "id": "",
+          "label": "",
+          "logGroups": [],
+          "matchExact": true,
+          "metricEditorMode": 1,
+          "metricName": "",
+          "metricQueryType": 0,
+          "namespace": "",
+          "period": "",
+          "queryMode": "Metrics",
+          "refId": "ConsumedLCUs",
+          "region": "$Regions",
+          "sqlExpression": "",
+          "statistic": "Average"
+        }
+      ],
+      "title": "Hourly Cost and Requests  - ELB: $LBName",
+      "transparent": true,
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 63
+      },
+      "id": 53,
+      "panels": [],
+      "repeat": "NGWName",
+      "repeatDirection": "h",
+      "title": "NatGateway - TagValue: $TagValue - NGWName - $NGWName",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "datasource",
+        "uid": "-- Mixed --"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-BlPu"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "Bytes Out",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 30,
+            "gradientMode": "scheme",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "smooth",
+            "lineStyle": {
+              "dash": [
+                0,
+                10
+              ],
+              "fill": "dot"
+            },
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "NGWTraffic"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "continuous-GrYlRd"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "displayName",
+                "value": "Nat Gateway Traffic Cost"
+              },
+              {
+                "id": "custom.showPoints",
+                "value": "always"
+              },
+              {
+                "id": "custom.axisLabel",
+                "value": "Traffic Cost"
+              },
+              {
+                "id": "unit",
+                "value": "currencyUSD"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 64
+      },
+      "id": 51,
+      "links": [
+        {
+          "targetBlank": true,
+          "title": "ELB Pricing Page",
+          "url": "https://aws.amazon.com/elasticloadbalancing/pricing/"
+        }
+      ],
+      "options": {
+        "legend": {
+          "calcs": [
+            "max",
+            "min"
+          ],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${DS_COAST-2023-09-19}"
+          },
+          "format": 1,
+          "hide": false,
+          "rawSQL": "-- When troubleshooting a query, it helps to use the Query Inspector button and copy the query into Athena\n-- To view resource names add in line_item_resource_id to the SELECT and GROUP BY statements\nSELECT\ndate_trunc('$Granularity', line_item_usage_start_date),\nSUM(line_item_unblended_cost) as cost\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date) \n  AND line_item_product_code = 'AmazonEC2'\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_usage_type = 'NatGateway-Bytes'\n  AND line_item_operation = 'NatGateway'\n  AND line_item_resource_id LIKE CONCAT('%', '$NGWName')\n  AND product_region = '$Regions' \n  GROUP BY\n  1\n",
+          "refId": "NGWTraffic"
+        },
+        {
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "${DS_CLOUDWATCH}"
+          },
+          "dimensions": {},
+          "expression": "SEARCH('{\"AWS/NATGateway\",\"NatGatewayId\"} MetricName=\"BytesOutToDestination\" \"$NGWName\"', 'Average', 300)",
+          "id": "",
+          "label": "",
+          "logGroups": [],
+          "matchExact": true,
+          "metricEditorMode": 1,
+          "metricName": "",
+          "metricQueryType": 0,
+          "namespace": "",
+          "period": "",
+          "queryMode": "Metrics",
+          "refId": "BytesOutToDestination",
+          "region": "$Regions",
+          "sqlExpression": "",
+          "statistic": "Average"
+        }
+      ],
+      "title": "NatGateway Traffic Cost",
+      "transparent": true,
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "datasource",
+        "uid": "-- Mixed --"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-BlPu"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "Bytes Out",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 30,
+            "gradientMode": "scheme",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "smooth",
+            "lineStyle": {
+              "dash": [
+                0,
+                10
+              ],
+              "fill": "dot"
+            },
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "NGWHourly"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "yellow",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "unit",
+                "value": "currencyUSD"
+              },
+              {
+                "id": "displayName",
+                "value": "NatGateway Hourly Cost"
+              },
+              {
+                "id": "custom.showPoints",
+                "value": "always"
+              },
+              {
+                "id": "unit",
+                "value": "currencyUSD"
+              },
+              {
+                "id": "custom.axisLabel",
+                "value": "NatGateway Hourly Cost"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 64
+      },
+      "id": 54,
+      "links": [
+        {
+          "targetBlank": true,
+          "title": "ELB Pricing Page",
+          "url": "https://aws.amazon.com/elasticloadbalancing/pricing/"
+        }
+      ],
+      "options": {
+        "legend": {
+          "calcs": [
+            "max",
+            "min"
+          ],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${DS_COAST-2023-09-19}"
+          },
+          "format": 1,
+          "hide": false,
+          "rawSQL": "-- When troubleshooting a query, it helps to use the Query Inspector button and copy the query into Athena\n-- To view resource names add in line_item_resource_id to the SELECT and GROUP BY statements\nSELECT\ndate_trunc('$Granularity', line_item_usage_start_date),\nSUM(line_item_unblended_cost) as cost\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date) \n  AND line_item_product_code = 'AmazonEC2'\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_usage_type = 'NatGateway-Hours'\n  AND line_item_operation = 'NatGateway'\n  AND line_item_resource_id LIKE CONCAT('%', '$NGWName')\n  AND product_region = '$Regions' \n  GROUP BY\n  1\n",
+          "refId": "NGWHourly"
+        },
+        {
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "${DS_CLOUDWATCH}"
+          },
+          "dimensions": {},
+          "expression": "SEARCH('{\"AWS/NATGateway\",\"NatGatewayId\"} MetricName=\"BytesOutToDestination\" \"$NGWName\"', 'Average', 300)",
+          "id": "",
+          "label": "",
+          "logGroups": [],
+          "matchExact": true,
+          "metricEditorMode": 1,
+          "metricName": "",
+          "metricQueryType": 0,
+          "namespace": "",
+          "period": "",
+          "queryMode": "Metrics",
+          "refId": "BytesOutToDestination",
+          "region": "$Regions",
+          "sqlExpression": "",
+          "statistic": "Average"
+        }
+      ],
+      "title": "NatGateway Test",
+      "transparent": true,
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 72
       },
       "id": 92,
       "panels": [],
@@ -3696,10 +3703,11 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 25
+        "y": 73
       },
       "id": 94,
       "options": {
+        "cellHeight": "sm",
         "footer": {
           "countRows": false,
           "fields": "",
@@ -3716,7 +3724,7 @@
           }
         ]
       },
-      "pluginVersion": "9.4.7",
+      "pluginVersion": "10.4.1",
       "targets": [
         {
           "connectionArgs": {
@@ -3744,7 +3752,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 33
+        "y": 81
       },
       "id": 90,
       "panels": [
@@ -3805,8 +3813,7 @@
   ],
   "refresh": false,
   "revision": 1,
-  "schemaVersion": 38,
-  "style": "dark",
+  "schemaVersion": 39,
   "tags": [],
   "templating": {
     "list": [
@@ -3903,22 +3910,12 @@
         "type": "query"
       },
       {
-        "current": {
-          "selected": false,
-          "text": "",
-          "value": ""
-        },
+        "current": {},
         "description": "Input the name of your autoscaling group",
         "hide": 0,
         "label": "ASG Name",
         "name": "ASGName",
-        "options": [
-          {
-            "selected": true,
-            "text": "",
-            "value": ""
-          }
-        ],
+        "options": [],
         "query": "",
         "skipUrlSync": false,
         "type": "textbox"
@@ -4086,13 +4083,13 @@
     ]
   },
   "time": {
-    "from": "now-2d",
+    "from": "now-30d",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Autoscaling Dashboard",
   "uid": "G9CQ3OpIzfda23g",
-  "version": 8,
+  "version": 2,
   "weekStart": ""
 }
