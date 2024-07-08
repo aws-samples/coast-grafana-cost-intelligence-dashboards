@@ -4,13 +4,13 @@
 
 ## About
 
-COAST is an open-source infrastructure as code deployment solution that integrates with Amazon Managed Grafana to provide customers with cost intelligence and optimization dashboards. COAST helps customers analyze and optimize their cloud costs by providing them with customizable dashboards on the Grafana open-source analytics and monitoring application they are already familiar with. With COAST, customers can gain full visibility and control over their cloud costs, ensuring that they are optimizing their spend and maximizing their ROI.
+COAST is an open-source infrastructure as code deployment solution that integrates with Amazon Managed Grafana to provide customers with cost intelligence and performance optimization dashboards. COAST helps customers analyze and optimize their cloud costs and performance by providing them with customizable dashboards on the Grafana open-source analytics and monitoring application they are already familiar with. With COAST, customers can gain full visibility and control over their cloud costs, ensuring that they are optimizing their spend and maximizing their ROI.
 
 
 
 ###### Advantages of COAST
 - If you are already using Grafana for monitoring application metrics, you will be familiar with the tool inferface.
-- COAST will integrate nicely with your existing Grafana dashboards.
+- COAST will integrate with your existing Grafana dashboards.
 - COAST has support for filtering by AWS account, service and AWS tags.
 - COAST may be installed at the AWS Management Account (payer) or in a single linked account with [member CUR](https://aws.amazon.com/about-aws/whats-new/2020/12/cost-and-usage-report-now-available-to-member-linked-accounts/).
 - COAST deploys the Executive dashboard with a CloudFormation template in under 5 minutes, and [additional dashboards](https://github.com/aws-samples/COAST/tree/main/grafana_dashboards) may be added with Grafana's easy one click [import](https://grafana.com/docs/grafana/latest/dashboards/manage-dashboards/#export-and-import-dashboards).
@@ -73,11 +73,11 @@ Within the CloudFormation template, you can choose whether to create a new Cost 
 - We recommend AWS IAM Identity Center (the Cloudformation template creates the Grafana workspace with AWS IAM Identity Center enabled).  
 - Add at least one Admin user under the Authentication tab in the Grafana Workspace console.  For additional instructions, see the [Grafana User Guide](https://docs.aws.amazon.com/grafana/latest/userguide/AMG-manage-users-and-groups-AMG.html) to setup user access.
 - Login to the COAST Grafana workspace URL using the identity configured above.
-- The dashboard will be automatically imported under the General folder in the Dashboards menu
+- Import the dashboards you require as per the instructions below
 
   #### Importing Additional Dashboards
 
-  You can import extra dashboards available in the grafana_dashboards folder of this repository. When importing dashboards, initially set all top variables to 'All'. This ensures that no variables (such as tags) are filtered in your initial view.
+  You may now import dashboards available in the grafana_dashboards folder of this repository.  Select a dashboard to import.  This will populate the dashboard name, and UID.  All dashboards will require an Amazon Athena datasource for CUR named "COAST-2023-09-19" and some may also require a CloudWatch datasource named "Cloudwatch".   After importing dashboards, follow the dashboards readme file to set your variables understand the data visualizations. 
   
   ##### FinOps Dashboard
 
