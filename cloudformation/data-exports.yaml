@@ -1,0 +1,862 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Sample CloudFormation template for creating an S3 bucket and a DynamoDB table.
+
+###########################################################################
+# Author: Chris Strzelczyk
+# Project: COAST: https://github.com/aws-samples/coast-grafana-cost-intelligence-dashboards
+# Inspired by CID templates: https://wellarchitectedlabs.com/cloud-intelligence-dashboards/
+###########################################################################
+
+Metadata:
+
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+        -
+          Label:
+            default: "Common Parameters Configuration"
+          Parameters:
+            - ResourcePrefix
+            - DataExportType
+            - ManagerAccount
+            - EnableSCAD
+
+Parameters:
+  ResourcePrefix:
+    Type: String
+    Default: "coast"
+    Description: "Prefix used for all named resources, including for the value of tag key 'project'"
+    MaxLength:  16 
+    AllowedPattern: "^[a-z0-9]+[a-z0-9-]{1,61}[a-z0-9]+$"
+  DataExportType:
+    Description: "Select a Data Export type"
+    Type: String
+    Default: "CUR-2-0"
+    AllowedValues:
+      - "CUR-Legacy"
+      - "CUR-2-0"
+      - "FOCUS"
+    ConstraintDescription: "Must be either 'CUR-Legacy', 'CUR-2-0' or 'FOCUS'."
+  ManagerAccount:
+    Type: String
+    Description: Set this to 'yes' if you are deploying this template in your management account.
+    AllowedValues: ['yes', 'no']
+    Default: "no"
+  EnableSCAD:
+    Type: String
+    Description: Whether to enable Split Cost Allocation Data (Scad). Set this to 'No', if you experience performance issues due to dataset size. Only applies to CUR data not FOCUS.
+    AllowedValues: ['yes', 'no']
+    Default: "no"
+
+Conditions:
+  EnableSCAD: !Equals [!Ref EnableSCAD, 'yes']
+  IsCURLegacySelected: !Equals [!Ref DataExportType, "CUR-Legacy"]
+  IsCUR20Selected: !Equals [!Ref DataExportType, "CUR-2-0"]
+  IsFOCUSSelected: !Equals [!Ref DataExportType, "FOCUS"]
+
+Mappings:
+  DataExportTypeMap:
+    CUR-Legacy:
+      ExportName: "curlegacy"
+    CUR-2-0:
+      ExportName: "cur20"
+    FOCUS:
+      ExportName: "focus"
+  DataExports:
+    #Mappings for storing values for different Data Exports tables
+    CUR2:
+      DefaultQuery: >-
+        SELECT bill_bill_type, bill_billing_entity, bill_billing_period_end_date, bill_billing_period_start_date, bill_invoice_id, bill_invoicing_entity, bill_payer_account_id, bill_payer_account_name, cost_category, discount, discount_bundled_discount, discount_total_discount, identity_line_item_id, identity_time_interval, line_item_availability_zone, line_item_blended_cost, line_item_blended_rate, line_item_currency_code, line_item_legal_entity, line_item_line_item_description, line_item_line_item_type, line_item_net_unblended_cost, line_item_net_unblended_rate, line_item_normalization_factor, line_item_normalized_usage_amount, line_item_operation, line_item_product_code, line_item_resource_id, line_item_tax_type, line_item_unblended_cost, line_item_unblended_rate, line_item_usage_account_id, line_item_usage_account_name, line_item_usage_amount, line_item_usage_end_date, line_item_usage_start_date, line_item_usage_type, pricing_currency, pricing_lease_contract_length, pricing_offering_class, pricing_public_on_demand_cost, pricing_public_on_demand_rate, pricing_purchase_option, pricing_rate_code, pricing_rate_id, pricing_term, pricing_unit, product, product_comment, product_fee_code, product_fee_description, product_from_location, product_from_location_type, product_from_region_code, product_instance_family, product_instance_type, product_instancesku, product_location, product_location_type, product_operation, product_pricing_unit, product_product_family, product_region_code, product_servicecode, product_sku, product_to_location, product_to_location_type, product_to_region_code, product_usagetype, reservation_amortized_upfront_cost_for_usage, reservation_amortized_upfront_fee_for_billing_period, reservation_availability_zone, reservation_effective_cost, reservation_end_time, reservation_modification_status, reservation_net_amortized_upfront_cost_for_usage, reservation_net_amortized_upfront_fee_for_billing_period, reservation_net_effective_cost, reservation_net_recurring_fee_for_usage, reservation_net_unused_amortized_upfront_fee_for_billing_period, reservation_net_unused_recurring_fee, reservation_net_upfront_value, reservation_normalized_units_per_reservation, reservation_number_of_reservations, reservation_recurring_fee_for_usage, reservation_reservation_a_r_n, reservation_start_time, reservation_subscription_id, reservation_total_reserved_normalized_units, reservation_total_reserved_units, reservation_units_per_reservation, reservation_unused_amortized_upfront_fee_for_billing_period, reservation_unused_normalized_unit_quantity, reservation_unused_quantity, reservation_unused_recurring_fee, reservation_upfront_value, resource_tags, savings_plan_amortized_upfront_commitment_for_billing_period, savings_plan_end_time, savings_plan_instance_type_family, savings_plan_net_amortized_upfront_commitment_for_billing_period, savings_plan_net_recurring_commitment_for_billing_period, savings_plan_net_savings_plan_effective_cost, savings_plan_offering_type, savings_plan_payment_option, savings_plan_purchase_term, savings_plan_recurring_commitment_for_billing_period, savings_plan_region, savings_plan_savings_plan_a_r_n, savings_plan_savings_plan_effective_cost, savings_plan_savings_plan_rate, savings_plan_start_time, savings_plan_total_commitment_to_date, savings_plan_used_commitment 
+        FROM COST_AND_USAGE_REPORT
+      SCADQuery: >-
+        SELECT bill_bill_type, bill_billing_entity, bill_billing_period_end_date, bill_billing_period_start_date, bill_invoice_id, bill_invoicing_entity, bill_payer_account_id, bill_payer_account_name, cost_category, discount, discount_bundled_discount, discount_total_discount, identity_line_item_id, identity_time_interval, line_item_availability_zone, line_item_blended_cost, line_item_blended_rate, line_item_currency_code, line_item_legal_entity, line_item_line_item_description, line_item_line_item_type, line_item_net_unblended_cost, line_item_net_unblended_rate, line_item_normalization_factor, line_item_normalized_usage_amount, line_item_operation, line_item_product_code, line_item_resource_id, line_item_tax_type, line_item_unblended_cost, line_item_unblended_rate, line_item_usage_account_id, line_item_usage_account_name, line_item_usage_amount, line_item_usage_end_date, line_item_usage_start_date, line_item_usage_type, pricing_currency, pricing_lease_contract_length, pricing_offering_class, pricing_public_on_demand_cost, pricing_public_on_demand_rate, pricing_purchase_option, pricing_rate_code, pricing_rate_id, pricing_term, pricing_unit, product, product_comment, product_fee_code, product_fee_description, product_from_location, product_from_location_type, product_from_region_code, product_instance_family, product_instance_type, product_instancesku, product_location, product_location_type, product_operation, product_pricing_unit, product_product_family, product_region_code, product_servicecode, product_sku, product_to_location, product_to_location_type, product_to_region_code, product_usagetype, reservation_amortized_upfront_cost_for_usage, reservation_amortized_upfront_fee_for_billing_period, reservation_availability_zone, reservation_effective_cost, reservation_end_time, reservation_modification_status, reservation_net_amortized_upfront_cost_for_usage, reservation_net_amortized_upfront_fee_for_billing_period, reservation_net_effective_cost, reservation_net_recurring_fee_for_usage, reservation_net_unused_amortized_upfront_fee_for_billing_period, reservation_net_unused_recurring_fee, reservation_net_upfront_value, reservation_normalized_units_per_reservation, reservation_number_of_reservations, reservation_recurring_fee_for_usage, reservation_reservation_a_r_n, reservation_start_time, reservation_subscription_id, reservation_total_reserved_normalized_units, reservation_total_reserved_units, reservation_units_per_reservation, reservation_unused_amortized_upfront_fee_for_billing_period, reservation_unused_normalized_unit_quantity, reservation_unused_quantity, reservation_unused_recurring_fee, reservation_upfront_value, resource_tags, savings_plan_amortized_upfront_commitment_for_billing_period, savings_plan_end_time, savings_plan_instance_type_family, savings_plan_net_amortized_upfront_commitment_for_billing_period, savings_plan_net_recurring_commitment_for_billing_period, savings_plan_net_savings_plan_effective_cost, savings_plan_offering_type, savings_plan_payment_option, savings_plan_purchase_term, savings_plan_recurring_commitment_for_billing_period, savings_plan_region, savings_plan_savings_plan_a_r_n, savings_plan_savings_plan_effective_cost, savings_plan_savings_plan_rate, savings_plan_start_time, savings_plan_total_commitment_to_date, savings_plan_used_commitment, split_line_item_actual_usage, split_line_item_net_split_cost, split_line_item_net_unused_cost, split_line_item_parent_resource_id, split_line_item_public_on_demand_split_cost, split_line_item_public_on_demand_unused_cost, split_line_item_reserved_usage, split_line_item_split_cost, split_line_item_split_usage, split_line_item_split_usage_ratio, split_line_item_unused_cost    
+        FROM COST_AND_USAGE_REPORT
+    FOCUS:
+      DefaultQuery: >-
+        SELECT AvailabilityZone, BilledCost, BillingAccountId, BillingAccountName, BillingCurrency, BillingPeriodEnd, BillingPeriodStart, ChargeCategory, ChargeClass, ChargeDescription, ChargeFrequency, ChargePeriodEnd, ChargePeriodStart, CommitmentDiscountCategory, CommitmentDiscountId, CommitmentDiscountName, CommitmentDiscountType, CommitmentDiscountStatus, ConsumedQuantity, ConsumedUnit, ContractedCost, ContractedUnitPrice, EffectiveCost, InvoiceIssuerName, ListCost, ListUnitPrice, PricingCategory, PricingQuantity, PricingUnit, ProviderName, PublisherName, RegionId, RegionName, ResourceId, ResourceName, ResourceType, ServiceCategory, ServiceName, SkuId, SkuPriceId, SubAccountId, SubAccountName, Tags, x_CostCategories, x_Discounts, x_Operation, x_ServiceCode, x_UsageType
+        FROM FOCUS_1_0_AWS_PREVIEW
+
+Resources:
+###########################################################################
+# Build S3 Bucket and Policy to Hold CUR or Focus Data
+###########################################################################
+
+    DataExportsBucket:
+      Type: AWS::S3::Bucket
+      DeletionPolicy: Delete
+      UpdateReplacePolicy: Retain
+      Properties:
+        BucketName: 
+          !Sub 
+          - ${ResourcePrefix}-data-export-${MappedExportName}-${UniqueString}
+          - UniqueString: !Select [ 0, !Split [ '-', !Select [ 2, !Split [ '/', !Ref 'AWS::StackId' ] ] ] ]
+            MappedExportName: !FindInMap [DataExportTypeMap, !Ref DataExportType, ExportName]
+
+        ## Uncomment following lines to enable bucket logging if needed. Please be careful with the cost of logging.
+        # LoggingConfiguration:
+        #   DestinationBucketName: REPLACE_WITH_YOUR_LOGGING_BUCKET
+        #   LogFilePrefix: REPLACE_WITH_YOUR_PREFIX
+
+        BucketEncryption:
+          ServerSideEncryptionConfiguration:
+            - ServerSideEncryptionByDefault:
+                SSEAlgorithm: AES256 ## Use AWS managed KMS
+                ## If you need Customer managed KMS key, yoy can do that using following parameters:
+                # SSEAlgorithm: aws:kms
+                # KMSMasterKeyID: "REPLACE_WITH_YOUR_KEY_ARN"
+        AccessControl: BucketOwnerFullControl
+        OwnershipControls:
+          Rules:
+            - ObjectOwnership: BucketOwnerEnforced
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: true
+          BlockPublicPolicy: true
+          IgnorePublicAcls: true
+          RestrictPublicBuckets: true
+        VersioningConfiguration:
+          Status: Enabled
+        LifecycleConfiguration:
+          Rules:
+            - Id: Object&Version Expiration
+              Status: Enabled
+              NoncurrentVersionExpirationInDays: 32 # 1 month
+        Tags:
+        - Key: "project"
+          Value: !Sub ${ResourcePrefix}
+      Metadata:
+        cfn_nag:
+          rules_to_suppress:
+            - id: 'W35'
+              reason: "Data buckets would generate too much logs"
+        cfn-lint:
+          config:
+            ignore_checks:
+              - W3045 # Need to use AccessControl for replication
+    
+    DataExportsS3BucketPolicy:
+      Type: 'AWS::S3::BucketPolicy'
+      DeletionPolicy: Delete
+      UpdateReplacePolicy: Delete
+      Properties:
+        Bucket: !Ref DataExportsBucket
+        PolicyDocument:
+          Id: AllowBillingReadAndWrite
+          Version: "2012-10-17"
+          Statement:
+            - Sid: AllowTLS12Only
+              Effect: Deny
+              Principal: "*"
+              Action: s3:*
+              Resource:
+                - !Sub 'arn:${AWS::Partition}:s3:::${DataExportsBucket}'
+                - !Sub 'arn:${AWS::Partition}:s3:::${DataExportsBucket}/*'
+              Condition:
+                NumericLessThan:
+                  s3:TlsVersion: 1.2
+            - Sid: AllowOnlyHTTPS
+              Effect: Deny
+              Principal: "*"
+              Action: s3:*
+              Resource:
+                - !Sub 'arn:${AWS::Partition}:s3:::${DataExportsBucket}'
+                - !Sub 'arn:${AWS::Partition}:s3:::${DataExportsBucket}/*'
+              Condition:
+                Bool:
+                  aws:SecureTransport: false
+            - Sid: AllowBillingReadAndWrite
+              Effect: Allow
+              Principal:
+                Service: bcm-data-exports.amazonaws.com
+              Action:
+                - s3:GetBucketAcl
+                - s3:GetBucketPolicy
+                - s3:PutObject
+              Resource:
+                - !Sub 'arn:${AWS::Partition}:s3:::${DataExportsBucket}'
+                - !Sub 'arn:${AWS::Partition}:s3:::${DataExportsBucket}/*'
+              Condition:
+                StringEquals:
+                  aws:SourceAccount: !Ref AWS::AccountId
+            - Sid: AllowReadBilling
+              Effect: Allow
+              Principal:
+                Service: billingreports.amazonaws.com
+              Action:
+                - s3:GetBucketAcl
+                - s3:GetBucketPolicy
+              Resource:
+                - !Sub 'arn:${AWS::Partition}:s3:::${DataExportsBucket}'
+                - !Sub 'arn:${AWS::Partition}:s3:::${DataExportsBucket}/*'
+            - Sid: AllowWriteBilling
+              Effect: Allow
+              Principal:
+                Service: billingreports.amazonaws.com
+              Action:
+                - s3:PutObject
+              Resource:
+                - !Sub 'arn:${AWS::Partition}:s3:::${DataExportsBucket}'
+                - !Sub 'arn:${AWS::Partition}:s3:::${DataExportsBucket}/*'
+            - Sid: AllowReplicationWrite
+              Effect: Allow
+              Principal:
+                AWS: !Ref AWS::AccountId
+              Action:
+                - s3:ReplicateDelete
+                - s3:ReplicateObject
+              Resource:
+                - !Sub 'arn:${AWS::Partition}:s3:::${DataExportsBucket}'
+                - !Sub 'arn:${AWS::Partition}:s3:::${DataExportsBucket}/*'
+            - Sid: AllowReplicationRead
+              Effect: Allow
+              Principal:
+                AWS: !Ref AWS::AccountId
+              Action:
+                - s3:ListBucket
+                - s3:ListBucketVersions
+                - s3:GetBucketVersioning
+                - s3:PutBucketVersioning
+              Resource:
+                - !Sub 'arn:${AWS::Partition}:s3:::${DataExportsBucket}'
+                - !Sub 'arn:${AWS::Partition}:s3:::${DataExportsBucket}/*'
+    
+###########################################################################
+# Build CUR Legacy data export, Glue Table, Glue Crawler
+###########################################################################
+
+    CURLegacy: #Create CUR report
+      DependsOn:
+        - DataExportsS3BucketPolicy
+      Type: AWS::CUR::ReportDefinition
+      Condition: IsCURLegacySelected
+      Properties:
+        AdditionalArtifacts: 
+          - ATHENA
+        AdditionalSchemaElements: 
+          - RESOURCES
+        Compression: Parquet
+        Format: Parquet
+        RefreshClosedReports: True
+        ReportName: 
+          !Sub 
+          - ${ResourcePrefix}-${MappedExportName}-${UniqueString}
+          - MappedExportName: !FindInMap [DataExportTypeMap, !Ref DataExportType, ExportName]
+            UniqueString: !Select [ 0, !Split [ '-', !Select [ 2, !Split [ '/', !Ref 'AWS::StackId' ] ] ] ]
+        ReportVersioning: OVERWRITE_REPORT
+        S3Bucket: !Ref DataExportsBucket
+        S3Prefix: 
+          !Sub 
+          - ${MappedExportName}
+          - MappedExportName: !FindInMap [DataExportTypeMap, !Ref DataExportType, ExportName]
+        S3Region: !Ref AWS::Region
+        TimeUnit: HOURLY
+
+    CURLegacyTable: #Create cur status table in glue/athena
+      Type: 'AWS::Glue::Table'
+      Condition: IsCURLegacySelected
+      DependsOn: 
+        - CURLegacy
+      Properties:
+        DatabaseName: !Ref GlueDatabase
+        CatalogId: !Ref AWS::AccountId
+        TableInput:
+          Name: 'cost_and_usage_data_status'
+          TableType: 'EXTERNAL_TABLE'
+          StorageDescriptor:
+            Columns:
+              - Name: status
+                Type: 'string'
+            InputFormat: 'org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat'
+            OutputFormat: 'org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat'
+            SerdeInfo:
+              SerializationLibrary: 'org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe'
+            Location: 
+              !Sub 
+              - s3://${DataExportsBucket}/${MappedExportName}/${CURLegacy}/cost_and_usage_data_status/
+              - MappedExportName: !FindInMap [DataExportTypeMap, !Ref DataExportType, ExportName]
+
+    CURLegacyCrawler: 
+      Type: 'AWS::Glue::Crawler'
+      Condition: IsCURLegacySelected
+      DependsOn:
+        - CURLegacy
+      Properties:
+        Name: 
+          !Sub 
+          - ${ResourcePrefix}-data-export-${MappedExportName}-${UniqueString}
+          - UniqueString: !Select [ 0, !Split [ '-', !Select [ 2, !Split [ '/', !Ref 'AWS::StackId' ] ] ] ]
+            MappedExportName: !FindInMap [DataExportTypeMap, !Ref DataExportType, ExportName]
+        Description: A recurring crawler that keeps your CUR table in Athena up-to-date.
+        Role: !GetAtt GlueDataExportCrawlerRole.Arn
+        DatabaseName: !Ref GlueDatabase
+        Tags:
+          "project": !Sub ${ResourcePrefix}
+        Targets:
+          S3Targets:
+            - Path: 
+                !Sub 
+                - s3://${DataExportsBucket}/${MappedExportName}/${CURLegacy}/${CURLegacy}/
+                - MappedExportName: !FindInMap [DataExportTypeMap, !Ref DataExportType, ExportName]
+              Exclusions:
+                - '**.json'
+                - '**.yml'
+                - '**.sql'
+                - '**.csv'
+                - '**.gz'
+                - '**.zip'
+        Schedule:
+          ScheduleExpression: cron(0 2,14 * * ? *)
+        SchemaChangePolicy:
+          UpdateBehavior: UPDATE_IN_DATABASE
+          DeleteBehavior: DELETE_FROM_DATABASE
+      
+###########################################################################
+# Build CUR 2.0 data export, Glue Table, Glue Crawler
+###########################################################################
+
+    CUR2DataExport:
+      Type: AWS::BCMDataExports::Export
+      Condition: IsCUR20Selected
+      DependsOn:
+        - DataExportsS3BucketPolicy
+      Properties:
+        Export:
+          DataQuery:
+            QueryStatement: !If [EnableSCAD, !FindInMap [DataExports, CUR2, SCADQuery], !FindInMap [DataExports, CUR2, DefaultQuery]]
+            TableConfigurations:
+              COST_AND_USAGE_REPORT:
+                TIME_GRANULARITY: "HOURLY"
+                INCLUDE_RESOURCES: "TRUE"
+                INCLUDE_MANUAL_DISCOUNT_COMPATIBILITY: "FALSE"
+                INCLUDE_SPLIT_COST_ALLOCATION_DATA: !If [EnableSCAD, "TRUE", "FALSE"]
+          Description: "CUR 2.0 Data Export"
+          DestinationConfigurations:
+            S3Destination:
+              S3Bucket: !Ref DataExportsBucket
+              S3Prefix: 
+                !Sub 
+                - ${MappedExportName}
+                - MappedExportName: !FindInMap [DataExportTypeMap, !Ref DataExportType, ExportName]
+              S3Region: !Ref AWS::Region
+              S3OutputConfigurations:
+                Overwrite: "OVERWRITE_REPORT"
+                Format: "PARQUET"
+                Compression: "PARQUET"
+                OutputType: "CUSTOM"
+          Name: 
+            !Sub 
+            - ${ResourcePrefix}-${MappedExportName}-${UniqueString}
+            - MappedExportName: !FindInMap [DataExportTypeMap, !Ref DataExportType, ExportName]
+              UniqueString: !Select [ 0, !Split [ '-', !Select [ 2, !Split [ '/', !Ref 'AWS::StackId' ] ] ] ]
+          RefreshCadence:
+            Frequency: "SYNCHRONOUS"
+        Tags:
+        - Key: "project"
+          Value: !Sub ${ResourcePrefix}
+    
+    CUR2Table:  # Initial creation of table. it will be updated by crawler later
+      Type: AWS::Glue::Table
+      Condition: IsCUR20Selected
+      Properties:
+        CatalogId: !Sub "${AWS::AccountId}"
+        DatabaseName: !Ref GlueDatabase
+        TableInput:
+          Name:
+            !Sub 
+            - ${ResourcePrefix}-${MappedExportName}
+            - MappedExportName: !FindInMap [DataExportTypeMap, !Ref DataExportType, ExportName]
+          Owner: owner
+          Retention: 0
+          TableType: EXTERNAL_TABLE
+          Parameters:
+            compressionType: none
+            classification: parquet
+            UPDATED_BY_CRAWLER: !Ref CUR2Crawler
+          StorageDescriptor:
+            BucketColumns: []
+            Compressed: false
+            Location: 
+              !Sub 
+              - s3://${DataExportsBucket}/${MappedExportName}/${ResourcePrefix}-${MappedExportName}-${UniqueString}/data
+              - MappedExportName: !FindInMap [DataExportTypeMap, !Ref DataExportType, ExportName]
+                UniqueString: !Select [ 0, !Split [ '-', !Select [ 2, !Split [ '/', !Ref 'AWS::StackId' ] ] ] ]
+            NumberOfBuckets: -1
+            InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
+            OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
+            SerdeInfo:
+              Parameters:
+                serialization.format: '1'
+              SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
+            StoredAsSubDirectories: false
+            Columns: #these columns may be edited as required
+              - {"Name": "bill_bill_type", "Type": "string" }
+              - {"Name": "bill_billing_entity", "Type": "string" }
+              - {"Name": "bill_billing_period_end_date", "Type": "timestamp" }
+              - {"Name": "bill_billing_period_start_date", "Type": "timestamp" }
+              - {"Name": "bill_invoice_id", "Type": "string" }
+              - {"Name": "bill_payer_account_id", "Type": "string" }
+              - {"Name": "bill_payer_account_name", "Type": "string" }
+              - {"Name": "cost_category", "Type": "map<string,string>" }
+              - {"Name": "discount", "Type": "map<string,string>" }
+              - {"Name": "identity_line_item_id", "Type": "string" }
+              - {"Name": "identity_time_interval", "Type": "string" }
+              - {"Name": "line_item_availability_zone", "Type": "string" }
+              - {"Name": "line_item_legal_entity", "Type": "string" }
+              - {"Name": "line_item_line_item_description", "Type": "string" }
+              - {"Name": "line_item_line_item_type", "Type": "string" }
+              - {"Name": "line_item_operation", "Type": "string" }
+              - {"Name": "line_item_product_code", "Type": "string" }
+              - {"Name": "line_item_resource_id", "Type": "string" }
+              - {"Name": "line_item_unblended_cost", "Type": "double" }
+              - {"Name": "line_item_usage_account_id", "Type": "string" }
+              - {"Name": "line_item_usage_amount", "Type": "double" }
+              - {"Name": "line_item_usage_end_date", "Type": "timestamp" }
+              - {"Name": "line_item_usage_start_date", "Type": "timestamp" }
+              - {"Name": "line_item_usage_type", "Type": "string" }
+              - {"Name": "pricing_lease_contract_length", "Type": "string" }
+              - {"Name": "pricing_offering_class", "Type": "string" }
+              - {"Name": "pricing_public_on_demand_cost", "Type": "double" }
+              - {"Name": "pricing_purchase_option", "Type": "string" }
+              - {"Name": "pricing_term", "Type": "string" }
+              - {"Name": "pricing_unit", "Type": "string" }
+              - {"Name": "product", "Type": "map<string,string>" }
+              - {"Name": "product_from_location", "Type": "string" }
+              - {"Name": "product_instance_type", "Type": "string" }
+              - {"Name": "product_product_family", "Type": "string" }
+              - {"Name": "product_servicecode", "Type": "string" }
+              - {"Name": "product_to_location", "Type": "string" }
+              - {"Name": "reservation_amortized_upfront_fee_for_billing_period", "Type": "double" }
+              - {"Name": "reservation_effective_cost", "Type": "double" }
+              - {"Name": "reservation_end_time", "Type": "timestamp" }
+              - {"Name": "reservation_reservation_a_r_n", "Type": "string" }
+              - {"Name": "reservation_start_time", "Type": "timestamp" }
+              - {"Name": "reservation_unused_amortized_upfront_fee_for_billing_period", "Type": "double" }
+              - {"Name": "reservation_unused_recurring_fee", "Type": "double" }
+              - {"Name": "resource_tags", "Type": "map<string,string>" }
+              - {"Name": "savings_plan_amortized_upfront_commitment_for_billing_period", "Type": "double" }
+              - {"Name": "savings_plan_end_time", "Type": "timestamp" }
+              - {"Name": "savings_plan_offering_type", "Type": "string" }
+              - {"Name": "savings_plan_payment_option", "Type": "string" }
+              - {"Name": "savings_plan_purchase_term", "Type": "string" }
+              - {"Name": "savings_plan_savings_plan_a_r_n", "Type": "string" }
+              - {"Name": "savings_plan_savings_plan_effective_cost", "Type": "double" }
+              - {"Name": "savings_plan_start_time", "Type": "timestamp" }
+              - {"Name": "savings_plan_total_commitment_to_date", "Type": "double" }
+              - {"Name": "savings_plan_used_commitment", "Type": "double" }
+              - {"Name": "split_line_item_parent_resource_id", "Type": "string" }
+              - {"Name": "split_line_item_reserved_usage", "Type": "double" }
+              - {"Name": "split_line_item_actual_usage", "Type": "double" }
+              - {"Name": "split_line_item_split_usage", "Type": "double" }
+              - {"Name": "split_line_item_split_usage_ratio", "Type": "double" }
+              - {"Name": "split_line_item_split_cost", "Type": "double" }
+              - {"Name": "split_line_item_unused_cost", "Type": "double" }
+              - {"Name": "split_line_item_net_split_cost", "Type": "double" }
+              - {"Name": "split_line_item_net_unused_cost", "Type": "double" }
+              - {"Name": "split_line_item_public_on_demand_split_cost", "Type": "double" }
+              - {"Name": "split_line_item_public_on_demand_unused_cost", "Type": "double" }
+          PartitionKeys:
+            - {"Name": "source_account_id", "Type": "string" }
+            - {"Name": "report_name", "Type": "string" }
+            - {"Name": "data", "Type": "string" }
+            - {"Name": "billing_period", "Type": "string" }
+
+    CUR2Crawler:
+      Type: AWS::Glue::Crawler
+      Condition: IsCUR20Selected
+      Properties:
+        Name:  
+          !Sub 
+            - ${ResourcePrefix}-data-export-${MappedExportName}-${UniqueString}
+            - UniqueString: !Select [ 0, !Split [ '-', !Select [ 2, !Split [ '/', !Ref 'AWS::StackId' ] ] ] ]
+              MappedExportName: !FindInMap [DataExportTypeMap, !Ref DataExportType, ExportName]
+        Description: A recurring crawler that keeps your CUR table in Athena up-to-date.
+        Role: !GetAtt GlueDataExportCrawlerRole.Arn
+        DatabaseName: !Ref GlueDatabase
+        Tags:
+          "project": !Sub ${ResourcePrefix}
+        Targets:
+          S3Targets:
+            - Path: 
+                !Sub 
+                - s3://${DataExportsBucket}/${MappedExportName}/${ResourcePrefix}-${MappedExportName}-${UniqueString}/data
+                - MappedExportName: !FindInMap [DataExportTypeMap, !Ref DataExportType, ExportName]
+                  UniqueString: !Select [ 0, !Split [ '-', !Select [ 2, !Split [ '/', !Ref 'AWS::StackId' ] ] ] ]
+              Exclusions:
+                - '**.json'
+                - '**.yml'
+                - '**.sql'
+                - '**.csv'
+                - '**.csv.metadata'
+                - '**.gz'
+                - '**.zip'
+                - '**/cost_and_usage_data_status/*'
+                - 'aws-programmatic-access-test-object'
+        SchemaChangePolicy:
+          DeleteBehavior: LOG
+        RecrawlPolicy:
+          RecrawlBehavior: CRAWL_EVERYTHING
+        Schedule:
+          ScheduleExpression: cron(0 2,14 * * ? *)
+        Configuration: |
+          {
+            "Version":1.0,
+            "Grouping": {
+              "TableGroupingPolicy": "CombineCompatibleSchemas"
+            },
+            "CrawlerOutput":{
+              "Tables":{
+                "AddOrUpdateBehavior":"MergeNewColumns"
+              }
+            }
+          }
+
+  ###########################################################################
+  # Build FOCUS data export, Glue Table, Glue Crawler
+  ###########################################################################
+
+    FOCUSDataExport:
+      Type: AWS::BCMDataExports::Export
+      Condition: IsFOCUSSelected
+      DependsOn:
+        - DataExportsS3BucketPolicy
+      Properties:
+        Export:
+          DataQuery:
+            QueryStatement: !FindInMap [DataExports, FOCUS, DefaultQuery]
+          Description: "FOCUS Data Export"
+          DestinationConfigurations:
+            S3Destination:
+              S3Bucket: !Ref DataExportsBucket
+              S3Prefix: 
+                !Sub 
+                - ${MappedExportName}
+                - MappedExportName: !FindInMap [DataExportTypeMap, !Ref DataExportType, ExportName]
+              S3Region: !Ref AWS::Region
+              S3OutputConfigurations:
+                Overwrite: "OVERWRITE_REPORT"
+                Format: "PARQUET"
+                Compression: "PARQUET"
+                OutputType: "CUSTOM"
+          Name: 
+            !Sub 
+            - ${ResourcePrefix}-${MappedExportName}-${UniqueString}
+            - UniqueString: !Select [ 0, !Split [ '-', !Select [ 2, !Split [ '/', !Ref 'AWS::StackId' ] ] ] ]
+              MappedExportName: !FindInMap [DataExportTypeMap, !Ref DataExportType, ExportName]
+          RefreshCadence:
+            Frequency: "SYNCHRONOUS"
+        Tags:
+        - Key: "project"
+          Value: !Sub ${ResourcePrefix}
+    
+    FOCUSTable:  # Initial creation of table. it will be updated by crawler later
+      Type: AWS::Glue::Table
+      Condition: IsFOCUSSelected
+      Properties:
+        CatalogId: !Sub "${AWS::AccountId}"
+        DatabaseName: !Ref GlueDatabase
+        TableInput:
+          Name: 
+            !Sub 
+            - ${ResourcePrefix}-${MappedExportName}
+            - MappedExportName: !FindInMap [DataExportTypeMap, !Ref DataExportType, ExportName]
+          Owner: owner
+          Retention: 0
+          TableType: EXTERNAL_TABLE
+          Parameters:
+            compressionType: none
+            classification: parquet
+            UPDATED_BY_CRAWLER: !Ref FOCUSCrawler
+          StorageDescriptor:
+            BucketColumns: []
+            Compressed: false
+            Location: 
+              !Sub 
+                - s3://${DataExportsBucket}/${MappedExportName}/${ResourcePrefix}-${MappedExportName}-${UniqueString}/data
+                - MappedExportName: !FindInMap [DataExportTypeMap, !Ref DataExportType, ExportName]
+                  UniqueString: !Select [ 0, !Split [ '-', !Select [ 2, !Split [ '/', !Ref 'AWS::StackId' ] ] ] ]
+            NumberOfBuckets: -1
+            InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
+            OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
+            SerdeInfo:
+              Parameters:
+                serialization.format: '1'
+              SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
+            StoredAsSubDirectories: false
+            Columns:
+              - {"Name": "availabilityzone", "Type": "string" }
+              - {"Name": "billedcost", "Type": "double" }
+              - {"Name": "billingaccountid", "Type": "string" }
+              - {"Name": "billingaccountname", "Type": "string" }
+              - {"Name": "billingcurrency", "Type": "string" }
+              - {"Name": "billingperiodend", "Type": "timestamp" }
+              - {"Name": "billingperiodstart", "Type": "timestamp" }
+              - {"Name": "chargecategory", "Type": "string" }
+              - {"Name": "chargeclass", "Type": "string" }
+              - {"Name": "chargedescription", "Type": "string" }
+              - {"Name": "chargefrequency", "Type": "string" }
+              - {"Name": "chargeperiodend", "Type": "timestamp" }
+              - {"Name": "chargeperiodstart", "Type": "timestamp" }
+              - {"Name": "commitmentdiscountcategory", "Type": "string" }
+              - {"Name": "commitmentdiscountid", "Type": "string" }
+              - {"Name": "commitmentdiscountname", "Type": "string" }
+              - {"Name": "commitmentdiscounttype", "Type": "string" }
+              - {"Name": "commitmentdiscountstatus", "Type": "string" }
+              - {"Name": "consumedquantity", "Type": "double" }
+              - {"Name": "consumedunit", "Type": "string" }
+              - {"Name": "contractedcost", "Type": "double" }
+              - {"Name": "contractedunitprice", "Type": "double" }
+              - {"Name": "effectivecost", "Type": "double" }
+              - {"Name": "invoiceissuername", "Type": "string" }
+              - {"Name": "listcost", "Type": "double" }
+              - {"Name": "listunitprice", "Type": "double" }
+              - {"Name": "pricingcategory", "Type": "string" }
+              - {"Name": "pricingquantity", "Type": "double" }
+              - {"Name": "pricingunit", "Type": "string" }
+              - {"Name": "providername", "Type": "string" }
+              - {"Name": "publishername", "Type": "string" }
+              - {"Name": "regionid", "Type": "string" }
+              - {"Name": "regionname", "Type": "string" }
+              - {"Name": "resourceid", "Type": "string" }
+              - {"Name": "resourcename", "Type": "string" }
+              - {"Name": "resourcetype", "Type": "string" }
+              - {"Name": "servicecategory", "Type": "string" }
+              - {"Name": "servicename", "Type": "string" }
+              - {"Name": "skuid", "Type": "string" }
+              - {"Name": "skupriceid", "Type": "string" }
+              - {"Name": "subaccountid", "Type": "string" }
+              - {"Name": "subaccountname", "Type": "string" }
+              - {"Name": "tags", "Type": "map<string,string>" }
+          PartitionKeys:
+            - {"Name": "source_account_id", "Type": "string" }
+            - {"Name": "report_name", "Type": "string" }
+            - {"Name": "data", "Type": "string" }
+            - {"Name": "billing_period", "Type": "string" }
+
+    FOCUSCrawler:
+      Type: AWS::Glue::Crawler
+      Condition: IsFOCUSSelected
+      Properties:
+        Name:
+          !Sub 
+            - ${ResourcePrefix}-data-export-${MappedExportName}-${UniqueString}
+            - UniqueString: !Select [ 0, !Split [ '-', !Select [ 2, !Split [ '/', !Ref 'AWS::StackId' ] ] ] ]
+              MappedExportName: !FindInMap [DataExportTypeMap, !Ref DataExportType, ExportName]
+        Description: A recurring crawler that keeps your FOCUS table in Athena up-to-date.
+        Role: !GetAtt GlueDataExportCrawlerRole.Arn
+        DatabaseName: !Ref GlueDatabase
+        Tags:
+          "project": !Sub ${ResourcePrefix}
+        Targets:
+          S3Targets:
+            - Path: 
+                !Sub 
+                - s3://${DataExportsBucket}/${MappedExportName}/${ResourcePrefix}-${MappedExportName}-${UniqueString}/data
+                - MappedExportName: !FindInMap [DataExportTypeMap, !Ref DataExportType, ExportName]
+                  UniqueString: !Select [ 0, !Split [ '-', !Select [ 2, !Split [ '/', !Ref 'AWS::StackId' ] ] ] ]
+              Exclusions:
+                - '**.json'
+                - '**.yml'
+                - '**.sql'
+                - '**.csv'
+                - '**.csv.metadata'
+                - '**.gz'
+                - '**.zip'
+                - '**/cost_and_usage_data_status/*'
+                - 'aws-programmatic-access-test-object'
+        SchemaChangePolicy:
+          DeleteBehavior: LOG
+        RecrawlPolicy:
+          RecrawlBehavior: CRAWL_EVERYTHING
+        Schedule:
+          ScheduleExpression: cron(0 2,14 * * ? *)
+        Configuration: |
+          {
+            "Version":1.0,
+            "Grouping": {
+              "TableGroupingPolicy": "CombineCompatibleSchemas"
+            },
+            "CrawlerOutput":{
+              "Tables":{
+                "AddOrUpdateBehavior":"MergeNewColumns"
+              }
+            }
+          }
+
+  ###########################################################################
+  # Build Glue Database and Authorization
+  ###########################################################################
+
+    GlueDataExportCrawlerRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: 
+          !Sub 
+          - ${ResourcePrefix}-data-export-crawler-${MappedExportName}-${UniqueString}
+          - UniqueString: !Select [ 0, !Split [ '-', !Select [ 2, !Split [ '/', !Ref 'AWS::StackId' ] ] ] ]
+            MappedExportName: !FindInMap [DataExportTypeMap, !Ref DataExportType, ExportName]
+        AssumeRolePolicyDocument:
+          Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - glue.amazonaws.com
+              Action:
+                - 'sts:AssumeRole'
+        Path: '/'
+        Tags:
+        - Key: "project"
+          Value: !Sub ${ResourcePrefix}
+        Policies:
+          - PolicyName: CrawlerPolicy
+            PolicyDocument:
+              Version: 2012-10-17
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - 's3:GetObject'
+                  Resource: !Sub 'arn:${AWS::Partition}:s3:::${DataExportsBucket}/*'
+                - Effect: Allow
+                  Action:
+                    - 's3:ListBucket'
+                  Resource: !Sub 'arn:${AWS::Partition}:s3:::${DataExportsBucket}'
+                - Effect: Allow
+                  Action:
+                    - glue:GetDatabase
+                    - glue:GetDatabases
+                    - glue:UpdateDatabase
+                    - glue:CreateTable
+                    - glue:UpdateTable
+                    - glue:GetTable
+                    - glue:GetTables
+                    - glue:BatchCreatePartition
+                    - glue:CreatePartition
+                    - glue:DeletePartition
+                    - glue:BatchDeletePartition
+                    - glue:UpdatePartition
+                    - glue:GetPartition
+                    - glue:GetPartitions
+                    - glue:BatchGetPartition
+                    - glue:ImportCatalogToGlue
+                  Resource:
+                    - !Sub arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:catalog
+                    - !Sub arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:database/${GlueDatabase}
+                    - !Sub arn:${AWS::Partition}:glue:${AWS::Region}:${AWS::AccountId}:table/${GlueDatabase}/*
+                - Effect: Allow
+                  Action:
+                    - logs:CreateLogGroup
+                    - logs:CreateLogStream
+                  Resource:
+                    - !Sub 'arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws-glue/crawlers:*'
+                - Effect: Allow
+                  Action:
+                    - logs:PutLogEvents
+                  Resource:
+                    - !Sub 'arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws-glue/crawlers:log-stream:*'
+
+    GlueDatabase:
+      Type: AWS::Glue::Database
+      Properties:
+        DatabaseInput:
+          Name: 
+            !Sub 
+            - ${ResourcePrefix}-data-export-${MappedExportName}-${UniqueString}
+            - UniqueString: !Select [ 0, !Split [ '-', !Select [ 2, !Split [ '/', !Ref 'AWS::StackId' ] ] ] ]
+              MappedExportName: !FindInMap [DataExportTypeMap, !Ref DataExportType, ExportName]
+        CatalogId: !Sub "${AWS::AccountId}"
+
+  ###########################################################################
+  # Build Athena Workgroup and Output Bucket
+  ###########################################################################
+
+    AthenaQueryResultsBucket: 
+      Type: AWS::S3::Bucket
+      DeletionPolicy: Retain
+      Properties:
+        BucketName: 
+          !Sub 
+          - ${ResourcePrefix}-data-export-${MappedExportName}-queries-${UniqueString}
+          - UniqueString: !Select [ 0, !Split [ '-', !Select [ 2, !Split [ '/', !Ref 'AWS::StackId' ] ] ] ]
+            MappedExportName: !FindInMap [DataExportTypeMap, !Ref DataExportType, ExportName]          
+        BucketEncryption:
+          ServerSideEncryptionConfiguration:
+            - ServerSideEncryptionByDefault:
+                SSEAlgorithm: AES256
+        AccessControl: BucketOwnerFullControl
+        OwnershipControls:
+          Rules:
+            - ObjectOwnership: BucketOwnerEnforced
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: true
+          BlockPublicPolicy: true
+          IgnorePublicAcls: true
+          RestrictPublicBuckets: true
+        LifecycleConfiguration:
+          Rules:
+            - Id: DeleteContent
+              Status: 'Enabled'
+              ExpirationInDays: 7
+        VersioningConfiguration:
+          Status: Enabled
+        Tags:
+          - Key: "project"
+            Value: !Sub ${ResourcePrefix}
+
+    AthenaWorkGroup:  
+      Type: AWS::Athena::WorkGroup
+      DependsOn:
+        - AthenaQueryResultsBucket
+      Properties:
+        Name: 
+          !Sub 
+          - ${ResourcePrefix}-${MappedExportName}-${UniqueString}
+          - UniqueString: !Select [ 0, !Split [ '-', !Select [ 2, !Split [ '/', !Ref 'AWS::StackId' ] ] ] ]
+            MappedExportName: !FindInMap [DataExportTypeMap, !Ref DataExportType, ExportName]
+        Description: 'Used for to store athena query results'
+        RecursiveDeleteOption: true
+        Tags:
+          - Key: "GrafanaDataSource"
+            Value: "true"
+          - Key: "project"
+            Value: !Sub ${ResourcePrefix}
+        WorkGroupConfiguration:
+          EnforceWorkGroupConfiguration: true
+          PublishCloudWatchMetricsEnabled: true
+          ResultConfiguration:
+            EncryptionConfiguration:
+              EncryptionOption: SSE_S3
+            OutputLocation: !Sub 's3://${AthenaQueryResultsBucket}'
+            AclConfiguration:
+              S3AclOption: BUCKET_OWNER_FULL_CONTROL
+    
+Outputs:
+  S3BucketName:
+    Description: 'Name of the S3 bucket'
+    Value: !Ref 'DataExportsBucket' 
+  AthenaDatabase:
+    Description: 'Glue/Athena Database'
+    Value: !Ref 'GlueDatabase'
+  AthenaTable:
+    Description: 'Athena Database Table'
+    Value: 
+      !Sub 
+      - ${ResourcePrefix}-${MappedExportName}
+      - MappedExportName: !FindInMap [DataExportTypeMap, !Ref DataExportType, ExportName]
+  AthenaWorkGroup:
+    Description: 'Athena workgroup to be used for queries'
+    Value: !Ref 'AthenaWorkGroup'
+  AthenaQueryResultsBucket:
+    Description: 'S3 bucket which stores the results of queries performed in Athena workgroup'
+    Value: !Ref 'AthenaQueryResultsBucket'
+  ReportName:
+    Description: 'Data Exports report name'
+    Value:
+      !Sub 
+      - ${ResourcePrefix}-${MappedExportName}
+      - MappedExportName: !FindInMap [DataExportTypeMap, !Ref DataExportType, ExportName]
+  UniqueId:
+    Description: 'Unique suffix for most resources. This suffix allows you to specify the same prefix for multiple deployments.'
+    Value:
+      !Sub 
+      - ${UniqueString}
+      - UniqueString: !Select [ 0, !Split [ '-', !Select [ 2, !Split [ '/', !Ref 'AWS::StackId' ] ] ] ]
+  
+  
