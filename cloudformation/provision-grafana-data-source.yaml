@@ -16,22 +16,22 @@ Parameters:
   GrafanaWorkspaceName:
     Type: String
     Description: "Amazon Managed Grafana workspace ID where data source will be provisioned."
-    Default: 'coast-workspace-e28554b0'
+    Default: ''
     MaxLength: 255
   AthenaDatabaseName:
     Type: String
     Description: "Amazon Managed Grafana workspace ID where data source will be provisioned."
-    Default: 'coast-data-export-curlegacy-36595230'
+    Default: ''
     MaxLength: 255
   AthenaWorkgroupName:
     Type: String
     Description: "Amazon Managed Grafana workspace ID where data source will be provisioned."
-    Default: 'coast-curlegacy-36595230'
+    Default: ''
     MaxLength: 255
   DataExportName:
     Type: String
     Description: "Name of the AWS Data Export to provision as a data source in the Amazon Managed Grafana workspace."
-    Default: 'coast-curlegacy-36595230'
+    Default: ''
     MaxLength: 255
   DataExportType:
     Type: String
