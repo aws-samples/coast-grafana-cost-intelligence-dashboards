@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Sample CloudFormation template for creating an S3 bucket and a DynamoDB table.
+Description: Cloudformation template for project COAST.  Provisions the selected Data Export and associate it with a Glue and Athena database/table .
 
 ###########################################################################
 # Author: Chris Strzelczyk
@@ -25,7 +25,7 @@ Parameters:
     Type: String
     Default: "coast"
     Description: "Prefix used for all named resources, including for the value of tag key 'project'"
-    MaxLength:  16 
+    MaxLength: 16 
     AllowedPattern: "^[a-z0-9]+[a-z0-9-]{1,61}[a-z0-9]+$"
   DataExportType:
     Description: "Select a Data Export type"
@@ -828,9 +828,12 @@ Resources:
               S3AclOption: BUCKET_OWNER_FULL_CONTROL
     
 Outputs:
-  S3BucketName:
-    Description: 'Name of the S3 bucket'
+  DataExportS3BucketName:
+    Description: 'Name of the Data Export S3 bucket.  Where daily report exports are stored.'
     Value: !Ref 'DataExportsBucket' 
+  AthenaQueryResultS3BucketName:
+    Description: 'Name of the Athena query result S3 bucket.  Where results of queries are stored.'
+    Value: !Ref 'AthenaQueryResultsBucket' 
   AthenaDatabase:
     Description: 'Glue/Athena Database'
     Value: !Ref 'GlueDatabase'
@@ -843,15 +846,13 @@ Outputs:
   AthenaWorkGroup:
     Description: 'Athena workgroup to be used for queries'
     Value: !Ref 'AthenaWorkGroup'
-  AthenaQueryResultsBucket:
-    Description: 'S3 bucket which stores the results of queries performed in Athena workgroup'
-    Value: !Ref 'AthenaQueryResultsBucket'
   ReportName:
     Description: 'Data Exports report name'
     Value:
       !Sub 
-      - ${ResourcePrefix}-${MappedExportName}
+      - ${ResourcePrefix}-${MappedExportName}-${UniqueString}
       - MappedExportName: !FindInMap [DataExportTypeMap, !Ref DataExportType, ExportName]
+        UniqueString: !Select [ 0, !Split [ '-', !Select [ 2, !Split [ '/', !Ref 'AWS::StackId' ] ] ] ]
   UniqueId:
     Description: 'Unique suffix for most resources. This suffix allows you to specify the same prefix for multiple deployments.'
     Value:
