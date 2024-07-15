@@ -4,7 +4,9 @@
 
 ## About
 
-COAST is an open-source infrastructure as code deployment solution that integrates with Amazon Managed Grafana to provide customers with cost intelligence and performance optimization dashboards. COAST helps customers analyze and optimize their cloud costs and performance by providing them with customizable dashboards on the Grafana open-source analytics and monitoring application they are already familiar with. With COAST, customers can gain full visibility and control over their cloud costs, ensuring that they are optimizing their spend and maximizing their ROI.
+COAST is an open-source collection of dashboards that provide the capability to combine and observe AWS resource performance metrics with cost and usage data metrics.  These dashboards assist customers in promoting financial accountability, optimizing costs, tracking usage goals, implementing governance best practices, and achieving operational excellence across all Well-Architected pillars.  Utilizing Amazon Managed Grafana allows us to utilize an open-source platform which is very popular with the engineering community.
+
+COAST is deployed via CloudFormation infrastructure as code templates, which allow for the provisioning of the necessary [AWS Data Exports](https://aws.amazon.com/aws-cost-management/aws-data-exports/) and [Amazon Managed Grafana](https://aws.amazon.com/grafana/) resources.  
 
 
 
@@ -13,69 +15,63 @@ COAST is an open-source infrastructure as code deployment solution that integrat
 - COAST will integrate with your existing Grafana dashboards.
 - COAST has support for filtering by AWS account, service and AWS tags.
 - COAST may be installed at the AWS Management Account (payer) or in a single linked account with [member CUR](https://aws.amazon.com/about-aws/whats-new/2020/12/cost-and-usage-report-now-available-to-member-linked-accounts/).
-- COAST deploys the Executive dashboard with a CloudFormation template in under 5 minutes, and [additional dashboards](https://github.com/aws-samples/COAST/tree/main/grafana_dashboards) may be added with Grafana's easy one click [import](https://grafana.com/docs/grafana/latest/dashboards/manage-dashboards/#export-and-import-dashboards).
 
 ## Pre-requisites
 
 - AWS IAM Identity Center - [Amazon Managed Grafana requires authentication](https://docs.aws.amazon.com/grafana/latest/userguide/authentication-in-AMG.html).  Our CloudFormation template configures the Grafana workspace with [AWS SSO](https://docs.aws.amazon.com/singlesignon/latest/userguide/getting-started.html).
 
+- AWS Data Exports - Currently COAST works with CUR Legacy.  However, our templates give you the ability to deploy [CUR 2.0](https://docs.aws.amazon.com/cur/latest/userguide/table-dictionary-cur2.html) and [FOCUS (preview)](https://docs.aws.amazon.com/cur/latest/userguide/table-dictionary-focus-1-0-aws.html)
+
 ## Suggested Configuration
-The COAST CloudFormation deployment template supports both deploying with an existing [Cost and Usage Report (CUR)](https://docs.aws.amazon.com/cur/latest/userguide/what-is-cur.html) or creating a new one if none exists. For immediate utilization of the COAST dashboard, it is recommended to have an already enabled Cost and Usage Report (CUR). If CUR is enabled during COAST deployment, dashboards may not display data for approximately 24 hours, and historical data will be unavailable unless a backfill is requested from AWS. 
+The COAST Data Export template enables you to create a CUR Legacy, [CUR 2.0](https://docs.aws.amazon.com/cur/latest/userguide/table-dictionary-cur2.html), and [FOCUS](https://docs.aws.amazon.com/cur/latest/userguide/table-dictionary-focus-1-0-aws.html) (preview) reports. Our dashboards will require one of these Data Exports as a prerequisite. We recommend using our template to deploy these exports, as the template will also create the necessary [AWS Glue](https://aws.amazon.com/glue/) and [AWS Athena](https://aws.amazon.com/athena/) resources required for the Grafana dashboards to use as data sources. To backfill the cost and usage data in each report, you can open a support case. For more information on Data Exports backfill, refer to the [Data Exports User Guide](https://docs.aws.amazon.com/cur/latest/userguide/troubleshooting.html#backfill-data).
 
-## Cloud Formation Template Deployment
+## Setup Overview - Deploy with CloudFormation
 
-### Setup Overview
+#### Data Exports Deployment
+The [provision-grafana-workspaces.yaml](https://github.com/aws-samples/coast-grafana-cost-intelligence-dashboards/blob/main/CloudFormation/provision-data-exports.yaml) allows users to provision Data Exports for a single account or an entire management (payer) account.  Use this template to create CUR Legacy, CUR 2.0 and Focus (preview) reports.  We recommend running three seperate CloudFormation stacks and provisioning all three reports.  The template will also create a Glue Database, Glue Table and Glue Crawler to allow Athena to query the data.  Athena is utilized by the Grafana plugin to make queries.  
 
-The setup process will create the following resources, along with their dependencies:
+Once the reports are provisioned you may open a support case to backfill data.  See [Data Exports User Guide](https://docs.aws.amazon.com/cur/latest/userguide/troubleshooting.html#backfill-data).
 
-- A new AWS Cost and Usage Report (AWS CUR)
-  - If an existing report is provided, the system will use the provided one.
-- Glue and Lambda infrastructure to update the Athena database
-- An Amazon Athena database for the Cost and Usage Report
-- Least Privilege Access Roles to allow the Cost and Usage Report to update Athena
-- An Amazon Managed Grafana workspace
-- A Grafana Athena Data Source (with AWS IAM Identity Center as the identity provider)
-- Importation of the Grafana Executive Dashboard
 
-### Deploy with CloudFormation
-- In CloudFormation, select Create Stack and select 'Upload a template file'.  Download and use the template cloudformation/COAST-cfn.yaml.  
-- Enter a Stack name.
-- For the parameters section follow the guidance below on enabling the dashboards with an existing CUR or a new CUR.
-- On the next screen, we suggest adding tags to your deployment.
-- On the last screen check 'I acknowledge that AWS CloudFormation might create IAM resources with custom names.' and click 'Submit'.
+1. Create a new stack in CloudFormation 
+2. Select 'Upload a template file' and provide the location of the template.  [provision-data-exports.yaml](https://github.com/aws-samples/coast-grafana-cost-intelligence-dashboards/blob/main/CloudFormation/provision-data-exports.yaml)
+3. Select the Data Export you need to configure with the drop down menu (either CUR legacy, CUR 2.0 or FOCUS (preview))
+4. Launch the creation
 
-### CUR report Overview
-Within the CloudFormation template, you can choose whether to create a new Cost and Usage Report (CUR) or utilize an existing one by providing its name. The template will establish the necessary infrastructure to update the Grafana datasource (Athena) with CUR data. For additional information on the CUR/Athena integration, refer to the documentatio [here](https://docs.aws.amazon.com/cur/latest/userguide/use-athena-cf.html).  
+Once the creation is finished, the Outputs tab will contain important informaiton which will be utilized by the next templates.
 
-  #### Create New CUR
-  Opting for this choice will initiate the creation of a new Cost and Usage Report (CUR) along with the necessary infrastructure to populate the Athena database with CUR data. Please be aware that it will take a minimum of 24 hours for the new CUR to be populated with data.  Historical data will be unavailable unless a backfill is requested from AWS Support.
 
-  To implement this in CloudFormation:
+#### Grafana Workspace Deployment
+The [provision-grafana-workspaces.yaml](https://github.com/aws-samples/coast-grafana-cost-intelligence-dashboards/blob/main/cloudformation/provision-grafana-workspace.yaml) template will build a new Amazon Managed Grafana workspace along with the necessary permissions.  You will still have to enable authentication by utilizing [AWS Identify Center](https://aws.amazon.com/iam/identity-center/) or you a third party IDP.  
 
-  - Launch a new stack using the cloudformation/COAST-cfn.yaml template.
-  - Do not modify the CurReportName parameter in the template
-  - The template will generate a report name based on the CloudFormation (CFN) stack name.
-  - Similarly, an S3 data bucket will be named and created based on the CFN stack name.
+To implement this in CloudFormation:
+  1. Create new stack in Cloudformation
+  2. Select 'upload template file' and select the [provision-grafana-workspaces.yaml](https://github.com/aws-samples/coast-grafana-cost-intelligence-dashboards/blob/main/cloudformation/provision-grafana-workspace.yaml) template.
+  3. You will have to select the name for the cheery before you can leave.
 
-  #### Use Existing CUR
-  Opt for this configuration only if you already possess a Cost and Usage Report (CUR) and wish to have Grafana utilize that existing CUR as the datasource. This choice will leverage your current CUR while establishing the necessary infrastructure to populate the Athena database with the CUR data.
+Once the creation is finished, the Outputs tab will contain important information about the workspace which will be utilized by the next templates.
 
-  To implement this in CloudFormation:
+### Grafana Data Sources Deployment
+The [provision-grafana-data-source.yaml](https://github.com/aws-samples/coast-grafana-cost-intelligence-dashboards/blob/main/cloudformation/provision-grafana-data-source.yaml) template installs the necessary data sources into the Grafana workspace you have created.  We recommend running seperate CloudFormation stacks and provisioning these data sources.  _Note, currently our dashboards only utilize the CUR Legacy and CloudWatch datasource_. 
 
-  - Ensure the CUR bucket of your existing CUR report is located in the same region as this CloudFormation stack (refer to the same region note in the documentation).
-  - Launch a new stack using the cloudformation/COAST-cfn.yaml template.
-  - Enter the name of your existing CUR in the CurReportName field.
-  - We will determine the S3 bucket used with the existing CUR report and use this bucket while establishing the necessary infrastructure.
+1. Create new stack in Cloudformation
+2. Select 'upload template file' and select the [provision-grafana-data-source.yaml](https://github.com/aws-samples/coast-grafana-cost-intelligence-dashboards/blob/main/cloudformation/provision-grafana-data-source.yaml) template.
+3. The template requires ceratin parameters in order to succeed:
 
+    - **AthenaDatabaseName** - You may obtain this from the Outputs tab of the Data Exports CloudFormation deployment.
+    - **AthenaWorkgroupName** - You may obtain this from the Outputs tab of the Data Exports CloudFormation deployment.
+    - **DataExportName** - You may obtain this from the Outputs tab of the Data Exports CloudFormation deployment.
+    - **DataExportType** - Select the export type (either CUR Legacy, CUR 2.0 or Focuse)
+    - **GrafanaWorkspaceName** - You may obtain this from the Outputs tab of the Provision Grafana workspace CloudFormation deployment.
 
 ### Post Installation Steps
 - Grafana workspaces require an identity provider (IdP) to enable users to log in to the workspace.
-- We recommend AWS IAM Identity Center (the Cloudformation template creates the Grafana workspace with AWS IAM Identity Center enabled).  
+- We recommend AWS IAM Identity Center (the CloudFormation template creates the Grafana workspace with AWS IAM Identity Center enabled).  
 - Add at least one Admin user under the Authentication tab in the Grafana Workspace console.  For additional instructions, see the [Grafana User Guide](https://docs.aws.amazon.com/grafana/latest/userguide/AMG-manage-users-and-groups-AMG.html) to setup user access.
 - Login to the COAST Grafana workspace URL using the identity configured above.
 - Import the dashboards you require as per the instructions below
 
-  #### Importing Additional Dashboards
+  #### Importing Dashboards
 
   You may now import dashboards available in the grafana_dashboards folder of this repository.  Select a dashboard to import.  This will populate the dashboard name, and UID.  All dashboards will require an Amazon Athena datasource for CUR named "COAST-2023-09-19" and some may also require a CloudWatch datasource named "Cloudwatch".   After importing dashboards, follow the dashboards readme file to set your variables understand the data visualizations. 
   
