@@ -1,0 +1,830 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Cloudformation template for project COAST.  Provisions enables plugin and provisions data source for Grafana workspace.
+
+###########################################################################
+# Author: Chris Strzelczyk
+# Project: COAST: https://github.com/aws-samples/coast-grafana-cost-intelligence-dashboards
+###########################################################################
+
+Parameters:
+  ResourcePrefix:
+    Type: String
+    Default: "coast"
+    Description: "Prefix used Amazon Managed Grafana workspace name and for the value of tag key 'project'"
+    MaxLength: 16 
+    AllowedPattern: "^[a-z0-9]+[a-z0-9-]{1,61}[a-z0-9]+$"
+  GrafanaWorkspaceName:
+    Type: String
+    Description: "Amazon Managed Grafana workspace ID where data source will be provisioned."
+    Default: 'coast-workspace-e28554b0'
+    MaxLength: 255
+  AthenaDatabaseName:
+    Type: String
+    Description: "Amazon Managed Grafana workspace ID where data source will be provisioned."
+    Default: 'coast-data-export-curlegacy-36595230'
+    MaxLength: 255
+  AthenaWorkgroupName:
+    Type: String
+    Description: "Amazon Managed Grafana workspace ID where data source will be provisioned."
+    Default: 'coast-curlegacy-36595230'
+    MaxLength: 255
+  DataExportName:
+    Type: String
+    Description: "Name of the AWS Data Export to provision as a data source in the Amazon Managed Grafana workspace."
+    Default: 'coast-curlegacy-36595230'
+    MaxLength: 255
+  DataExportType:
+    Type: String
+    Description: "Type of data source to provision."
+    Default: "CUR-Legacy"
+    AllowedValues:
+      - "CUR-2-0"
+      - "CUR-Legacy"
+      - "FOCUS"
+      - "CloudWatch"
+
+Conditions:
+  ShouldRunRoleUpdate:
+    Fn::Or:
+      - Fn::Equals: [ !Ref DataExportType, 'CUR-2-0' ]
+      - Fn::Equals: [ !Ref DataExportType, 'CUR-Legacy' ]
+      - Fn::Equals: [ !Ref DataExportType, 'FOCUS' ]
+
+Resources:
+
+###########################################################################
+# Discovery metadata necessary to update data source resources 
+###########################################################################
+
+  ResourceDiscoveryLambdaRole: #Resource Discovery
+    Type: 'AWS::IAM::Role'
+    Properties:
+      RoleName:
+        !Sub 
+        - ${ResourcePrefix}-data-discovery-role-${UniqueString}
+        - UniqueString: !Select [ 0, !Split [ '-', !Select [ 2, !Split [ '/', !Ref 'AWS::StackId' ] ] ] ]
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Tags:
+        - Key: "project"
+          Value: !Sub ${ResourcePrefix}
+      Path: /
+      Policies:
+        - PolicyName: "DefaultCloudWatchAccess"
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'logs:CreateLogGroup'
+                  - 'logs:CreateLogStream'
+                  - 'logs:PutLogEvents'
+                Resource: !Sub 'arn:${AWS::Partition}:logs:*:*:*'
+              - Effect: Allow
+                Action:
+                  - 'cur:DescribeReportDefinitions'
+                Resource: 
+                  - '*'
+        - PolicyName: "ListCURLegacy" #list report for CUR Legacy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'cur:DescribeReportDefinitions'
+                Resource: 
+                  - '*'
+        - PolicyName: "ListDataExports" #List reports for CUR2.0 and FOCUS
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+            - Effect: Allow
+              Action:
+              - bcm-data-exports:GetExport
+              - bcm-data-exports:ListExports
+              - bcm-data-exports:CreateExport
+              - bcm-data-exports:UpdateExport
+              - bcm-data-exports:ListExecutions
+              - bcm-data-exports:ListTables
+              - bcm-data-exports:GetTable
+              Resource: 
+                - '*'
+        - PolicyName: "AthenaWorkGroup" #Discover Workgroup output S3 bucket
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+            - Effect: Allow
+              Action:
+              - athena:GetWorkGroup,
+              - athena:ListWorkGroups
+              Resource: 
+                - '*'
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AWSGrafanaAccountAdministrator
+        - arn:aws:iam::aws:policy/AmazonAthenaFullAccess
+
+  ResourceDiscoveryLambda: #Discover metadata for resource necessary for provisioning for data sources
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        !Sub 
+        - ${ResourcePrefix}-data-discovery-${UniqueString}
+        - UniqueString: !Select [ 0, !Split [ '-', !Select [ 2, !Split [ '/', !Ref 'AWS::StackId' ] ] ] ]
+      Code:
+        ZipFile: |
+          import boto3
+          import sys
+          import logging
+          import time
+          import cfnresponse
+
+
+          #######################################################################
+          # Author: Chris Strzelczyk
+          # For project: COAST - Grafana dashboards
+          # Code is provided as is and warrents testing in a development 
+          # environment prior to provisioning
+          #######################################################################
+
+          # Set up the logger
+          logger = logging.getLogger()
+          logger.setLevel(logging.INFO)
+
+          workspace_name = None
+          workspace_role_arn = None
+          export_s3_bucket = None
+          export_bucket_arn = None
+          athena_workgroup_s3_bucket_arn = None
+          output_results = {}
+
+          def create_s3_bucket_arn(s3_uri):
+              '''Extract the bucket name from the S3 URI'''
+              bucket_name = s3_uri.split('//')[1]
+              
+              # Construct the ARN for the S3 bucket
+              bucket_arn = f"arn:aws:s3:::{bucket_name}"
+              
+              return bucket_arn
+
+          def get_grafana_workspace_metadata(workspace_name:str) -> str:
+              '''
+              Return the workspace id and role arn from the Amazon Managed Grfana
+              workspace name provided
+              '''
+              grafana_client = boto3.client('grafana')
+              try:
+                response = grafana_client.list_workspaces()
+              except:
+                logger.error("Amazon Managed Grafana failed to list workspaces.")
+
+              workspaces = response['workspaces']
+              workspace_role_arn = None
+              workspace_id = None
+
+              for workspace in workspaces:
+                  if workspace['name'] == workspace_name.strip():
+                      workspace_id = workspace['id']
+                      try:
+                        describe_response = grafana_client.describe_workspace(workspaceId=workspace_id)
+                      except:
+                        logger.error(f"Amazon Managed Grafana failed to describe workspace: {workspace_id}.")
+                      
+                      workspace_role_arn = describe_response['workspace']['workspaceRoleArn']
+                      break
+              
+              return workspace_id,workspace_role_arn
+
+          def get_export_bucket_arn(export_name:str) -> str:
+              '''
+              Return the S3 bucket ARN for the export name provided
+              '''
+              logger.info(f"Looking up S3 bucket arn for Data Export: {export_name}")
+
+              export_client = boto3.client('bcm-data-exports')
+              try:
+                exports = export_client.list_exports()
+              except:
+                logger.error("Error: Unable to list Data Exports.")
+              
+              for export in exports['Exports']:
+                  if export['ExportName'] == export_name:
+                      export_arn = export['ExportArn']
+                      try:
+                        describe_export = export_client.get_export(ExportArn=export['ExportArn'])
+                      except:
+                        logger.error("Error: Unable to get Data Exports.")
+                      export_s3_bucket = describe_export['Export']['DestinationConfigurations']['S3Destination']['S3Bucket']
+                      export_bucket_arn = f"arn:aws:s3:::{export_s3_bucket}"
+
+                      return export_bucket_arn
+
+              return None
+
+          def get_curlegacy_bucket_arn(export_name:str)->str:
+              '''
+              Return the S3 bucket ARN for the cur legacy report provided
+              '''
+              cur_client = boto3.client('cur')
+              try:
+                reports = cur_client.describe_report_definitions()
+              except:
+                logger.error("Error: Unable to describe CUR Legacy report definitions.")
+
+              for report in reports['ReportDefinitions']:
+                  if report['ReportName'] == export_name:
+                      cur_legacy_s3_bucket_name = report['S3Bucket']
+                      cur_legacy_s3_bucket_arn = f"arn:aws:s3:::{cur_legacy_s3_bucket_name}"
+
+                      return cur_legacy_s3_bucket_arn
+              
+              return None
+
+          def get_athena_workgroup_s3_bucket_arn(athena_workgroup):
+              '''
+              Return the S3 bucket ARN for the athena workgroup provided
+              '''
+              athena_client = boto3.client('athena')
+              try:
+                athena_describe_workgroup = athena_client.get_work_group(WorkGroup=athena_workgroup)
+              except:
+                logger.error(f"Error: Unable to describe Athena workgroup: {athena_workgroup}.")
+              athena_workgroup_s3_bucket_uri = athena_describe_workgroup['WorkGroup']['Configuration']['ResultConfiguration']['OutputLocation']
+              try:
+                athena_workgroup_s3_bucket_arn = create_s3_bucket_arn(athena_workgroup_s3_bucket_uri)
+              except:
+                logger.error(f"Error: Unable to create ARN from S3 bucket: {athena_workgroup_s3_bucket_uri}.")
+
+              return athena_workgroup_s3_bucket_arn
+
+          def lambda_handler(event, context):
+
+              start_time = time.time()
+              
+              print(f"event: {event} ")
+              logger.info('Lambda function started')
+              output_results = {}
+              grafana_workspace_name = event['ResourceProperties']['GrafanaWorkspaceName'].strip()
+              export_name = event['ResourceProperties']['DataExportName'].strip()
+              athena_workgroup = event['ResourceProperties']['AthenaWorkgroupName'].strip()
+              resource_type = event['ResourceProperties']['ResourceType'].strip()
+              
+              if event['RequestType']=='Create':
+                  logger.info(f"Obtaining Amazon Managed Grafana workspace role for workspace: {grafana_workspace_name}")
+                  
+                  try:
+                      workspace_id,workspace_role_arn = get_grafana_workspace_metadata(grafana_workspace_name)
+                  except Exception as e:
+                      msg = f"Error obtaining Amazon Managed Grafana workspace role. Error: {str(e)}"
+                      logger.error(msg)
+                      cfnresponse.send(event,context,cfnresponse.FAILED,{'message': msg})
+
+                  if workspace_role_arn:
+                      output_results['grafana_workspace_role_arn'] = workspace_role_arn
+                  else:
+                      msg = f"Error Amazon Managed Grafana workspace role arn may not be null."
+                      logger.error(msg)
+                      cfnresponse.send(event,context,cfnresponse.FAILED,{'message': msg})
+
+                  if workspace_id:
+                      output_results['grafana_workspace_id'] = workspace_id
+                  else:
+                      msg = f"Error Amazon Managed Grafana workspace id may not be null."
+                      logger.error(msg)
+                      cfnresponse.send(event,context,cfnresponse.FAILED,{'message': msg})
+              
+                  
+                  if resource_type == 'CUR-2-0' or resource_type == 'FOCUS':
+                      try:
+                          output_results['export_bucket_arn'] = get_export_bucket_arn(export_name)
+                      except Exception as e:
+                          msg = f"Unable to obtain cur20 or focus S3 bucket name for report: {export_name}. Error: {str(e)}" 
+                          logger.error(msg)
+                          cfnresponse.send(event,context,cfnresponse.FAILED,{'message': msg})
+                  elif resource_type == 'CUR-Legacy':
+                      try:
+                          output_results['export_bucket_arn'] = get_curlegacy_bucket_arn(export_name)
+                      except Exception as e:
+                          msg = f"Unable to obtain curlegacy S3 bucket name for report: {export_name}. Error: {str(e)}"
+                          logger.error(msg)
+                          cfnresponse.send(event,context,cfnresponse.FAILED,{'message': msg})
+                  elif resource_type == 'CloudWatch':
+                    output_results['export_bucket_arn'] = ''
+                    output_results['athena_workgroup_s3_bucket_arn'] = ''
+                    cfnresponse.send(event,context,cfnresponse.SUCCESS,output_results)
+                  else:
+                      msg = f"Unsupported resource type."
+                      logger.error(msg)
+                      cfnresponse.send(event,context,cfnresponse.FAILED,{'message': msg})
+                      
+                  if 'export_bucket_arn' in output_results.keys():
+                    if output_results['export_bucket_arn'] == None:
+                        msg = f"Export bucket arn for: {export_name} is None.  Did you select the correct Data Export report type: {resource_type} ?"
+                        logger.error(msg)
+                        cfnresponse.send(event,context,cfnresponse.FAILED,{'message': msg})
+                  
+                  try:
+                      output_results['athena_workgroup_s3_bucket_arn'] = get_athena_workgroup_s3_bucket_arn(athena_workgroup)
+                  except:
+                      logger.error(f"Error: Unable to obtain Athena workgroup S3 bucket ARN.")
+                      cfnresponse.send(event,context,cfnresponse.FAILED,output_results)
+              
+                  print(output_results)
+                  logger.info(f"Output Results: {output_results}")
+                  cfnresponse.send(event,context,cfnresponse.SUCCESS,output_results)
+                  
+                  return output_results
+              elif event['RequestType']=='Update':
+                  cfnresponse.send(event,context,cfnresponse.SUCCESS,{'message': 'Update complete'})
+                  
+                  return output_results
+              elif event['RequestType']=='Delete':
+                  cfnresponse.send(event,context,cfnresponse.SUCCESS,{'message': 'Delete complete'})
+                  
+              return output_results
+
+              end_time = time.time()
+              duration = end_time - start_time
+              logger.info(f"Execution time: %s seconds {duration}")
+
+              return None
+      Role: !GetAtt ResourceDiscoveryLambdaRole.Arn
+      Handler: 'index.lambda_handler'
+      Timeout: 45
+      Runtime: python3.12
+      ReservedConcurrentExecutions: 1
+      Tags:
+        - Key: "project"
+          Value: !Sub ${ResourcePrefix}
+
+  ResourceDiscovery: #Execute ResourceDiscoveryLambda 
+    Type: 'Custom::ResourceDiscovery'
+    Properties:
+      ServiceToken: !GetAtt ResourceDiscoveryLambda.Arn
+      GrafanaWorkspaceName: !Ref GrafanaWorkspaceName
+      DataExportName: !Ref DataExportName
+      AthenaWorkgroupName: !Ref AthenaWorkgroupName
+      ResourceType: !Ref DataExportType
+
+###########################################################################
+# Update Grafana workspace with premissions to athena data sources
+###########################################################################
+
+  GrafanaRoleUpdateLambdaRole: #Role for GrafanaRoleUpdateLambda which updates a specific IAM policy
+    Type: 'AWS::IAM::Role'
+    Condition: ShouldRunRoleUpdate
+    Properties:
+      RoleName:
+        !Sub 
+        - ${ResourcePrefix}-grafana-role-updater-role-${UniqueString}
+        - UniqueString: !Select [ 0, !Split [ '-', !Select [ 2, !Split [ '/', !Ref 'AWS::StackId' ] ] ] ]
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Tags:
+        - Key: "project"
+          Value: !Sub ${ResourcePrefix}
+      Path: /
+      Policies:
+        - PolicyName: LambdaIAMUpdatePolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - iam:PutRolePolicy
+                Resource: !GetAtt "ResourceDiscovery.grafana_workspace_role_arn"
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: "*"
+
+  GrafanaRoleUpdateLambda: #Discover metadata for resource necessary for provisioning for data sources
+    Type: AWS::Lambda::Function
+    Condition: ShouldRunRoleUpdate
+    Properties:
+      FunctionName:
+        !Sub 
+        - ${ResourcePrefix}-grafana-role-updater-${UniqueString}
+        - UniqueString: !Select [ 0, !Split [ '-', !Select [ 2, !Split [ '/', !Ref 'AWS::StackId' ] ] ] ]
+      Code:
+        ZipFile: |
+          import boto3
+          import json
+          import logging
+          import time
+          import cfnresponse
+
+          # Set up the logger
+          logger = logging.getLogger()
+          logger.setLevel(logging.INFO)
+
+          # Define the role name and the policy name
+          unique_id = 'XXXXXXX'
+          role_name = 'coast-grafana-workspace2024071-GrafanaWorkspaceRole-pCkPLRSrqeGA'
+          policy_name = f"GrafanaAthenaS3Access-{unique_id}"
+          athena_query_output_bucket= 'arn:aws:s3:::coast-data-export-curlegacy-queries-36595230'
+          export_output_bucket = 'arn:aws:s3:::coast-data-export-curlegacy-36595230'
+
+          def extract_role_name(arn):
+              # Split the ARN by ':' and then by '/'
+              
+              parts = arn.split(':')
+              role_name = parts[-1].split('/')[-1]
+              
+              return role_name
+
+
+          def build_policy_document(export_output_bucket, athena_query_output_bucket)->str:
+              # Define the policy document
+              policy_document = {
+                  "Version": "2012-10-17",
+                  "Statement": [
+                      {
+                          "Effect": "Allow",
+                          "Action": [
+                              "s3:GetBucketLocation",
+                              "s3:GetObject",
+                              "s3:ListBucket",
+                              "s3:ListBucketMultipartUploads",
+                              "s3:ListMultipartUploadParts",
+                              "s3:AbortMultipartUpload",
+                              "s3:CreateBucket",
+                              "s3:PutObject",
+                              "s3:PutBucketPublicAccessBlock"
+                          ],
+                          "Resource": [
+                              export_output_bucket,
+                              f"{export_output_bucket}/*",
+                              athena_query_output_bucket,
+                              f"{athena_query_output_bucket}/*"
+                          ]
+                      }
+                  ]
+              }
+
+              return policy_document
+
+          def lambda_handler(event, context):
+              
+              start_time = time.time()
+                        
+              print(f"event: {event} ")
+              logger.info('Lambda function started')
+
+              grafana_workspace_role_arn = event['ResourceProperties']['GrafanaWorkspacRoleARN'].strip()
+              export_bucket_arn = event['ResourceProperties']['ExportBucketARN'].strip()
+              athena_workgroup_bucket_arn = event['ResourceProperties']['AthenaWorkgroupBucketARN'].strip()
+              unique_id = event['ResourceProperties']['UniqueID'].strip() 
+
+              try:
+                extracted_role_name = extract_role_name(grafana_workspace_role_arn)
+              except Exception as e:
+                msg = f"Failed to extract role name from ARN: {grafana_workspace_role_arn}. Error: {str(e)}"
+                logger.error(msg)
+                cfnresponse.send(event,context,cfnresponse.FAILED,{'message': msg})
+
+              if event['RequestType']=='Create':
+                  policy_name = f"GrafanaAthenaS3Access-{unique_id}"
+                  logger.info(f"Policy name: {policy_name}")
+                  
+                  # Build the policy document
+                  logger.info(f"Building policy document for ARNs: {export_bucket_arn}, {athena_workgroup_bucket_arn}")
+                  try:
+                      policy_document = build_policy_document(export_bucket_arn, athena_workgroup_bucket_arn)
+                  except Exception as e:
+                      msg = f"Failed to build policy document. Error: {str(e)}"
+                      logger.error(msg)
+                      cfnresponse.send(event,context,cfnresponse.FAILED,{'message': msg})
+
+                  # Initialize the boto3 IAM client
+                  iam_client = boto3.client('iam')
+
+                  # Update the policy
+                  try:
+                      response = iam_client.put_role_policy(
+                          RoleName=extracted_role_name,
+                          PolicyName=policy_name,
+                          PolicyDocument=json.dumps(policy_document)
+                      )
+                  except Exception as e:
+                      msg = f"Unable to update IAM role:{grafana_workspace_role_arn}. Error: {str(e)}"
+                      logger.error(msg)
+                      cfnresponse.send(event, context, cfnresponse.FAILED,{'message': msg})
+              elif event['RequestType']=='Update':
+                  cfnresponse.send(event,context,cfnresponse.SUCCESS,{'update': 'complete'})
+
+              elif event['RequestType']=='Delete':
+                  cfnresponse.send(event,context,cfnresponse.SUCCESS,{'delete': 'complete'})
+
+              logger.info('Lambda function completed')
+              logger.info(f"Total time: {time.time() - start_time}")
+              print(f"Updated policy for role {role_name} with policy name {policy_name}")
+              cfnresponse.send(event,context,cfnresponse.SUCCESS,{'create': 'complete'})
+      Role: !GetAtt GrafanaRoleUpdateLambdaRole.Arn
+      Handler: 'index.lambda_handler'
+      Timeout: 45
+      Runtime: python3.12
+      ReservedConcurrentExecutions: 1
+      Tags:
+        - Key: "project"
+          Value: !Sub ${ResourcePrefix}
+
+  GrafanaRoleUpdate: #Execute GrafanaRoleUpdateFunction
+    Type: 'Custom::GrafanaRoleUpdateLambda'
+    Condition: ShouldRunRoleUpdate
+    DependsOn:
+      -  ResourceDiscovery
+    Properties:
+      ServiceToken: !GetAtt GrafanaRoleUpdateLambda.Arn
+      GrafanaWorkspacRoleARN: !GetAtt "ResourceDiscovery.grafana_workspace_role_arn"
+      ExportBucketARN: !GetAtt "ResourceDiscovery.export_bucket_arn"
+      AthenaWorkgroupBucketARN: !GetAtt "ResourceDiscovery.athena_workgroup_s3_bucket_arn"
+      UniqueID: 
+        !Sub 
+        - ${UniqueString}
+        - UniqueString: !Select [ 0, !Split [ '-', !Select [ 2, !Split [ '/', !Ref 'AWS::StackId' ] ] ] ]
+
+###########################################################################
+# Create data source in Grafana workspace
+###########################################################################
+
+  GrafanaDataSourceLambdaRole: #Role required for Grafana Datasource and CoastDashboard functions
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName:
+        !Sub 
+        - ${ResourcePrefix}-grafana-datasource-${UniqueString}
+        - UniqueString: !Select [ 0, !Split [ '-', !Select [ 2, !Split [ '/', !Ref 'AWS::StackId' ] ] ] ]
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+      Tags:
+        - Key: "project"
+          Value: !Sub ${ResourcePrefix}
+      Policies:
+        - PolicyName: 'coast-datasource-lambda'
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'logs:CreateLogGroup'
+                  - 'logs:CreateLogStream'
+                  - 'logs:PutLogEvents'
+                Resource: !Sub 'arn:${AWS::Partition}:logs:*:*:*'
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AWSGrafanaAccountAdministrator
+
+  GrafanaDataSourceLambda: #Lambda function to create Grafana data source
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        ZipFile: |
+          import cfnresponse
+          import boto3
+          import urllib3
+          import json
+          import logging
+
+          # Configure the logging module
+          logger = logging.getLogger()
+          logger.setLevel(logging.INFO)
+
+          SUCCESS="SUCCESS"
+          FAILED="FAILED"
+          class CoastGrafanaWorkspace:
+              client=boto3.client('grafana')
+              http=urllib3.PoolManager()
+              
+              def __init__(self,athena_db,athena_region,athena_workgroup,datasource_name,key_name,workspace_id,plugin_list,plugin_type):
+                  self.logger = logging.getLogger()
+                  self.logger.setLevel(logging.INFO)
+                  self.athena_db=athena_db
+                  self.athena_region=athena_region
+                  self.athena_workgroup=athena_workgroup
+                  self.datasource_name=datasource_name
+                  self.plugin_list=plugin_list
+                  self.plugin_type=plugin_type
+                  self.datasource_uid_list = []
+                  self.workspace=self.get_workspace(workspace_id)
+                  self.workspace_id = workspace_id
+                  self.key=self.create_key(key_name)
+                  self.common_headers={'Accept':'application/json','Content-Type':'application/json','Authorization':'Bearer '+self.key['key']}
+              
+              def get_workspace(self,workspace_id):
+                  '''return a the workspace id or return None'''
+                  workspaces=self.client.list_workspaces()
+                  
+                  for workspace in workspaces['workspaces']:
+                      if workspace['id']==workspace_id:
+                          return workspace
+
+                  return None
+
+              def create_key(self,key_name):
+                  '''delete grafana api key and create new key'''
+                  try:
+                      self.client.delete_workspace_api_key(keyName=key_name,workspaceId=self.workspace_id)
+                  except client.exceptions.ResourceNotFoundException as rnfe:
+                      self.logger.info(f'Unable to delete key.  This is not a breaking error.: {rnfe}.')
+                  except Exception as err:
+                      print('Error:'+str(err))
+                      pass
+                  finally:
+                      try:
+                        return self.client.create_workspace_api_key(keyName=key_name,keyRole='ADMIN',secondsToLive=60,workspaceId=self.workspace_id)
+                      except Exception as err:
+                        print('Error:'+str(err))
+                        pass
+              
+              def install_plugin(self) -> None:
+                  '''install plugin, currently only required for Athena'''
+                  if self.plugin_type == 'athena':
+                    body = {}
+                    
+                    try:
+                      install_athena = self.grafana_api('POST','plugins/grafana-athena-datasource/install',bytes(json.dumps(body),encoding='utf-8'))
+
+                      self.logger.info(f'Install Athena plugin status: {install_athena.status}')
+                      #self.logger.info(f'Install Athena Data: {install_athena.data}')
+                    except Exception as err:
+                      self.logger.error('Error installing plugin: '+str(err))
+                      pass
+
+                    return None
+              
+              def set_datasource_body(self, body=''):
+                  '''return body needed for creation of datasource'''
+                  
+                  body={}
+                  
+                  self.logger.info(f'setting plugin datasource body of plugin type: {self.plugin_type}')
+
+                  if self.plugin_type == 'athena':
+                    body = {
+                      'name':self.datasource_name,'type':'grafana-athena-datasource','access':'proxy','url':'',
+                      'user':'','database':'','basicAuth':False,'isDefault':False,
+                      'jsonData':{'authType':'ec2_iam_role','catalog':'AwsDataCatalog','database':self.athena_db,'defaultRegion':self.athena_region,'provisionedBy':'COAST','workgroup':self.athena_workgroup},'readOnly':False}
+                  
+                  if self.plugin_type == 'cloudwatch':
+                    body = {'access': 'proxy', 'isDefault': True, 'name': 'Cloudwatch', 'type': self.plugin_type}
+
+                  self.logger.debug(f'Set datasource body: {body}')
+              
+                  return bytes(json.dumps(body),encoding='utf-8')
+
+              def create_datasource(self):
+                  success = True
+
+                  #install plugin, only required for non-core plugins
+                  self.install_plugin()
+
+                  enable_plugin = self.grafana_api('POST','datasources',self.set_datasource_body())
+
+                  self.logger.info(f'Enable {self.plugin_type} plugin status: {enable_plugin.status}')
+
+                  if enable_plugin.status != 200:
+                    success = False
+
+                    if enable_plugin.status == 409:
+                      self.logger.error(f"It is possible that plugin_type {self.plugin_type} with name {self.datasource_name} already exists.")
+                      return success
+
+                    
+                  return success
+              
+              def grafana_api(self,method,path,body=None):
+                  url='https://'+self.workspace['endpoint']+'/api/'+path
+                  headers={'Accept':'application/json','Content-Type':'application/json','Authorization':'Bearer '+self.key['key']}
+                  print(method + ' ' + url + ' ' + str(body))
+                  
+                  res=self.http.request(method,url,headers=headers,body=body)
+                  
+                  return res
+
+          def lambda_handler(event,context):
+              
+              logger.info('Lambda function started')
+              print(json.dumps(event,indent=4))
+              print(f"event: {event} ")
+              
+              athena_db = event['ResourceProperties']['AthenaDB'].strip()
+              athena_region = event['ResourceProperties']['AthenaRegion'].strip()
+              athena_workgroup = event['ResourceProperties']['AthenaWorkgroup'].strip()
+              datasource_type = event['ResourceProperties']['DataSource'].strip()
+              key_name = event['ResourceProperties']['GrafanaKey'].strip()
+              workspace_id = event['ResourceProperties']['GrafanaWorkspaceID'].strip()
+
+              response_data={'Data': None}
+              
+              if datasource_type == "CUR-2-0":
+                plugin_type = 'athena'
+                datasource_name = 'COAST-CUR20-2024-07-15'
+              elif datasource_type == "CUR-Legacy":
+                plugin_type = 'athena'
+                datasource_name = 'COAST-2023-09-19'
+              elif datasource_type == "FOCUS":
+                plugin_type = 'athena'
+                datasource_name = "COAST-FOCUS-2024-07-15"
+              elif datasource_type == "CloudWatch":
+                plugin_type = 'cloudwatch'
+                datasource_name = 'Cloudwatch'
+              else:
+                plugin_type = None
+                datasource_name = None
+                cfnresponse.send(event,context,cfnresponse.FAILED,{'message': 'Error: Unknown datasource type.'})
+
+              plugin_list=['athena', 'cloudwatch']
+              
+              try:
+                  id=event['PhysicalResourceId'] if 'PhysicalResourceId' in event else '0'
+                  ws=CoastGrafanaWorkspace(
+                    athena_db=athena_db,athena_region=athena_region,athena_workgroup=athena_workgroup,datasource_name=datasource_name,
+                    key_name=key_name,workspace_id=workspace_id,plugin_list=plugin_list,plugin_type=plugin_type
+                  )
+                  
+                  if event['RequestType']=='Create':
+                      result=ws.create_datasource()
+                                            
+                      if result:
+                          cfnresponse.send(event,context,cfnresponse.SUCCESS,response_data)
+                      else:
+                          cfnresponse.send(event,context,cfnresponse.FAILED,response_data)
+                  elif event['RequestType']=='Delete':
+                      cfnresponse.send(event,context,cfnresponse.SUCCESS,{'Message': "Delete not necessary"})
+                  elif event['RequestType']=='Update':
+                      cfnresponse.send(event,context,cfnresponse.SUCCESS,{'Message': "Update not necessary"})
+
+              except Exception as err:
+                  msg = f'Error: {str(err)}'
+                  self.logger.error(msg)
+                  cfnresponse.send(event,context,cfnresponse.FAILED,{'message': msg},'0')
+
+      FunctionName:
+        !Sub 
+        - ${ResourcePrefix}-grafana-datasource-${UniqueString}
+        - UniqueString: !Select [ 0, !Split [ '-', !Select [ 2, !Split [ '/', !Ref 'AWS::StackId' ] ] ] ]
+      Role: !GetAtt GrafanaDataSourceLambdaRole.Arn
+      Handler: 'index.lambda_handler'
+      Timeout: 30
+
+      Tags:
+        - Key: "project"
+          Value: !Sub ${ResourcePrefix}
+      Runtime: python3.10
+      ReservedConcurrentExecutions: 1
+
+  GrafanaDatasource: #Execute lambda data source creation; custom resource
+    Type: 'Custom::GrafanaDatasource'
+    Properties:
+      ServiceToken: !GetAtt GrafanaDataSourceLambda.Arn
+      AthenaDB: !Ref AthenaDatabaseName
+      AthenaRegion: !Ref AWS::Region
+      AthenaWorkgroup: !Ref AthenaWorkgroupName
+      #DataSource: 'COAST-2023-09-19' #Do not change until we update our templates
+      DataSource: !Ref DataExportType
+      GrafanaKey: !Ref AWS::StackName
+      GrafanaWorkspaceID: !GetAtt "ResourceDiscovery.grafana_workspace_id"
+      CoastWorkspace: !Ref GrafanaWorkspaceName
+
+
+Outputs:
+
+  DiscoveredAthenaOutputBucketARN:
+    Description: Discovererd Workgroup ARN for provided Athena Workgroup
+    Value: !GetAtt "ResourceDiscovery.athena_workgroup_s3_bucket_arn"
+  DiscoveredGrafanaWorkspaceRoleARN:
+    Description: Discovererd Workgroup ARN for provided Grafana Workgroup
+    Value: !GetAtt "ResourceDiscovery.grafana_workspace_role_arn"
+  DiscoveredExportBucketARN:
+    Description: Discovererd Export Bucket ARN for provided Data Export
+    Value: !GetAtt "ResourceDiscovery.export_bucket_arn"
+  UniqueId:
+    Description: 'Unique suffix for most resources. This suffix allows you to specify the same prefix for multiple deployments.'
+    Value:
+      !Sub 
+      - ${UniqueString}
+      - UniqueString: !Select [ 0, !Split [ '-', !Select [ 2, !Split [ '/', !Ref 'AWS::StackId' ] ] ] ]
+  
+  
