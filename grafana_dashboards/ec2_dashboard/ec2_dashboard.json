@@ -2558,8 +2558,8 @@
       {
         "current": {
           "selected": false,
-          "text": "i-0f57cf65bf1421747",
-          "value": "i-0f57cf65bf1421747"
+          "text": "",
+          "value": ""
         },
         "description": "Input the Instance ID to populate performance and cost and usage data in panels",
         "hide": 0,
@@ -2569,7 +2569,7 @@
         "name": "InstanceId",
         "options": [],
         "query": "",
-        "queryValue": "i-0f57cf65bf1421747",
+        "queryValue": "",
         "skipUrlSync": false,
         "type": "custom"
       }
