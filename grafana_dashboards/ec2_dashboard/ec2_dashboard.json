@@ -1,0 +1,2596 @@
+{
+  "__inputs": [
+    {
+      "name": "DS_COAST-CUR20-2024-07-15",
+      "label": "COAST-CUR20-2024-07-15",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "grafana-athena-datasource",
+      "pluginName": "Amazon Athena"
+    },
+    {
+      "name": "DS_CLOUDWATCH",
+      "label": "Cloudwatch",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "cloudwatch",
+      "pluginName": "CloudWatch"
+    }
+  ],
+  "__elements": {},
+  "__requires": [
+    {
+      "type": "panel",
+      "id": "barchart",
+      "name": "Bar chart",
+      "version": ""
+    },
+    {
+      "type": "datasource",
+      "id": "cloudwatch",
+      "name": "CloudWatch",
+      "version": "1.0.0"
+    },
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "10.4.1"
+    },
+    {
+      "type": "datasource",
+      "id": "grafana-athena-datasource",
+      "name": "Amazon Athena",
+      "version": "2.17.1"
+    },
+    {
+      "type": "panel",
+      "id": "stat",
+      "name": "Stat",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "table",
+      "name": "Table",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "text",
+      "name": "Text",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "timeseries",
+      "name": "Time series",
+      "version": ""
+    }
+  ],
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "EC2 Compute Dashboard",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 2,
+  "id": null,
+  "links": [
+    {
+      "asDropdown": false,
+      "icon": "external link",
+      "includeVars": false,
+      "keepTime": false,
+      "tags": [],
+      "targetBlank": true,
+      "title": "Cost Explorer",
+      "tooltip": "Cost Explorer",
+      "type": "link",
+      "url": "https://console.aws.amazon.com/cost-management/home?#/custom?excludeCategorizedResources=false&excludeDiscounts=true&excludeTaggedResources=false&filter=%5B%5D&granularity=Monthly&groupBy=None&hasAmortized=false&hasBlended=false&isTemplate=true&reportName=&reportType=CostUsage&timeRangeOption=Last6Months&chartStyle=Group&forecastTimeRangeOption=None&usageAs=usageQuantity&excludeForecast=false&startDate=2022-04-01&endDate=2022-09-30"
+    }
+  ],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {
+        "type": "grafana-athena-datasource",
+        "uid": "${DS_COAST-CUR20-2024-07-15}"
+      },
+      "description": "",
+      "gridPos": {
+        "h": 3,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 85,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "<h1 style='font-size: 20px'>\n<span style='color: #AF69EE;font-weight: bold'>C</span>ost <span style='color: #AF69EE;font-weight: bold'>O</span>ptimization <span style='color: #AF69EE;font-weight: bold'>A</span>nd <span style='color: #AF69EE;font-weight: bold'>S</span>avings <span style='color: #AF69EE;font-weight: bold'>T</span>ool (<span style='color: #AF69EE;font-weight: bold'>COAST</span>) <br> <span style=\"font-size: 18px\"> for Amazon Managed Grafana - EC2 Dashboard</span>\n</h1>",
+        "mode": "html"
+      },
+      "pluginVersion": "10.4.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${DS_COAST-CUR20-2024-07-15}"
+          },
+          "refId": "A"
+        }
+      ],
+      "title": " ",
+      "transparent": true,
+      "type": "text"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 3
+      },
+      "id": 58,
+      "panels": [],
+      "title": "How to use this dashboard",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "grafana-athena-datasource",
+        "uid": "${DS_COAST-CUR20-2024-07-15}"
+      },
+      "description": "",
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 4
+      },
+      "id": 88,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "### EC2 Compute Dashboard\n\nThe EC2 Dashboard offers visualizations that display aggregated EC2 compute usage across your infrastructure. Additionally, it provides visuals that showcase cost, usage, and performance metrics for individual EC2 instances specified in the parameter text box.\n\nTo effectively utilize this dashboard, you must fulfill the following prerequisites:\n\n- Set up a Cost and Usage Report (CUR) 2.0, either at the payer account level or within your individual AWS account.\n- Create a data source for the CUR 2.0 data. This can be accomplished using our data export CloudFormation template.\n  - If you create the CUR 2.0 datasource manually, it needs to be named 'COAST-CUR20-2024-07-15'\n- If you plan to use this dashboard in your payer account and have access to the payer's CUR 2.0, you will need to configure CloudWatch cross-account replication for the accounts you wish to monitor.\n\nBy meeting these requirements, you can leverage the EC2 Dashboard to gain insights into your EC2 compute usage, costs, and performance metrics, enabling you to optimize your resources and make informed decisions.",
+        "mode": "markdown"
+      },
+      "pluginVersion": "10.4.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${DS_COAST-CUR20-2024-07-15}"
+          },
+          "refId": "A"
+        }
+      ],
+      "title": " ",
+      "type": "text"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 13
+      },
+      "id": 60,
+      "panels": [],
+      "title": "EC2: Aggregated Compute View",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "datasource",
+        "uid": "grafana"
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 24,
+        "x": 0,
+        "y": 14
+      },
+      "id": 110,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "<font size=\"2\">\nThis section displays the average aggregated compute metrics for all EC2 Instances in account ${LinkedAccounts} within ${Regions}.  The visuals are impacted by selections made from the inpute parameters and the time period.\n\n\n###### Parameters\nCUR Granulairty: ${CURGranularity}     CloudWatch Granulairty: ${CWGranularity}   \n</font>\n",
+        "mode": "markdown"
+      },
+      "pluginVersion": "10.4.1",
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "grafana-athena-datasource",
+        "uid": "${DS_COAST-CUR20-2024-07-15}"
+      },
+      "description": "This visual displays the cost for all EC2 Running Instances from the Cost and Usage Report (CUR) for the current selected time period: ${__from:date:iso} - ${__to:date:iso}",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "semi-dark-purple",
+            "mode": "fixed",
+            "seriesBy": "max"
+          },
+          "decimals": 0,
+          "displayName": "my display name",
+          "fieldMinMax": false,
+          "mappings": [],
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "currencyUSD"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "_col0"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "EC2 Instance Cost"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 8,
+        "x": 0,
+        "y": 17
+      },
+      "id": 117,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "value_and_name",
+        "wideLayout": true
+      },
+      "pluginVersion": "10.4.1",
+      "targets": [
+        {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${DS_COAST-CUR20-2024-07-15}"
+          },
+          "format": 1,
+          "rawSQL": "SELECT \n  SUM(line_item_unblended_cost)\nFROM $CurTable\nWHERE\n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_usage_account_id IN ('$LinkedAccounts')\n  AND product_region_code in ('$Regions')\n  AND line_item_product_code = 'AmazonEC2'\n  AND line_item_operation = 'RunInstances'\n  AND line_item_usage_type LIKE ('%Box%')\n  AND line_item_resource_id LIKE 'i-%'",
+          "refId": "A"
+        }
+      ],
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "grafana-athena-datasource",
+        "uid": "${DS_COAST-CUR20-2024-07-15}"
+      },
+      "description": "This visual displays the average VCPU count/hour as observed from the Cost and Usage Report (CUR) for the current selected time period: ${__from:date:iso} - ${__to:date:iso}",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "#6f63c7",
+            "mode": "fixed",
+            "seriesBy": "max"
+          },
+          "decimals": 1,
+          "displayName": "my display name",
+          "fieldMinMax": false,
+          "mappings": [],
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "avg_vcpus"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Average Hourly VCPU"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 8,
+        "x": 8,
+        "y": 17
+      },
+      "id": 119,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "value_and_name",
+        "wideLayout": true
+      },
+      "pluginVersion": "10.4.1",
+      "targets": [
+        {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${DS_COAST-CUR20-2024-07-15}"
+          },
+          "format": 1,
+          "rawSQL": "SELECT \n  DATE_TRUNC('hour', line_item_usage_start_date) AS hour,\n  AVG(CAST(product['vcpu'] AS INT)) AS avg_vcpus\nFROM \n  $CurTable\nWHERE\n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_usage_account_id IN ('$LinkedAccounts')\n  AND product_region_code in ('$Regions')\n  AND line_item_product_code = 'AmazonEC2'\n  AND line_item_operation = 'RunInstances'\n  AND line_item_resource_id LIKE 'i-%'\n  AND line_item_usage_type LIKE ('%Box%')\n  AND product['vcpu'] <> ''\nGROUP BY \n1\nORDER BY\nhour;\n\n",
+          "refId": "A"
+        }
+      ],
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "grafana-athena-datasource",
+        "uid": "${DS_COAST-CUR20-2024-07-15}"
+      },
+      "description": "This visual displays the average count/hour of all unique instance IDs observed in the Cost and Usage Report (CUR) for the current selected time period: ${__from:date:iso} - ${__to:date:iso}",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "semi-dark-blue",
+            "mode": "fixed",
+            "seriesBy": "max"
+          },
+          "decimals": 1,
+          "displayName": "my display name",
+          "fieldMinMax": false,
+          "mappings": [],
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "_col1"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Average Number of Running EC2 Instances"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 8,
+        "x": 16,
+        "y": 17
+      },
+      "id": 118,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "value_and_name",
+        "wideLayout": true
+      },
+      "pluginVersion": "10.4.1",
+      "targets": [
+        {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${DS_COAST-CUR20-2024-07-15}"
+          },
+          "format": 1,
+          "rawSQL": "SELECT \n  DATE_TRUNC('hour', line_item_usage_start_date) AS hour,\n  COUNT(DISTINCT(line_item_resource_id))\nFROM $CurTable\nWHERE\n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_usage_account_id IN ('$LinkedAccounts')\n  AND product_region_code in ('$Regions')\n  AND line_item_product_code = 'AmazonEC2'\n  AND line_item_operation = 'RunInstances'\n  AND line_item_resource_id LIKE 'i-%'\n  AND line_item_usage_type LIKE ('%Box%')\nGROUP BY\n1\nORDER BY hour DESC;",
+          "refId": "A"
+        }
+      ],
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "datasource",
+        "uid": "-- Mixed --"
+      },
+      "description": "This visualization displays two metrics: Cost and Performance. For Cost, it retrieves the total cost for EC2 running CPU from the Cost and Usage Report (CUR) for the specified time period (${CURGranularity}). As for Performance, it pulls the average number of running vCPUs from CloudWatch over the same time period (${CWGranularity} seconds). It's important to ensure that the time periods for the Cost and Usage Report (CUR) and CloudWatch are always aligned.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-BlPu",
+            "seriesBy": "max"
+          },
+          "custom": {
+            "axisBorderShow": true,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisGridShow": true,
+            "axisLabel": "Cost",
+            "axisPlacement": "left",
+            "axisSoftMax": 5,
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 50,
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "smooth",
+            "lineStyle": {
+              "dash": [
+                0,
+                10
+              ],
+              "fill": "dot"
+            },
+            "lineWidth": 2,
+            "pointSize": 6,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "always",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "decimals": 1,
+          "displayName": "cost/${CURGranularity}",
+          "fieldMinMax": false,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "currencyUSD"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "cloudwatch_data"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "none"
+              },
+              {
+                "id": "custom.axisPlacement",
+                "value": "right"
+              },
+              {
+                "id": "custom.axisLabel",
+                "value": "Avg VCPU"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "continuous-RdYlGr",
+                  "seriesBy": "max"
+                }
+              },
+              {
+                "id": "custom.axisSoftMax"
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              },
+              {
+                "id": "displayName",
+                "value": "vCPUs/${CWGranularity}(s)"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 21
+      },
+      "id": 115,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hoverProximity": 5,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "10.4.1",
+      "targets": [
+        {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${DS_COAST-CUR20-2024-07-15}"
+          },
+          "format": 1,
+          "hide": false,
+          "rawSQL": "SELECT \n  date_trunc('$CURGranularity', line_item_usage_start_date) as date,\n  SUM(line_item_unblended_cost) AS \"Total EC2 Unblended Cost\"\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_usage_account_id IN ('$LinkedAccounts')\n  AND product_region_code in ('$Regions')\n  AND line_item_product_code = 'AmazonEC2'\n  AND line_item_operation = 'RunInstances'\n  AND line_item_usage_type LIKE ('%Box%')\n  AND line_item_line_item_type NOT IN ('Tax')\nGROUP BY\n1\nORDER BY \n  \"Total EC2 Unblended Cost\" DESC;",
+          "refId": "cur_data"
+        },
+        {
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "${DS_CLOUDWATCH}"
+          },
+          "dimensions": {
+            "Class": "Standard/OnDemand",
+            "Resource": "vCPU",
+            "Service": "EC2",
+            "Type": "*"
+          },
+          "expression": "REMOVE_EMPTY(SEARCH('{AWS/Usage,Class,Resource,Service,Type} :aws.AccountId = ${LinkedAccounts} Resource=\\\"vCPU\\\" Service=\\\"EC2\\\"', 'Average', ${CWGranularity} ))",
+          "hide": false,
+          "id": "ec2_vcpu_unblended",
+          "label": "VCPU",
+          "logGroups": [],
+          "matchExact": true,
+          "metricEditorMode": 1,
+          "metricName": "ResourceCount",
+          "metricQueryType": 0,
+          "namespace": "AWS/Usage",
+          "period": "$CWGranularity",
+          "queryMode": "Metrics",
+          "refId": "cloudwatch_data",
+          "region": "$Regions",
+          "sql": {
+            "select": {
+              "name": "AVG",
+              "type": "function"
+            }
+          },
+          "sqlExpression": "{\n    \"view\": \"timeSeries\",\n    \"stacked\": false,\n    \"region\": \"us-east-1\",\n    \"metrics\": [\n        [ \"AWS/Usage\", \"CallCount\", \"Type\", \"API\", \"Resource\", \"RunInstances\", \"Service\", \"EC2\", \"Class\", \"None\" ]\n    ]\n}",
+          "statistic": "Sum"
+        }
+      ],
+      "title": "EC2: VCPU vs Unblended Cost ",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "datasource",
+        "uid": "-- Mixed --"
+      },
+      "description": "This visualization displays two metrics: Cost and Performance. For Cost, it retrieves the total amortized cost for EC2 running CPU from the Cost and Usage Report (CUR) for the specified time period (${CURGranularity}). As for Performance, it pulls the average number of running vCPUs from CloudWatch over the same time period (${CWGranularity} seconds). It's important to ensure that the time periods for the Cost and Usage Report (CUR) and CloudWatch are always aligned.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-BlPu",
+            "seriesBy": "max"
+          },
+          "custom": {
+            "axisBorderShow": true,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisGridShow": true,
+            "axisLabel": "Cost",
+            "axisPlacement": "left",
+            "axisSoftMax": 5,
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 50,
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "smooth",
+            "lineStyle": {
+              "dash": [
+                0,
+                10
+              ],
+              "fill": "dot"
+            },
+            "lineWidth": 2,
+            "pointSize": 6,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "always",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "decimals": 1,
+          "displayName": "cost/${CURGranularity}",
+          "fieldMinMax": false,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "currencyUSD"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "cloudwatch_data"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "none"
+              },
+              {
+                "id": "custom.axisPlacement",
+                "value": "right"
+              },
+              {
+                "id": "custom.axisLabel",
+                "value": "Avg VCPU"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "continuous-RdYlGr",
+                  "seriesBy": "max"
+                }
+              },
+              {
+                "id": "custom.axisSoftMax"
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              },
+              {
+                "id": "displayName",
+                "value": "vCPUs/${CWGranularity}(s)"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 21
+      },
+      "id": 116,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hoverProximity": 5,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "10.4.1",
+      "targets": [
+        {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${DS_COAST-CUR20-2024-07-15}"
+          },
+          "format": 1,
+          "hide": false,
+          "rawSQL": "SELECT \n  date_trunc('$CURGranularity', line_item_usage_start_date) as date,\n  SUM(CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN savings_plan_savings_plan_effective_cost\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN reservation_effective_cost\n    WHEN line_item_line_item_type = 'Usage' THEN line_item_unblended_cost\n    ELSE 0 \n  END) AS \"Total EC2 Amortized Cost\"\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_usage_account_id IN ('$LinkedAccounts')\n  AND product_region_code in ('$Regions')\n  AND line_item_product_code = 'AmazonEC2'\n  AND line_item_operation = 'RunInstances'\n  AND line_item_usage_type LIKE ('%Box%')\n  AND line_item_line_item_type NOT IN ('Tax')\nGROUP BY\n1\nORDER BY \n  \"Total EC2 Amortized Cost\" DESC;",
+          "refId": "cur_data"
+        },
+        {
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "${DS_CLOUDWATCH}"
+          },
+          "dimensions": {
+            "Class": "Standard/OnDemand",
+            "Resource": "vCPU",
+            "Service": "EC2",
+            "Type": "*"
+          },
+          "expression": "REMOVE_EMPTY(SEARCH('{AWS/Usage,Class,Resource,Service,Type} :aws.AccountId = ${LinkedAccounts} Resource=\\\"vCPU\\\" Service=\\\"EC2\\\"', 'Average', ${CWGranularity} ))",
+          "hide": false,
+          "id": "ec2_vcpu_unblended",
+          "label": "VCPU",
+          "logGroups": [],
+          "matchExact": true,
+          "metricEditorMode": 1,
+          "metricName": "ResourceCount",
+          "metricQueryType": 0,
+          "namespace": "AWS/Usage",
+          "period": "$CWGranularity",
+          "queryMode": "Metrics",
+          "refId": "cloudwatch_data",
+          "region": "$Regions",
+          "sql": {
+            "select": {
+              "name": "AVG",
+              "type": "function"
+            }
+          },
+          "sqlExpression": "{\n    \"view\": \"timeSeries\",\n    \"stacked\": false,\n    \"region\": \"us-east-1\",\n    \"metrics\": [\n        [ \"AWS/Usage\", \"CallCount\", \"Type\", \"API\", \"Resource\", \"RunInstances\", \"Service\", \"EC2\", \"Class\", \"None\" ]\n    ]\n}",
+          "statistic": "Sum"
+        }
+      ],
+      "title": "EC2: VCPU vs Amortized Cost ",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "grafana-athena-datasource",
+        "uid": "${DS_COAST-CUR20-2024-07-15}"
+      },
+      "description": "This visual retrieves the average vcpus running/hour during the CUR granularity of $CURGranularity and the amortized cost per hour from CUR.  The cost is divided by the average vcpus to display the vcpu unit cost for the period: ${__from:date:iso} - ${__to:date:iso}",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-BlPu"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "series",
+            "axisLabel": "VCPU Unit Cost",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 30,
+            "gradientMode": "scheme",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "smooth",
+            "lineStyle": {
+              "dash": [
+                0,
+                10
+              ],
+              "fill": "dot"
+            },
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "always",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "decimals": 2,
+          "displayName": "Unit Cost/VCPU",
+          "fieldMinMax": false,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "currencyUSD"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 29
+      },
+      "id": 120,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "10.4.1",
+      "targets": [
+        {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${DS_COAST-CUR20-2024-07-15}"
+          },
+          "format": 1,
+          "rawSQL": "WITH average_vcpu_query AS (\nSELECT \n  date_trunc('$CURGranularity', line_item_usage_start_date) as hour,\n  AVG(CAST(product['vcpu'] AS INT)) AS avg_vcpus\nFROM \n  $CurTable\nWHERE\n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_usage_account_id IN ('$LinkedAccounts')\n  AND product_region_code in ('$Regions')\n  AND line_item_product_code = 'AmazonEC2'\n  AND line_item_operation = 'RunInstances'\n  AND line_item_resource_id LIKE 'i-%'\n  AND line_item_usage_type LIKE ('%Box%')\n  AND product['vcpu'] <> ''\nGROUP BY\n1\nORDER BY\nhour DESC\n), \n\nunblended_cost_query AS (\n  SELECT \n  date_trunc('hour', line_item_usage_start_date) as hour,\n  SUM(CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN savings_plan_savings_plan_effective_cost\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN reservation_effective_cost\n    WHEN line_item_line_item_type = 'Usage' THEN line_item_unblended_cost\n    ELSE 0 \n  END) AS \"Total EC2 Amortized Cost\"\n  --SUM(CAST(line_item_unblended_cost AS DOUBLE)) AS \"Total EC2 Unblended Cost\"\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_usage_account_id IN ('$LinkedAccounts')\n  AND product_region_code in ('$Regions')\n  AND line_item_product_code = 'AmazonEC2'\n  AND line_item_operation = 'RunInstances'\n  AND line_item_line_item_type NOT IN ('Tax')\nGROUP BY\n1\nORDER BY \n  \"Total EC2 Amortized Cost\" DESC\n)\n\nSELECT\nunblended_cost_query.hour as timeperiod,\n(unblended_cost_query.\"Total EC2 Amortized Cost\" / average_vcpu_query.avg_vcpus) as vcpu_unit_cost\nFROM unblended_cost_query\nRIGHT JOIN average_vcpu_query on average_vcpu_query.hour = unblended_cost_query.hour\n\n\n",
+          "refId": "cur_data"
+        }
+      ],
+      "title": "EC2: VCPU Unblended Unit Cost",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "grafana-athena-datasource",
+        "uid": "${DS_COAST-CUR20-2024-07-15}"
+      },
+      "description": "This visual retrieves the amortized cost for the top 10 most expensive instance from the Cost and Usage Report (CUR) for the period: ${__from:date:iso} - ${__to:date:iso}",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "#bc62ea",
+            "mode": "fixed"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "cost",
+            "axisPlacement": "auto",
+            "fillOpacity": 51,
+            "gradientMode": "scheme",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 0,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "displayName": "instance cost",
+          "fieldMinMax": false,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "currencyUSD"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 29
+      },
+      "id": 121,
+      "options": {
+        "barRadius": 0,
+        "barWidth": 0.5,
+        "fullHighlight": false,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "orientation": "horizontal",
+        "showValue": "never",
+        "stacking": "none",
+        "text": {
+          "valueSize": 18
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        },
+        "xField": "instance",
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
+      },
+      "pluginVersion": "10.4.1",
+      "targets": [
+        {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${DS_COAST-CUR20-2024-07-15}"
+          },
+          "format": 1,
+          "rawSQL": "SELECT \n  line_item_resource_id as instance,\n  SUM(CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN savings_plan_savings_plan_effective_cost\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN reservation_effective_cost\n    WHEN line_item_line_item_type = 'Usage' THEN line_item_unblended_cost\n    ELSE 0 \n  END) AS cost\nFROM \n  $CurTable\nWHERE\n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_usage_account_id IN ('$LinkedAccounts')\n  AND product_region_code in ('$Regions')\n  AND line_item_product_code = 'AmazonEC2'\n  AND line_item_operation = 'RunInstances'\n  AND line_item_resource_id LIKE 'i-%'\n  AND line_item_usage_type LIKE ('%Box%')\n  AND product['vcpu'] <> ''\nGROUP BY\n1\nORDER BY \ncost DESC\nLIMIT 10;\n",
+          "refId": "A"
+        }
+      ],
+      "title": "EC2 Top 10 Instances by Cost",
+      "type": "barchart"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 37
+      },
+      "id": 122,
+      "panels": [],
+      "title": "Instance Dashboard: $InstanceId",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "grafana-athena-datasource",
+        "uid": "${DS_COAST-CUR20-2024-07-15}"
+      },
+      "description": "",
+      "gridPos": {
+        "h": 4,
+        "w": 12,
+        "x": 0,
+        "y": 38
+      },
+      "id": 127,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "<font size=\"2\">\nThis section displays the average compute, disk and network metrics for the current specified instance ${InstanceId}.  The visuals are impacted by selections made from the inpute parameters and the time period.\n\n\n###### Parameters\nCUR Granulairty: ${CURGranularity}     CloudWatch Granulairty: ${CWGranularity}   \n</font>\n",
+        "mode": "markdown"
+      },
+      "pluginVersion": "10.4.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${DS_COAST-CUR20-2024-07-15}"
+          },
+          "refId": "A"
+        }
+      ],
+      "title": " Section Overview",
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "datasource",
+        "uid": "-- Mixed --"
+      },
+      "description": "The first visual displays the instance cost per $CURGranularity from the cost and usage report.  The second visual reports the instance average CPU per ${CWGranularity}(s) for the given time period: ${__from:date:iso} - ${__to:date:iso}",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "semi-dark-purple",
+            "mode": "fixed",
+            "seriesBy": "max"
+          },
+          "custom": {
+            "axisBorderShow": true,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisGridShow": true,
+            "axisLabel": "Cost",
+            "axisPlacement": "left",
+            "axisSoftMax": 5,
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 50,
+            "gradientMode": "scheme",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "smooth",
+            "lineStyle": {
+              "dash": [
+                0,
+                10
+              ],
+              "fill": "dot"
+            },
+            "lineWidth": 2,
+            "pointSize": 6,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "always",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "decimals": 1,
+          "displayName": "cost/${CURGranularity}",
+          "fieldMinMax": false,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "currencyUSD"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "cloudwatch_data"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "percent"
+              },
+              {
+                "id": "custom.axisLabel",
+                "value": "% CPU"
+              },
+              {
+                "id": "custom.axisPlacement",
+                "value": "right"
+              },
+              {
+                "id": "displayName",
+                "value": "% CPU"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "light-blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 38
+      },
+      "id": 123,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hoverProximity": 5,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "10.4.1",
+      "targets": [
+        {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${DS_COAST-CUR20-2024-07-15}"
+          },
+          "format": 1,
+          "hide": false,
+          "rawSQL": "SELECT \n  date_trunc('$CURGranularity', line_item_usage_start_date) as date,\n  SUM(CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN savings_plan_savings_plan_effective_cost\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN reservation_effective_cost\n    WHEN line_item_line_item_type = 'Usage' THEN line_item_unblended_cost\n    ELSE 0 \n  END) AS \"Total Instance Amortized Cost\"\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_resource_id = '$InstanceId'\n  AND line_item_product_code = 'AmazonEC2'\n  AND line_item_operation = 'RunInstances'\n  AND line_item_usage_type LIKE ('%Box%')\n  AND line_item_line_item_type NOT IN ('Tax')\nGROUP BY\n1\nORDER BY \n  \"Total Instance Amortized Cost\" DESC;",
+          "refId": "cur_data"
+        },
+        {
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "${DS_CLOUDWATCH}"
+          },
+          "dimensions": {
+            "InstanceId": "$InstanceId"
+          },
+          "expression": "SEARCH('{AWS/EC2,InstanceId} MetricName=\\\"CPUUtilization\\\"  ', 'Average', 300)",
+          "hide": false,
+          "id": "",
+          "label": "",
+          "logGroups": [],
+          "matchExact": false,
+          "metricEditorMode": 0,
+          "metricName": "CPUUtilization",
+          "metricQueryType": 0,
+          "namespace": "AWS/EC2",
+          "period": "$CWGranularity",
+          "queryMode": "Metrics",
+          "refId": "cloudwatch_data",
+          "region": "$Regions",
+          "sql": {
+            "select": {
+              "name": "AVG",
+              "type": "function"
+            }
+          },
+          "sqlExpression": "{\n    \"view\": \"timeSeries\",\n    \"stacked\": false,\n    \"region\": \"us-east-1\",\n    \"metrics\": [\n        [ \"AWS/Usage\", \"CallCount\", \"Type\", \"API\", \"Resource\", \"RunInstances\", \"Service\", \"EC2\", \"Class\", \"None\" ]\n    ]\n}",
+          "statistic": "Average"
+        }
+      ],
+      "title": "EC2: CPU Utilization Vs Cost (${CURGranularity})",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "datasource",
+        "uid": "-- Mixed --"
+      },
+      "description": "Instance type and instance public rate as pulled from the cost and usage report.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "light-blue",
+            "mode": "fixed",
+            "seriesBy": "max"
+          },
+          "decimals": 1,
+          "fieldMinMax": false,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "currencyUSD"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "product_instance_type"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "string"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 0,
+        "y": 42
+      },
+      "id": 125,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "/^public_rate$/",
+          "values": true
+        },
+        "showPercentChange": false,
+        "text": {},
+        "textMode": "value_and_name",
+        "wideLayout": true
+      },
+      "pluginVersion": "10.4.1",
+      "targets": [
+        {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${DS_COAST-CUR20-2024-07-15}"
+          },
+          "format": 1,
+          "hide": false,
+          "rawSQL": "SELECT \n  line_item_unblended_rate as \"public_rate\",\n  product_instance_type\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_resource_id = '$InstanceId'\n  AND line_item_product_code = 'AmazonEC2'\n  AND line_item_operation = 'RunInstances'\n  AND line_item_usage_type LIKE ('%Box%')\n  AND line_item_line_item_type NOT IN ('Tax')\nORDER BY \n  line_item_usage_start_date DESC\nLIMIT 1",
+          "refId": "cur_data"
+        }
+      ],
+      "title": "public rate",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "datasource",
+        "uid": "-- Mixed --"
+      },
+      "description": "Total Instance cost for $instanceId for period: ${__from:date:iso} - ${__to:date:iso}",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "light-blue",
+            "mode": "fixed",
+            "seriesBy": "max"
+          },
+          "decimals": 1,
+          "displayName": "${InstanceId} Cost",
+          "fieldMinMax": false,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "currencyUSD"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "cloudwatch_data"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "percent"
+              },
+              {
+                "id": "displayName",
+                "value": "% CPU"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "light-blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 4,
+        "y": 42
+      },
+      "id": 124,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "10.4.1",
+      "targets": [
+        {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${DS_COAST-CUR20-2024-07-15}"
+          },
+          "format": 1,
+          "hide": false,
+          "rawSQL": "SELECT \n  SUM(CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN savings_plan_savings_plan_effective_cost\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN reservation_effective_cost\n    WHEN line_item_line_item_type = 'Usage' THEN line_item_unblended_cost\n    ELSE 0 \n  END) AS \"Total Instance Amortized Cost\"\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_resource_id = '$InstanceId'\n  AND line_item_product_code = 'AmazonEC2'\n  AND line_item_operation = 'RunInstances'\n  AND line_item_line_item_type NOT IN ('Tax')\nORDER BY \n  \"Total Instance Amortized Cost\" DESC;",
+          "refId": "cur_data"
+        }
+      ],
+      "title": "Instance Compute Cost",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "${DS_CLOUDWATCH}"
+      },
+      "description": "Average Instance CPU for $instanceId for period: ${__from:date:iso} - ${__to:date:iso}.  \n\nThis field will highlight red if the instance average CPU is < 5% in the given time period.  This indicates the instance may be a candidate for rightsizing based on CPU only.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "light-blue",
+            "mode": "fixed",
+            "seriesBy": "max"
+          },
+          "decimals": 1,
+          "displayName": "${InstanceId} CPU",
+          "fieldMinMax": false,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "orange",
+                "value": null
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byValue",
+              "options": {
+                "op": "lte",
+                "reducer": "mean",
+                "value": 5
+              }
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 8,
+        "y": 42
+      },
+      "id": 126,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": true,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "10.4.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "${DS_CLOUDWATCH}"
+          },
+          "dimensions": {
+            "InstanceId": "$InstanceId"
+          },
+          "expression": "",
+          "id": "",
+          "label": "",
+          "logGroups": [],
+          "matchExact": true,
+          "metricEditorMode": 0,
+          "metricName": "CPUUtilization",
+          "metricQueryType": 0,
+          "namespace": "AWS/EC2",
+          "period": "$CWGranularity",
+          "queryMode": "Metrics",
+          "refId": "A",
+          "region": "default",
+          "sqlExpression": "",
+          "statistic": "Average"
+        }
+      ],
+      "title": "Instance Average CPU Utilization",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "datasource",
+        "uid": "-- Mixed --"
+      },
+      "description": "This visual displays data transfer out cost data at a granularity of ${CURGranularity} and CloudWatch Network Out traffic at a CloudWatch granularity of ${CWGranularity}(s) for $InstanceId  during time period: ${__from:date:iso} - ${__to:date:iso}.  \n",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "semi-dark-purple",
+            "mode": "fixed",
+            "seriesBy": "max"
+          },
+          "custom": {
+            "axisBorderShow": true,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisGridShow": true,
+            "axisLabel": "NetworkOut",
+            "axisPlacement": "right",
+            "axisSoftMax": 5,
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 50,
+            "gradientMode": "scheme",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "smooth",
+            "lineStyle": {
+              "dash": [
+                0,
+                10
+              ],
+              "fill": "dot"
+            },
+            "lineWidth": 2,
+            "pointSize": 6,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "always",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "decimals": 1,
+          "displayName": "NetworkIn",
+          "fieldMinMax": false,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "decbytes"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "cur_data"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "currencyUSD"
+              },
+              {
+                "id": "displayName",
+                "value": "cost/$CURGranularity"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "semi-dark-yellow",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.axisLabel",
+                "value": "cost"
+              },
+              {
+                "id": "custom.axisPlacement",
+                "value": "left"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 46
+      },
+      "id": 129,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hoverProximity": 5,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "10.4.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "${DS_CLOUDWATCH}"
+          },
+          "dimensions": {},
+          "expression": "SUM(REMOVE_EMPTY(SEARCH('{AWS/EC2,InstanceId} $InstanceId MetricName=\"NetworkOut\"', 'Sum', $CWGranularity )))/$CWGranularity",
+          "id": "",
+          "label": "",
+          "logGroups": [],
+          "matchExact": true,
+          "metricEditorMode": 1,
+          "metricName": "",
+          "metricQueryType": 0,
+          "namespace": "",
+          "period": "",
+          "queryMode": "Metrics",
+          "refId": "cloudwatch_data",
+          "region": "$Regions",
+          "sqlExpression": "",
+          "statistic": "Average"
+        },
+        {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${DS_COAST-CUR20-2024-07-15}"
+          },
+          "format": 1,
+          "hide": false,
+          "rawSQL": "SELECT \n  date_trunc('$CURGranularity', line_item_usage_start_date) as date,\n  SUM(line_item_unblended_cost) as datatransfer_cost\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  -- AND line_item_resource_id = '$InstanceId'\n  AND line_item_product_code = 'AmazonEC2'\n  AND line_item_operation = 'RunInstances'\n  AND line_item_usage_type LIKE ('%DataTransfer-Out%')\n  AND line_item_line_item_type NOT IN ('Tax')\nGROUP BY\n1",
+          "refId": "cur_data"
+        }
+      ],
+      "title": "$InstanceId: NetworkOut Traffic",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "datasource",
+        "uid": "-- Mixed --"
+      },
+      "description": "This visual displays the Network in traffic for $InstanceId at a CloudWatch granularity of ${CWGranularity}(s) during time period: ${__from:date:iso} - ${__to:date:iso}.  \n\nThere is no charge for incoming network thus we do not display cost and usage data from CUR for NetworkIn",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "semi-dark-purple",
+            "mode": "fixed",
+            "seriesBy": "max"
+          },
+          "custom": {
+            "axisBorderShow": true,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisGridShow": true,
+            "axisLabel": "NetworkIn",
+            "axisPlacement": "right",
+            "axisSoftMax": 5,
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 50,
+            "gradientMode": "scheme",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "smooth",
+            "lineStyle": {
+              "dash": [
+                0,
+                10
+              ],
+              "fill": "dot"
+            },
+            "lineWidth": 2,
+            "pointSize": 6,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "always",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "decimals": 1,
+          "displayName": "NetworkIn",
+          "fieldMinMax": false,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "decbytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 46
+      },
+      "id": 128,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hoverProximity": 5,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "10.4.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "${DS_CLOUDWATCH}"
+          },
+          "dimensions": {},
+          "expression": "SUM(REMOVE_EMPTY(SEARCH('{AWS/EC2,InstanceId} $InstanceId MetricName=\"NetworkIn\"', 'Sum', $CWGranularity )))/$CWGranularity",
+          "id": "",
+          "label": "",
+          "logGroups": [],
+          "matchExact": true,
+          "metricEditorMode": 1,
+          "metricName": "",
+          "metricQueryType": 0,
+          "namespace": "",
+          "period": "",
+          "queryMode": "Metrics",
+          "refId": "cloudwatch_data",
+          "region": "$Regions",
+          "sqlExpression": "",
+          "statistic": "Average"
+        }
+      ],
+      "title": "$InstanceId: NetworkIn Traffic",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "datasource",
+        "uid": "-- Mixed --"
+      },
+      "description": "This visual displays data transfer by usage type for $InstanceId  during time period: ${__from:date:iso} - ${__to:date:iso}.  \n",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "semi-dark-purple",
+            "mode": "continuous-BlPu",
+            "seriesBy": "max"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 50,
+            "gradientMode": "scheme",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "decimals": 1,
+          "displayName": "NetworkIn",
+          "fieldMinMax": false,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "currencyUSD"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 54
+      },
+      "id": 130,
+      "options": {
+        "barRadius": 0,
+        "barWidth": 0.37,
+        "colorByField": "Usage Type",
+        "fullHighlight": false,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "orientation": "horizontal",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        },
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 100
+      },
+      "pluginVersion": "10.4.1",
+      "targets": [
+        {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${DS_COAST-CUR20-2024-07-15}"
+          },
+          "format": 1,
+          "hide": false,
+          "rawSQL": "SELECT \n  DISTINCT(line_item_usage_type) as \"Usage Type\",\n  SUM(line_item_unblended_cost) as \"Data Transfer Cost\"\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_resource_id = '$InstanceId'\n  AND line_item_product_code = 'AmazonEC2'\n  AND line_item_operation = 'RunInstances'\n  AND line_item_usage_type LIKE ('%DataTransfer-Out%')\n  AND line_item_line_item_type NOT IN ('Tax')\nGROUP BY\n1\nORDER BY\n\"Data Transfer Cost\" DESC",
+          "refId": "cur_data"
+        }
+      ],
+      "title": "$InstanceId: Cost by Usage Type",
+      "type": "barchart"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 62
+      },
+      "id": 131,
+      "panels": [],
+      "title": "Top Instances by Cost",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "grafana-athena-datasource",
+        "uid": "${DS_COAST-CUR20-2024-07-15}"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "decimals": 1,
+          "displayName": "NetworkIn",
+          "fieldMinMax": false,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "currencyUSD"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 17,
+        "w": 24,
+        "x": 0,
+        "y": 63
+      },
+      "id": 132,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "10.4.1",
+      "targets": [
+        {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${DS_COAST-CUR20-2024-07-15}"
+          },
+          "format": 1,
+          "rawSQL": "SELECT \n  line_item_resource_id as Instance,\n  product_instance_type,\n  CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN 'Savings Plan'\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN 'Reserved Instance'\n    WHEN line_item_line_item_type = 'Usage' THEN 'On Demand'\n    ELSE 'On Demand'\n  END AS \"Purchase Type\",\n  SUM(CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN savings_plan_savings_plan_effective_cost\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN reservation_effective_cost\n    WHEN line_item_line_item_type = 'Usage' THEN line_item_unblended_cost\n    ELSE 0 \n  END) AS Cost\nFROM \n  $CurTable\nWHERE\n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_usage_account_id IN ('$LinkedAccounts')\n  AND product_region_code in ('$Regions')\n  AND line_item_product_code = 'AmazonEC2'\n  AND line_item_operation = 'RunInstances'\n  AND line_item_resource_id LIKE 'i-%'\n  AND line_item_usage_type LIKE ('%Box%')\n  AND product['vcpu'] <> ''\nGROUP BY\n1,2,3\nORDER BY \ncost DESC\nLIMIT 500;\n",
+          "refId": "A"
+        }
+      ],
+      "title": "Top 500 Instances by Cost",
+      "type": "table"
+    }
+  ],
+  "refresh": "",
+  "revision": 1,
+  "schemaVersion": 39,
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": false,
+          "text": "COAST-CUR20-2024-07-15",
+          "value": "eds95qoc00sg0e"
+        },
+        "hide": 2,
+        "includeAll": false,
+        "multi": false,
+        "name": "Datasource",
+        "options": [],
+        "query": "grafana-athena-datasource",
+        "queryValue": "",
+        "refresh": 1,
+        "regex": "/COAST-CUR20.*/",
+        "skipUrlSync": false,
+        "type": "datasource"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "grafana-athena-datasource",
+          "uid": "${DS_COAST-CUR20-2024-07-15}"
+        },
+        "definition": "",
+        "hide": 2,
+        "includeAll": false,
+        "label": "CUR Table",
+        "multi": false,
+        "name": "CurTable",
+        "options": [],
+        "query": {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "format": 1,
+          "rawSQL": "show tables"
+        },
+        "refresh": 1,
+        "regex": "/data/",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "grafana-athena-datasource",
+          "uid": "${DS_COAST-CUR20-2024-07-15}"
+        },
+        "definition": "",
+        "description": "Select Linked Account",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Linked Accounts",
+        "multi": false,
+        "name": "LinkedAccounts",
+        "options": [],
+        "query": {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "format": 1,
+          "rawSQL": "SELECT DISTINCT(line_item_usage_account_id) FROM $CurTable;"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 3,
+        "type": "query"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "grafana-athena-datasource",
+          "uid": "${DS_COAST-CUR20-2024-07-15}"
+        },
+        "definition": "",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Regions",
+        "multi": false,
+        "name": "Regions",
+        "options": [],
+        "query": {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "format": 1,
+          "rawSQL": "select DISTINCT(product_region_code) as region from $CurTable ORDER by region ASC;"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "grafana-athena-datasource",
+          "uid": "${DS_COAST-CUR20-2024-07-15}"
+        },
+        "definition": "",
+        "hide": 2,
+        "includeAll": true,
+        "label": "Services",
+        "multi": true,
+        "name": "Services",
+        "options": [],
+        "query": {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "format": 1,
+          "rawSQL": "SELECT DISTINCT(line_item_product_code) from $CurTable;\n"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "day",
+          "value": "day"
+        },
+        "description": "CUR Granularity: Month/Week/Day/Hour",
+        "hide": 0,
+        "includeAll": false,
+        "label": "CUR Granularity",
+        "multi": false,
+        "name": "CURGranularity",
+        "options": [
+          {
+            "selected": false,
+            "text": "month",
+            "value": "month"
+          },
+          {
+            "selected": false,
+            "text": "week",
+            "value": "week"
+          },
+          {
+            "selected": true,
+            "text": "day",
+            "value": "day"
+          },
+          {
+            "selected": false,
+            "text": "hour",
+            "value": "hour"
+          }
+        ],
+        "query": "month,week,day,hour",
+        "queryValue": "",
+        "skipUrlSync": false,
+        "type": "custom"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "86400",
+          "value": "86400"
+        },
+        "description": "CloudWatch Granularity (seconds): Month/Week/Day/Hour",
+        "hide": 0,
+        "includeAll": false,
+        "label": "CW Granularity",
+        "multi": false,
+        "name": "CWGranularity",
+        "options": [
+          {
+            "selected": false,
+            "text": "3600",
+            "value": "3600"
+          },
+          {
+            "selected": true,
+            "text": "86400",
+            "value": "86400"
+          }
+        ],
+        "query": "2628000,604800,86400,3600",
+        "queryValue": "",
+        "skipUrlSync": false,
+        "type": "custom"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "grafana-athena-datasource",
+          "uid": "${DS_COAST-CUR20-2024-07-15}"
+        },
+        "definition": "",
+        "hide": 2,
+        "includeAll": true,
+        "label": "Charge Type",
+        "multi": true,
+        "name": "ChargeType",
+        "options": [],
+        "query": {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "format": 1,
+          "rawSQL": "SELECT DISTINCT(line_item_line_item_type) from $CurTable;"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "grafana-athena-datasource",
+          "uid": "${DS_COAST-CUR20-2024-07-15}"
+        },
+        "definition": "",
+        "hide": 2,
+        "includeAll": false,
+        "label": "Tag Key",
+        "multi": false,
+        "name": "TagKey",
+        "options": [],
+        "query": {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "format": 1,
+          "rawSQL": "SHOW COLUMNS from $CurTable;"
+        },
+        "refresh": 1,
+        "regex": "/resource_tags(.+)/",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "grafana-athena-datasource",
+          "uid": "${DS_COAST-CUR20-2024-07-15}"
+        },
+        "definition": "",
+        "hide": 2,
+        "includeAll": true,
+        "label": "Tag Value",
+        "multi": true,
+        "name": "TagValue",
+        "options": [],
+        "query": {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "format": 1,
+          "rawSQL": "SELECT DISTINCT(resource_tags_user_$TagKey) \nFROM $CurTable;"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "grafana-athena-datasource",
+          "uid": "${DS_COAST-CUR20-2024-07-15}"
+        },
+        "definition": "",
+        "hide": 2,
+        "includeAll": false,
+        "label": "Cost Category Name",
+        "multi": false,
+        "name": "CostCategoryName",
+        "options": [],
+        "query": {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "format": 1,
+          "rawSQL": "SHOW COLUMNS from $CurTable;"
+        },
+        "refresh": 1,
+        "regex": "/cost_category_(.+)/",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "grafana-athena-datasource",
+          "uid": "${DS_COAST-CUR20-2024-07-15}"
+        },
+        "definition": "",
+        "hide": 2,
+        "includeAll": true,
+        "label": "Cost Category Value",
+        "multi": true,
+        "name": "CostCategoryValue",
+        "options": [],
+        "query": {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "format": 1,
+          "rawSQL": "SELECT DISTINCT(cost_category_$CostCategoryName) FROM $CurTable;"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "grafana-athena-datasource",
+          "uid": "${DS_COAST-CUR20-2024-07-15}"
+        },
+        "definition": "",
+        "description": "Calculate the spend percentage from the top 25 accounts in the AWS Organization.",
+        "hide": 2,
+        "includeAll": false,
+        "multi": false,
+        "name": "PanelTop25SpendPercentage",
+        "options": [],
+        "query": {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": true,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "format": 1,
+          "rawSQL": "with total_spend as (\n    SELECT\n    line_item_usage_account_id as account,\n    sum(line_item_unblended_cost) as total_spend\n    FROM\n    $CurTable\n    where\n    bill_billing_period_start_date = date_add('MONTH', -1, DATE_TRUNC('MONTH', current_date))\n    Group by \n    line_item_usage_account_id\n),\n\ntop10_spend as (\n    SELECT\n    line_item_usage_account_id as account,\n    sum(line_item_unblended_cost) as top25_spend\n    FROM\n    csaws_cur\n    where\n    bill_billing_period_start_date = date_add('MONTH', -1, DATE_TRUNC('MONTH', current_date))\n    Group by \n    line_item_usage_account_id\n    LIMIT 10\n)\n\n\nSELECT\n    CAST( (sum(top25_spend) / sum(total_spend) * 100) as VARCHAR) as percentage_from_top25\nFROM\n    total_spend\nINNER JOIN top10_spend ON total_spend.account = top10_spend.account;\n"
+        },
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "grafana-athena-datasource",
+          "uid": "${DS_COAST-CUR20-2024-07-15}"
+        },
+        "definition": "",
+        "hide": 2,
+        "includeAll": false,
+        "label": "",
+        "multi": false,
+        "name": "TotalAccountInOrganization",
+        "options": [],
+        "query": {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": true,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "format": 1,
+          "rawSQL": "SELECT \nCAST(COUNT(DISTINCT(line_item_usage_account_id)) as VARCHAR) as account_count\nFROM \n$CurTable\n"
+        },
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "",
+          "value": ""
+        },
+        "description": "Input the Instance ID to populate performance and cost and usage data in panels",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Instance Id",
+        "multi": false,
+        "name": "InstanceId",
+        "options": [],
+        "query": "",
+        "queryValue": "",
+        "skipUrlSync": false,
+        "type": "custom"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-30d",
+    "to": "now-720m"
+  },
+  "timepicker": {
+    "nowDelay": "720m",
+    "refresh_intervals": [
+      "30m",
+      "1h",
+      "2h",
+      "1d"
+    ]
+  },
+  "timezone": "utc",
+  "title": "COAST - EC2 Compute",
+  "uid": "fdw1e9dqk80e8e",
+  "version": 139,
+  "weekStart": ""
+}
