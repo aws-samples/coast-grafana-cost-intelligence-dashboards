@@ -41,7 +41,7 @@
       "type": "datasource",
       "id": "grafana-athena-datasource",
       "name": "Amazon Athena",
-      "version": "2.17.1"
+      "version": "2.17.2"
     },
     {
       "type": "panel",
@@ -179,7 +179,7 @@
           "showLineNumbers": false,
           "showMiniMap": false
         },
-        "content": "### EC2 Compute Dashboard\n\nThe EC2 Dashboard offers visualizations that display aggregated EC2 compute usage across your infrastructure. Additionally, it provides visuals that showcase cost, usage, and performance metrics for individual EC2 instances specified in the parameter text box.\n\nTo effectively utilize this dashboard, you must fulfill the following prerequisites:\n\n- Set up a Cost and Usage Report (CUR) 2.0, either at the payer account level or within your individual AWS account.\n- Create a data source for the CUR 2.0 data. This can be accomplished using our data export CloudFormation template.\n  - If you create the CUR 2.0 datasource manually, it needs to be named 'COAST-CUR20-2024-07-15'\n- If you plan to use this dashboard in your payer account and have access to the payer's CUR 2.0, you will need to configure CloudWatch cross-account replication for the accounts you wish to monitor.\n\nBy meeting these requirements, you can leverage the EC2 Dashboard to gain insights into your EC2 compute usage, costs, and performance metrics, enabling you to optimize your resources and make informed decisions.",
+        "content": "### EC2 Compute Dashboard\n\nThe EC2 Dashboard offers visualizations that display aggregated \nEC2 compute usage across your infrastructure. Additionally, it \nprovides visuals that showcase cost, usage, and performance \nmetrics for individual EC2 instances specified in the parameter \ntext box.\n\nTo effectively utilize this dashboard, you must fulfill the \nfollowing prerequisites:\n\n- Set up a Cost and Usage Report (CUR) 2.0, either at the payer \naccount level or within your individual AWS account.\n- Create a data source for the CUR 2.0 data. This can be \naccomplished using our data export CloudFormation template (see [Readme](https://github.com/aws-samples/coast-grafana-cost-intelligence-dashboards/blob/main/README.md)).\n  - If you create the CUR 2.0 datasource manually, it needs to \n  be named 'COAST-CUR20-2024-07-15'\n- If you plan to use this dashboard in your payer account and \nhave access to the payer's CUR 2.0, you will need to configure [CloudWatch cross-account replication](https://docs.aws.amazon.com/grafana/latest/userguide/cloudwatch-cross-account.html) for the accounts you wish to monitor.\n\nBy meeting these requirements, you can leverage the EC2 Dashboard to \ngain insights into your EC2 compute usage, costs, and performance metrics, \nenabling you to optimize your resources and make informed decisions.",
         "mode": "markdown"
       },
       "pluginVersion": "10.4.1",
@@ -226,7 +226,7 @@
           "showLineNumbers": false,
           "showMiniMap": false
         },
-        "content": "<font size=\"2\">\nThis section displays the average aggregated compute metrics for all EC2 Instances in account ${LinkedAccounts} within ${Regions}.  The visuals are impacted by selections made from the inpute parameters and the time period.\n\n\n###### Parameters\nCUR Granulairty: ${CURGranularity}     CloudWatch Granulairty: ${CWGranularity}   \n</font>\n",
+        "content": "<font size=\"2\">\nThis section displays the aggregated compute metrics for all EC2 Instances in account ${LinkedAccounts} within ${Regions}.  The visuals are impacted by selections made from the inpute parameters and the time period.\n\n\n###### Parameters\nCUR Granulairty: ${CURGranularity}     CloudWatch Granulairty: ${CWGranularity}   \n</font>\n",
         "mode": "markdown"
       },
       "pluginVersion": "10.4.1",
@@ -274,7 +274,7 @@
             "properties": [
               {
                 "id": "displayName",
-                "value": "EC2 Instance Cost"
+                "value": "EC2 Compute Cost"
               }
             ]
           }
@@ -1128,7 +1128,7 @@
       "description": "",
       "gridPos": {
         "h": 4,
-        "w": 12,
+        "w": 24,
         "x": 0,
         "y": 38
       },
@@ -1154,6 +1154,200 @@
       ],
       "title": " Section Overview",
       "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "grafana-athena-datasource",
+        "uid": "${DS_COAST-CUR20-2024-07-15}"
+      },
+      "description": "Total Instance cost for $instanceId for period: ${__from:date:iso} - ${__to:date:iso}",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "light-blue",
+            "mode": "fixed",
+            "seriesBy": "max"
+          },
+          "decimals": 1,
+          "displayName": "${InstanceId}",
+          "fieldMinMax": false,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "currencyUSD"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "cloudwatch_data"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "percent"
+              },
+              {
+                "id": "displayName",
+                "value": "% CPU"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "light-blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 8,
+        "x": 0,
+        "y": 42
+      },
+      "id": 124,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "10.4.1",
+      "targets": [
+        {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${DS_COAST-CUR20-2024-07-15}"
+          },
+          "format": 1,
+          "rawSQL": "SELECT \n  SUM(CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN savings_plan_savings_plan_effective_cost\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN reservation_effective_cost\n    WHEN line_item_line_item_type = 'Usage' THEN line_item_unblended_cost\n    ELSE 0 \n  END) AS \"Total Instance Amortized Cost\"\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_resource_id = '$InstanceId'\n  AND line_item_product_code = 'AmazonEC2'\n  AND line_item_operation = 'RunInstances'\n  AND line_item_line_item_type NOT IN ('Tax')\nORDER BY \n  \"Total Instance Amortized Cost\" DESC;",
+          "refId": "A"
+        }
+      ],
+      "title": "Instance Compute Cost",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "grafana-athena-datasource",
+        "uid": "${DS_COAST-CUR20-2024-07-15}"
+      },
+      "description": "This visual displays the date the instance was lass seen in the CUR.  The CUR is searched for the past 12 months.\n\nKeep in mind the CUR update times happen up to three times daily, so you may see this metric lag behind depending on when the update last happened.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "light-blue",
+            "mode": "fixed",
+            "seriesBy": "max"
+          },
+          "fieldMinMax": false,
+          "mappings": [
+            {
+              "options": {
+                "On Demand": {
+                  "color": "light-red",
+                  "index": 0
+                },
+                "Reserved Instance": {
+                  "color": "light-green",
+                  "index": 1
+                },
+                "Savings Plan": {
+                  "color": "super-light-green",
+                  "index": 2
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "string"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 8,
+        "y": 42
+      },
+      "id": 134,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "/^Last Seen Timestamp$/",
+          "values": true
+        },
+        "showPercentChange": false,
+        "textMode": "value",
+        "wideLayout": true
+      },
+      "pluginVersion": "10.4.1",
+      "targets": [
+        {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${DS_COAST-CUR20-2024-07-15}"
+          },
+          "format": 1,
+          "rawSQL": "SELECT \n  DATE_FORMAT(line_item_usage_start_date, '%M %d, %Y ') as \"Last Seen Timestamp\"\nFROM \n  $CurTable\nWHERE \n  line_item_usage_start_date >= date_add('month', -12, current_date)\n  AND line_item_resource_id = '$InstanceId'\n  AND line_item_product_code = 'AmazonEC2'\n  AND line_item_operation = 'RunInstances'\n  AND line_item_usage_type LIKE '%Box%'\n  AND line_item_line_item_type NOT IN ('Tax') \nORDER BY \"Last Seen Timestamp\" DESC\nLIMIT 1",
+          "refId": "A"
+        }
+      ],
+      "title": "Last Seen in CUR",
+      "type": "stat"
     },
     {
       "datasource": {
@@ -1266,7 +1460,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 38
+        "y": 42
       },
       "id": 123,
       "options": {
@@ -1338,8 +1532,8 @@
     },
     {
       "datasource": {
-        "type": "datasource",
-        "uid": "-- Mixed --"
+        "type": "grafana-athena-datasource",
+        "uid": "${DS_COAST-CUR20-2024-07-15}"
       },
       "description": "Instance type and instance public rate as pulled from the cost and usage report.",
       "fieldConfig": {
@@ -1386,7 +1580,7 @@
         "h": 4,
         "w": 4,
         "x": 0,
-        "y": 42
+        "y": 46
       },
       "id": 125,
       "options": {
@@ -1421,20 +1615,19 @@
             "uid": "${DS_COAST-CUR20-2024-07-15}"
           },
           "format": 1,
-          "hide": false,
           "rawSQL": "SELECT \n  line_item_unblended_rate as \"public_rate\",\n  product_instance_type\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_resource_id = '$InstanceId'\n  AND line_item_product_code = 'AmazonEC2'\n  AND line_item_operation = 'RunInstances'\n  AND line_item_usage_type LIKE ('%Box%')\n  AND line_item_line_item_type NOT IN ('Tax')\nORDER BY \n  line_item_usage_start_date DESC\nLIMIT 1",
-          "refId": "cur_data"
+          "refId": "A"
         }
       ],
-      "title": "public rate",
+      "title": "public rate per hour",
       "type": "stat"
     },
     {
       "datasource": {
-        "type": "datasource",
-        "uid": "-- Mixed --"
+        "type": "grafana-athena-datasource",
+        "uid": "${DS_COAST-CUR20-2024-07-15}"
       },
-      "description": "Total Instance cost for $instanceId for period: ${__from:date:iso} - ${__to:date:iso}",
+      "description": "Purchase type observed for $instanceId for period: ${__from:date:iso} - ${__to:date:iso}",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1442,58 +1635,46 @@
             "mode": "fixed",
             "seriesBy": "max"
           },
-          "decimals": 1,
-          "displayName": "${InstanceId} Cost",
           "fieldMinMax": false,
-          "mappings": [],
+          "mappings": [
+            {
+              "options": {
+                "On Demand": {
+                  "color": "light-red",
+                  "index": 0
+                },
+                "Reserved Instance": {
+                  "color": "light-green",
+                  "index": 1
+                },
+                "Savings Plan": {
+                  "color": "super-light-green",
+                  "index": 2
+                }
+              },
+              "type": "value"
+            }
+          ],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
                 "color": "green",
                 "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
               }
             ]
           },
-          "unit": "currencyUSD"
+          "unit": "string"
         },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byFrameRefID",
-              "options": "cloudwatch_data"
-            },
-            "properties": [
-              {
-                "id": "unit",
-                "value": "percent"
-              },
-              {
-                "id": "displayName",
-                "value": "% CPU"
-              },
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "light-blue",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          }
-        ]
+        "overrides": []
       },
       "gridPos": {
         "h": 4,
         "w": 4,
         "x": 4,
-        "y": 42
+        "y": 46
       },
-      "id": 124,
+      "id": 133,
       "options": {
         "colorMode": "background",
         "graphMode": "area",
@@ -1503,11 +1684,11 @@
           "calcs": [
             "sum"
           ],
-          "fields": "",
-          "values": false
+          "fields": "/^_col0$/",
+          "values": true
         },
         "showPercentChange": false,
-        "textMode": "auto",
+        "textMode": "value",
         "wideLayout": true
       },
       "pluginVersion": "10.4.1",
@@ -1525,12 +1706,11 @@
             "uid": "${DS_COAST-CUR20-2024-07-15}"
           },
           "format": 1,
-          "hide": false,
-          "rawSQL": "SELECT \n  SUM(CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN savings_plan_savings_plan_effective_cost\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN reservation_effective_cost\n    WHEN line_item_line_item_type = 'Usage' THEN line_item_unblended_cost\n    ELSE 0 \n  END) AS \"Total Instance Amortized Cost\"\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_resource_id = '$InstanceId'\n  AND line_item_product_code = 'AmazonEC2'\n  AND line_item_operation = 'RunInstances'\n  AND line_item_line_item_type NOT IN ('Tax')\nORDER BY \n  \"Total Instance Amortized Cost\" DESC;",
-          "refId": "cur_data"
+          "rawSQL": "SELECT \n  DISTINCT\n  CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN 'Savings Plan'\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN 'Reserved Instance'\n    WHEN line_item_line_item_type = 'Usage' THEN 'On Demand'\n    ELSE 'Other'\n  END\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_resource_id = '$InstanceId'\n  AND line_item_product_code = 'AmazonEC2'\n  AND line_item_operation = 'RunInstances'\n  AND line_item_usage_type LIKE '%Box%'\n  AND line_item_line_item_type NOT IN ('Tax') ",
+          "refId": "A"
         }
       ],
-      "title": "Instance Compute Cost",
+      "title": "Purchase Type",
       "type": "stat"
     },
     {
@@ -1587,7 +1767,7 @@
         "h": 4,
         "w": 4,
         "x": 8,
-        "y": 42
+        "y": 46
       },
       "id": 126,
       "options": {
@@ -1628,7 +1808,7 @@
           "period": "$CWGranularity",
           "queryMode": "Metrics",
           "refId": "A",
-          "region": "default",
+          "region": "$Regions",
           "sqlExpression": "",
           "statistic": "Average"
         }
@@ -1747,7 +1927,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 46
+        "y": 50
       },
       "id": 129,
       "options": {
@@ -1801,7 +1981,7 @@
           },
           "format": 1,
           "hide": false,
-          "rawSQL": "SELECT \n  date_trunc('$CURGranularity', line_item_usage_start_date) as date,\n  SUM(line_item_unblended_cost) as datatransfer_cost\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  -- AND line_item_resource_id = '$InstanceId'\n  AND line_item_product_code = 'AmazonEC2'\n  AND line_item_operation = 'RunInstances'\n  AND line_item_usage_type LIKE ('%DataTransfer-Out%')\n  AND line_item_line_item_type NOT IN ('Tax')\nGROUP BY\n1",
+          "rawSQL": "SELECT \n  date_trunc('$CURGranularity', line_item_usage_start_date) as date,\n  SUM(line_item_unblended_cost) as datatransfer_cost\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  -- AND line_item_resource_id = '$InstanceId'\n  AND line_item_product_code = 'AmazonEC2'\n  AND line_item_operation = 'RunInstances'\n  AND line_item_usage_type LIKE ('%Bytes')\n  AND line_item_line_item_type NOT IN ('Tax')\nGROUP BY\n1",
           "refId": "cur_data"
         }
       ],
@@ -1810,8 +1990,8 @@
     },
     {
       "datasource": {
-        "type": "datasource",
-        "uid": "-- Mixed --"
+        "type": "cloudwatch",
+        "uid": "${DS_CLOUDWATCH}"
       },
       "description": "This visual displays the Network in traffic for $InstanceId at a CloudWatch granularity of ${CWGranularity}(s) during time period: ${__from:date:iso} - ${__to:date:iso}.  \n\nThere is no charge for incoming network thus we do not display cost and usage data from CUR for NetworkIn",
       "fieldConfig": {
@@ -1887,7 +2067,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 46
+        "y": 50
       },
       "id": 128,
       "options": {
@@ -1922,7 +2102,7 @@
           "namespace": "",
           "period": "",
           "queryMode": "Metrics",
-          "refId": "cloudwatch_data",
+          "refId": "A",
           "region": "$Regions",
           "sqlExpression": "",
           "statistic": "Average"
@@ -1933,8 +2113,8 @@
     },
     {
       "datasource": {
-        "type": "datasource",
-        "uid": "-- Mixed --"
+        "type": "grafana-athena-datasource",
+        "uid": "${DS_COAST-CUR20-2024-07-15}"
       },
       "description": "This visual displays data transfer by usage type for $InstanceId  during time period: ${__from:date:iso} - ${__to:date:iso}.  \n",
       "fieldConfig": {
@@ -1990,7 +2170,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 54
+        "y": 58
       },
       "id": 130,
       "options": {
@@ -2030,9 +2210,8 @@
             "uid": "${DS_COAST-CUR20-2024-07-15}"
           },
           "format": 1,
-          "hide": false,
-          "rawSQL": "SELECT \n  DISTINCT(line_item_usage_type) as \"Usage Type\",\n  SUM(line_item_unblended_cost) as \"Data Transfer Cost\"\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_resource_id = '$InstanceId'\n  AND line_item_product_code = 'AmazonEC2'\n  AND line_item_operation = 'RunInstances'\n  AND line_item_usage_type LIKE ('%DataTransfer-Out%')\n  AND line_item_line_item_type NOT IN ('Tax')\nGROUP BY\n1\nORDER BY\n\"Data Transfer Cost\" DESC",
-          "refId": "cur_data"
+          "rawSQL": "SELECT \n  DISTINCT(line_item_usage_type) as \"Usage Type\",\n  SUM(line_item_unblended_cost) as \"Data Transfer Cost\"\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_resource_id = '$InstanceId'\n  AND line_item_product_code = 'AmazonEC2'\n  AND line_item_operation = 'RunInstances'\n  AND line_item_usage_type LIKE ('%Bytes')\n  AND line_item_line_item_type NOT IN ('Tax')\nGROUP BY\n1\nORDER BY\n\"Data Transfer Cost\" DESC",
+          "refId": "A"
         }
       ],
       "title": "$InstanceId: Cost by Usage Type",
@@ -2044,11 +2223,11 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 62
+        "y": 66
       },
       "id": 131,
       "panels": [],
-      "title": "Top Instances by Cost",
+      "title": "Top 500 Instances by Cost",
       "type": "row"
     },
     {
@@ -2070,15 +2249,13 @@
             "inspect": false
           },
           "decimals": 1,
-          "displayName": "NetworkIn",
           "fieldMinMax": false,
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -2094,7 +2271,7 @@
         "h": 17,
         "w": 24,
         "x": 0,
-        "y": 63
+        "y": 67
       },
       "id": 132,
       "options": {
@@ -2124,7 +2301,7 @@
             "uid": "${DS_COAST-CUR20-2024-07-15}"
           },
           "format": 1,
-          "rawSQL": "SELECT \n  line_item_resource_id as Instance,\n  product_instance_type,\n  CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN 'Savings Plan'\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN 'Reserved Instance'\n    WHEN line_item_line_item_type = 'Usage' THEN 'On Demand'\n    ELSE 'On Demand'\n  END AS \"Purchase Type\",\n  SUM(CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN savings_plan_savings_plan_effective_cost\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN reservation_effective_cost\n    WHEN line_item_line_item_type = 'Usage' THEN line_item_unblended_cost\n    ELSE 0 \n  END) AS Cost\nFROM \n  $CurTable\nWHERE\n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_usage_account_id IN ('$LinkedAccounts')\n  AND product_region_code in ('$Regions')\n  AND line_item_product_code = 'AmazonEC2'\n  AND line_item_operation = 'RunInstances'\n  AND line_item_resource_id LIKE 'i-%'\n  AND line_item_usage_type LIKE ('%Box%')\n  AND product['vcpu'] <> ''\nGROUP BY\n1,2,3\nORDER BY \ncost DESC\nLIMIT 500;\n",
+          "rawSQL": "SELECT \n  line_item_resource_id as Instance,\n  product_instance_type,\n  CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN 'Savings Plan'\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN 'Reserved Instance'\n    WHEN line_item_line_item_type = 'Usage' THEN 'On Demand'\n    ELSE 'On Demand'\n  END AS \"Purchase Type\",\n  SUM(CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN savings_plan_savings_plan_effective_cost\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN reservation_effective_cost\n    WHEN line_item_line_item_type = 'Usage' THEN line_item_unblended_cost\n    ELSE 0 \n  END) AS \"Amortized Cost\",\n  SUM(line_item_unblended_cost) as \"Unblended Cost\"\nFROM \n  $CurTable\nWHERE\n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_usage_account_id IN ('$LinkedAccounts')\n  AND product_region_code in ('$Regions')\n  AND line_item_product_code = 'AmazonEC2'\n  AND line_item_operation = 'RunInstances'\n  AND line_item_resource_id LIKE 'i-%'\n  AND line_item_usage_type LIKE ('%Box%')\n  AND product['vcpu'] <> ''\nGROUP BY\n1,2,3\nORDER BY \n\"Amortized Cost\" DESC\nLIMIT 500;\n",
           "refId": "A"
         }
       ],
@@ -2142,7 +2319,7 @@
         "current": {
           "selected": false,
           "text": "COAST-CUR20-2024-07-15",
-          "value": "eds95qoc00sg0e"
+          "value": "adw7nw1yfq7lsc"
         },
         "hide": 2,
         "includeAll": false,
@@ -2591,6 +2768,6 @@
   "timezone": "utc",
   "title": "COAST - EC2 Compute",
   "uid": "fdw1e9dqk80e8e",
-  "version": 139,
+  "version": 25,
   "weekStart": ""
 }
