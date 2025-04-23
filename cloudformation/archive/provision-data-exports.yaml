@@ -27,6 +27,11 @@ Parameters:
     Description: "Prefix used for all named resources, including for the value of tag key 'project'"
     MaxLength: 16 
     AllowedPattern: "^[a-z0-9]+[a-z0-9-]{1,61}[a-z0-9]+$"
+  DecisionUseExistingDataExport:
+    Type: String
+    Description: "Use an already existing CUR2 Data Export?"
+    AllowedValues: ['Yes', 'No']
+    Default: 'no'
   DataExportType:
     Description: "Select a Data Export type"
     Type: String
@@ -763,70 +768,6 @@ Resources:
               MappedExportName: !FindInMap [DataExportTypeMap, !Ref DataExportType, ExportName]
         CatalogId: !Sub "${AWS::AccountId}"
 
-  ###########################################################################
-  # Build Athena Workgroup and Output Bucket
-  ###########################################################################
-
-    AthenaQueryResultsBucket: 
-      Type: AWS::S3::Bucket
-      DeletionPolicy: Retain
-      Properties:
-        BucketName: 
-          !Sub 
-          - ${ResourcePrefix}-data-export-${MappedExportName}-queries-${UniqueString}
-          - UniqueString: !Select [ 0, !Split [ '-', !Select [ 2, !Split [ '/', !Ref 'AWS::StackId' ] ] ] ]
-            MappedExportName: !FindInMap [DataExportTypeMap, !Ref DataExportType, ExportName]          
-        BucketEncryption:
-          ServerSideEncryptionConfiguration:
-            - ServerSideEncryptionByDefault:
-                SSEAlgorithm: AES256
-        AccessControl: BucketOwnerFullControl
-        OwnershipControls:
-          Rules:
-            - ObjectOwnership: BucketOwnerEnforced
-        PublicAccessBlockConfiguration:
-          BlockPublicAcls: true
-          BlockPublicPolicy: true
-          IgnorePublicAcls: true
-          RestrictPublicBuckets: true
-        LifecycleConfiguration:
-          Rules:
-            - Id: DeleteContent
-              Status: 'Enabled'
-              ExpirationInDays: 7
-        VersioningConfiguration:
-          Status: Enabled
-        Tags:
-          - Key: "project"
-            Value: !Sub ${ResourcePrefix}
-
-    AthenaWorkGroup:  
-      Type: AWS::Athena::WorkGroup
-      DependsOn:
-        - AthenaQueryResultsBucket
-      Properties:
-        Name: 
-          !Sub 
-          - ${ResourcePrefix}-${MappedExportName}-${UniqueString}
-          - UniqueString: !Select [ 0, !Split [ '-', !Select [ 2, !Split [ '/', !Ref 'AWS::StackId' ] ] ] ]
-            MappedExportName: !FindInMap [DataExportTypeMap, !Ref DataExportType, ExportName]
-        Description: 'Used for to store athena query results'
-        RecursiveDeleteOption: true
-        Tags:
-          - Key: "GrafanaDataSource"
-            Value: "true"
-          - Key: "project"
-            Value: !Sub ${ResourcePrefix}
-        WorkGroupConfiguration:
-          EnforceWorkGroupConfiguration: true
-          PublishCloudWatchMetricsEnabled: true
-          ResultConfiguration:
-            EncryptionConfiguration:
-              EncryptionOption: SSE_S3
-            OutputLocation: !Sub 's3://${AthenaQueryResultsBucket}'
-            AclConfiguration:
-              S3AclOption: BUCKET_OWNER_FULL_CONTROL
-    
 Outputs:
   DataExportS3BucketName:
     Description: 'Name of the Data Export S3 bucket.  Where daily report exports are stored.'

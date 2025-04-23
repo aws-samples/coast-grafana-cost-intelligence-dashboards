@@ -20,15 +20,15 @@ Parameters:
     MaxLength: 255
   AthenaDatabaseName:
     Type: String
-    Description: "Amazon Managed Grafana workspace ID where data source will be provisioned."
+    Description: "Athena Database Name "
     Default: ''
     MaxLength: 255
   AthenaWorkgroupName:
     Type: String
-    Description: "Amazon Managed Grafana workspace ID where data source will be provisioned."
+    Description: "Athena Workgroup Name"
     Default: ''
     MaxLength: 255
-  DataExportName:
+  DataExportsBucketName:
     Type: String
     Description: "Name of the AWS Data Export to provision as a data source in the Amazon Managed Grafana workspace."
     Default: ''
@@ -36,7 +36,7 @@ Parameters:
   DataExportType:
     Type: String
     Description: "Type of data source to provision."
-    Default: "CUR-Legacy"
+    Default: "CUR-2-0"
     AllowedValues:
       - "CUR-2-0"
       - "CUR-Legacy"
