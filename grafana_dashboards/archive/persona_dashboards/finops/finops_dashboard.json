@@ -1,0 +1,3732 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "Advanced Cost and Usage Analysis Dashboard",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 7,
+  "links": [
+    {
+      "asDropdown": false,
+      "icon": "external link",
+      "includeVars": false,
+      "keepTime": false,
+      "tags": [],
+      "targetBlank": true,
+      "title": "Cost Explorer",
+      "tooltip": "Cost Explorer",
+      "type": "link",
+      "url": "https://console.aws.amazon.com/cost-management/home?#/custom?excludeCategorizedResources=false&excludeDiscounts=true&excludeTaggedResources=false&filter=%5B%5D&granularity=Monthly&groupBy=None&hasAmortized=false&hasBlended=false&isTemplate=true&reportName=&reportType=CostUsage&timeRangeOption=Last6Months&chartStyle=Group&forecastTimeRangeOption=None&usageAs=usageQuantity&excludeForecast=false&startDate=2022-04-01&endDate=2022-09-30"
+    }
+  ],
+  "liveNow": false,
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 58,
+      "panels": [],
+      "title": "Hot to use this dashboard",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "grafana-athena-datasource",
+        "uid": "${Datasource}"
+      },
+      "description": "",
+      "gridPos": {
+        "h": 3,
+        "w": 24,
+        "x": 0,
+        "y": 1
+      },
+      "id": 88,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "<h1 style='font-size: 20px'>\n<span style='color: #AF69EE;font-weight: bold'>C</span>ost <span style='color: #AF69EE;font-weight: bold'>O</span>ptimization <span style='color: #AF69EE;font-weight: bold'>A</span>nd <span style='color: #AF69EE;font-weight: bold'>S</span>avings <span style='color: #AF69EE;font-weight: bold'>T</span>ool (<span style='color: #AF69EE;font-weight: bold'>COAST</span>) <br> <span style=\"font-size: 18px\"> for Amazon Managed Grafana </span>\n</h1>",
+        "mode": "html"
+      },
+      "pluginVersion": "9.4.7",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${Datasource}"
+          },
+          "refId": "A"
+        }
+      ],
+      "title": " ",
+      "transparent": true,
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "grafana-athena-datasource",
+        "uid": "${Datasource}"
+      },
+      "description": "",
+      "gridPos": {
+        "h": 6,
+        "w": 24,
+        "x": 0,
+        "y": 4
+      },
+      "id": 90,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "\n<p>\nCOAST is a set of customizable Amazon Managed Grafana\ndashboards which provide a summary view as well as granular \nservice level views based on the AWS Cost and Usage Report (CUR).  \nDashboards include specific views tailored for executive leadership, \nFinOps Practitioners and DevOps/Engineering.\n</p><p>\nThe Executuve Dashboard is a powerful tool that empowers your organization to take control of cloud costs, optimize spending, and make data-driven financial decisions. By leveraging its capabilities, you can ensure that your cloud resources are not only efficient but also cost-effective.\n</p><p>\nIf you have any questions or need further assistance in interpreting the data or utilizing the dashboard's features, please reach out to your designated Cloud Financial Analyst or FinOps Manager for guidance and support.\n</p>",
+        "mode": "html"
+      },
+      "pluginVersion": "9.4.7",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${Datasource}"
+          },
+          "refId": "A"
+        }
+      ],
+      "title": " ",
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "grafana-athena-datasource",
+        "uid": "${Datasource}"
+      },
+      "description": "",
+      "gridPos": {
+        "h": 14,
+        "w": 12,
+        "x": 0,
+        "y": 10
+      },
+      "id": 92,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "<div style='font-size: 18px'>\nAbout this Dashboard\n</div>\n\nThe <span style='color: #AF69EE'>FinOps Dashboard</span> is a comprehensive tool designed specifically for the Cloud Center of Excellence and FinOps practitioners within your organization. Its primary objective is to offer a convenient and insightful way to manage and analyze cloud spending, enabling informed financial decisions related to your cloud infrastructure.\n<br><br>\n\n<strong>Key Features and Benefits:</strong>\n\n    <ul>\n    <li>Invoice Spend Tracking: One of the central features of this dashboard is its ability to meticulously track invoice spend. By aggregating and visualizing invoice data, it provides a clear and detailed overview of your organization's financial commitments, helping you ensure that your cloud resources stay within budget.</li>\n\n    <li>General Spend Summaries: In addition to invoice spend, this dashboard offers general spend summaries. It provides an overview of how resources across various accounts are being utilized and where costs are incurred. This high-level view helps in identifying trends and optimizing spending patterns.</li>\n\n    <li>Commitment-Based Spend: A critical aspect of cloud cost management is commitment-based spending. The dashboard includes specialized views and insights into your organization's commitments and usage. By tracking commitments, you can ensure that your cloud resources align with your organization's budgetary goals.</li>\n\n    <li>Multi-Account Support: We recommend using this dashboard at the payer level, allowing you to monitor and manage spend and usage across all linked accounts. This comprehensive view ensures that all accounts are aligned with your financial objectives, enabling better control and optimization.</li>\n    </ul>\n",
+        "mode": "html"
+      },
+      "pluginVersion": "9.4.7",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${Datasource}"
+          },
+          "refId": "A"
+        }
+      ],
+      "title": " ",
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "grafana-athena-datasource",
+        "uid": "${Datasource}"
+      },
+      "description": "",
+      "gridPos": {
+        "h": 14,
+        "w": 12,
+        "x": 12,
+        "y": 10
+      },
+      "id": 94,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "<div style='font-size: 18px'>\nHow to Utilize this Dashboard\n</div>\nTo make the most of the <span style='color: #AF69EE'>FinOps Dashboard</span>, consider the following steps:\n    <ul>\n    <li>Regular Monitoring: Regularly review the dashboard to monitor your organization's cloud spend. Keep a close eye on invoice spend, commitments, and general summaries to identify any discrepancies or areas where cost savings can be achieved.</li>\n\n    <li>Cost Optimization: Use the insights provided by the dashboard to optimize your cloud resources. Identify areas where resource usage can be scaled down or reconfigured to reduce costs without compromising performance.</li>\n\n    <li>Commitment Management: Manage your commitment-based spend effectively by tracking your commitments and ensuring that they align with actual usage. The dashboard provides data to help you make informed decisions about adjustments to commitments.</li>\n\n    <li>Collaboration: Share the dashboard with relevant teams and stakeholders within your organization. Encourage collaboration between finance, IT, and operations teams to jointly manage and optimize cloud costs.</li>\n\n    <li>Periodic Reviews: Schedule periodic reviews and discussions based on the information presented in the dashboard. This helps in aligning cloud spending with your organization's evolving needs and financial goals.</li>\n    </ul>\n\nThe FinOps Dashboard is a powerful tool that empowers your organization to take control of cloud costs, optimize spending, and make data-driven financial decisions. By leveraging its capabilities, you can ensure that your cloud resources are not only efficient but also cost-effective.\n\n<br><br>\nIf you have any questions or need further assistance in interpreting the data or utilizing the dashboard's features, please reach out to your designated Cloud Financial Analyst or FinOps Manager for guidance and support.",
+        "mode": "html"
+      },
+      "pluginVersion": "9.4.7",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${Datasource}"
+          },
+          "refId": "A"
+        }
+      ],
+      "title": " ",
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "datasource",
+        "uid": "grafana"
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 24
+      },
+      "id": 96,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "The <span style='color: #AF69EE'>Required Columns Validator</span> evaluates your CUR dataset to confirm the presence of essential columns. For the dashboard to operate accurately, the CUR dataset must include columns for:\n<br><br>\n<ul>\n  <li>Reservations - When acquiring a reservation, specific columns are appended to the CUR. Many of our queries rely on these columns to accurately represent your spend.</li>\n  <li>Savings Plans - The purchase of a savings plan results in the addition of distinct columns to your CUR. Many of our queries rely on these columns to accurately represent your spend.</li>\n  <li>Cost Allocation Tags - Defining a cost allocation tag results in its persistence in your CUR dataset. For our queries to function correctly, it is imperative to have at least one cost allocation tag enabled.\n</ul>\n<br>\n<span style='color: #AF69EE'>VERIFIED</span> indicates the presence of the columns in your CUR. <span style='color: red'>FAILED</span> indicates the absence of these columns, and as a result, certain visuals in the dashboard may not function as expected.  If this is a new CUR it may take 24 hours for column data to populate.",
+        "mode": "html"
+      },
+      "pluginVersion": "9.4.7",
+      "title": "Required Columns Validator",
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "grafana-athena-datasource",
+        "uid": "${Datasource}"
+      },
+      "description": "This table will display TRUE if the required savings plans, reservation and cost allocation columns exist within your dataset.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "color-text"
+            },
+            "inspect": false
+          },
+          "mappings": [
+            {
+              "options": {
+                "FAILED": {
+                  "color": "semi-dark-red",
+                  "index": 1
+                },
+                "VERIFIED": {
+                  "color": "semi-dark-purple",
+                  "index": 0
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 24
+      },
+      "id": 98,
+      "options": {
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "9.4.7",
+      "targets": [
+        {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${Datasource}"
+          },
+          "format": 1,
+          "rawSQL": "with user_tag_columns as ( -- count cost allocation tags\nSELECT \nCOUNT(*) OVER (PARTITION BY column_name) AS user_tag_column_count\nFROM information_schema.columns\nWHERE \ntable_name = '$CurTable'\nAND column_name LIKE 'resource_tags_user_%'  \n),\n\nsavings_plans_columns as ( -- check for savings plans column\nSELECT \nCOUNT(*) OVER (PARTITION BY column_name) AS savings_plans_column_count\nFROM information_schema.columns\nWHERE \ntable_name = '$CurTable'\nAND column_name = 'savings_plan_savings_plan_effective_cost'  \n),\n\nreservation_columns as ( -- check for reservation column\nSELECT \nCOUNT(*) OVER (PARTITION BY column_name) AS reservation_column_count\nFROM information_schema.columns\nWHERE \ntable_name = '$CurTable'\nAND column_name LIKE 'reservation_effective_cost'  \n)\n\nSELECT \nCASE\n    WHEN (SELECT SUM(user_tag_column_count) FROM user_tag_columns) > 0 THEN 'VERIFIED' ELSE 'FAILED' \nEND AS user_tag_columns,\nCASE \n    WHEN (SELECT SUM(savings_plans_column_count) FROM savings_plans_columns) > 0 THEN 'VERIFIED' ELSE 'FAILED' \nEND AS savings_plans_columns,\nCASE\n    WHEN (SELECT SUM(reservation_column_count) FROM reservation_columns) > 0 THEN 'VERIFIED' ELSE 'FAILED' \nEND AS reservation_columns",
+          "refId": "A"
+        }
+      ],
+      "title": "CUR Columns Validator",
+      "type": "table"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 33
+      },
+      "id": 60,
+      "panels": [],
+      "title": "Invoice View",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "datasource",
+        "uid": "grafana"
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 24,
+        "x": 0,
+        "y": 34
+      },
+      "id": 76,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "<div>\nThe Invoice View section displays invoice amounts and will match the amounts in your AWS Bills page.\nIt is only reactive to the date, linked accounts and regions filters (not tagging).\n</div>\n\n<div>\n  For more billing details navigate to the: \n  <a href=\"https://us-east-1.console.aws.amazon.com/billing/home?region=us-east-1#/bills\" target=\"_blank\">Account Billing Page</a>\n</div>",
+        "mode": "html"
+      },
+      "pluginVersion": "9.4.7",
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "grafana-athena-datasource",
+        "uid": "${Datasource}"
+      },
+      "description": "Last two invoices - Top 10",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-BlPu"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 75,
+            "gradientMode": "hue",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "log": 2,
+              "type": "symlog"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "spend_percentage_diff"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "percent"
+              },
+              {
+                "id": "displayName",
+                "value": "Percentual Difference"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "account"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Account"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 12,
+        "w": 6,
+        "x": 0,
+        "y": 36
+      },
+      "id": 102,
+      "options": {
+        "barRadius": 0.05,
+        "barWidth": 0.97,
+        "colorByField": "spend_percentage_diff",
+        "fullHighlight": true,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "orientation": "vertical",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        },
+        "xTickLabelRotation": -90,
+        "xTickLabelSpacing": 0
+      },
+      "pluginVersion": "9.4.7",
+      "targets": [
+        {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": true,
+            "resultReuseMaxAgeInMinutes": 10080
+          },
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${Datasource}"
+          },
+          "format": 1,
+          "rawSQL": "with spend_difference as (\n    SELECT\n    line_item_usage_account_id as account,\n    SUM(\n        CASE\n        WHEN(bill_billing_period_start_date = date_add('MONTH', -1, DATE_TRUNC('MONTH', current_date))) THEN line_item_unblended_cost\n    END) as cost_one_month_ago,\n    SUM(\n        CASE\n        WHEN(bill_billing_period_start_date = date_add('MONTH', -2, DATE_TRUNC('MONTH', current_date))) THEN line_item_unblended_cost\n    END) as cost_two_months_ago\n    FROM\n    $CurTable\n    where\n    ( bill_billing_period_start_date = date_add('MONTH', -1, DATE_TRUNC('MONTH', current_date)) \n    OR bill_billing_period_start_date = date_add('MONTH', -2, DATE_TRUNC('MONTH', current_date)) )\n    AND product_location in ($Regions)\n    AND line_item_usage_account_id IN ($LinkedAccounts)\n    Group by \n    line_item_usage_account_id\n    ORDER BY \n    account DESC\n    LIMIT 10\n)\n\nSELECT\n    account,\n    (((cost_one_month_ago - cost_two_months_ago) / cost_two_months_ago) * 100) as spend_percentage_diff\nFROM\nspend_difference\nORDER BY spend_percentage_diff",
+          "refId": "A"
+        }
+      ],
+      "title": "Top 10 Account Trends",
+      "transformations": [
+        {
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "desc": true,
+                "field": "spend_percentage_diff"
+              }
+            ]
+          }
+        }
+      ],
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "grafana-athena-datasource",
+        "uid": "${Datasource}"
+      },
+      "description": "Last Month",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-BlPu"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 75,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "log": 10,
+              "type": "log"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "spend"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "currencyUSD"
+              },
+              {
+                "id": "displayName",
+                "value": "Spend"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "account"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Account"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 12,
+        "w": 6,
+        "x": 6,
+        "y": 36
+      },
+      "id": 104,
+      "options": {
+        "barRadius": 0.05,
+        "barWidth": 0.97,
+        "colorByField": "spend",
+        "fullHighlight": true,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "orientation": "vertical",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        },
+        "xTickLabelRotation": -90,
+        "xTickLabelSpacing": 0
+      },
+      "pluginVersion": "9.4.7",
+      "targets": [
+        {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": true,
+            "resultReuseMaxAgeInMinutes": 10080
+          },
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${Datasource}"
+          },
+          "format": 1,
+          "rawSQL": "SELECT \nCAST(line_item_usage_account_id as varchar) as account,\nCAST(sum(line_item_unblended_cost) as integer) as spend\nFROM $CurTable\nwhere\nbill_billing_period_start_date = date_add('MONTH', -1, date_trunc('MONTH', current_date))\nAND product_location in ($Regions)\nAND line_item_usage_account_id IN ($LinkedAccounts)\nGROUP BY\nline_item_usage_account_id\nORDER BY \nspend DESC\nLIMIT 10\n",
+          "refId": "A"
+        }
+      ],
+      "title": "Top 10 Accounts - Invoice Last Month",
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "grafana-athena-datasource",
+        "uid": "${Datasource}"
+      },
+      "description": "The invoice panel allows for filtering by accounts and regions only.  This panel displays the current number of accounts and regions used to calculate the invoice sums.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Accounts"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "Accounts"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Regions"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "Regions"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 12,
+        "y": 36
+      },
+      "id": 106,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value"
+      },
+      "pluginVersion": "9.4.7",
+      "targets": [
+        {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": true,
+            "resultReuseMaxAgeInMinutes": 10080
+          },
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${Datasource}"
+          },
+          "format": 1,
+          "rawSQL": "SELECT \nCOUNT(DISTINCT(line_item_usage_account_id)) as Accounts,\nCOUNT(DISTINCT(product_location)) as Regions\nFROM $CurTable\nWHERE \nproduct_location in ($Regions)\nAND line_item_usage_account_id IN ($LinkedAccounts)",
+          "refId": "A"
+        }
+      ],
+      "title": "Selected for invoice",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "datasource",
+        "uid": "grafana"
+      },
+      "description": "",
+      "gridPos": {
+        "h": 12,
+        "w": 6,
+        "x": 18,
+        "y": 36
+      },
+      "id": 116,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "<div style='font-size: 18px'>\nTotal linked accounts in AWS Organization: <span style='color: #AF69EE;font-weight: bold'>${TotalAccountInOrganization}</span>\n<br><br>\n\nPercentage of spend from top 10 accounts: <span style='color: #AF69EE;font-weight: bold'>${PanelTop25SpendPercentage}%</span>\n</div>",
+        "mode": "html"
+      },
+      "pluginVersion": "9.4.7",
+      "targets": [
+        {
+          "datasource": {
+            "type": "datasource",
+            "uid": "grafana"
+          },
+          "refId": "A"
+        }
+      ],
+      "transparent": true,
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "grafana-athena-datasource",
+        "uid": "${Datasource}"
+      },
+      "description": "Invoice trend over the past two months",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 0,
+          "mappings": [],
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "super-light-blue",
+                "value": null
+              },
+              {
+                "color": "super-light-purple",
+                "value": 0
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "percentage_change"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Invoice Trend YTD"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 6,
+        "x": 12,
+        "y": 40
+      },
+      "id": 108,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name"
+      },
+      "pluginVersion": "9.4.7",
+      "targets": [
+        {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": true,
+            "resultReuseMaxAgeInMinutes": 10080
+          },
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${Datasource}"
+          },
+          "format": 1,
+          "rawSQL": "-- Output the bill sum from jan of this year and last month\nWITH bill_sum_ytd_and_last_month as (\n  SELECT \n  SUM(CASE\n        WHEN (bill_billing_period_start_date = date_add('YEAR', 0, DATE_TRUNC('YEAR', current_date))) THEN line_item_unblended_cost ELSE 0 \n      END) AS bill_january,\n  SUM(CASE\n        WHEN (bill_billing_period_start_date = date_add('MONTH', -1, DATE_TRUNC('MONTH', current_date))) THEN line_item_unblended_cost ELSE 0 \n      END) AS bill_one_month_ago\n  FROM $CurTable\n  where\n  ( bill_billing_period_start_date = date_add('YEAR', 0, DATE_TRUNC('YEAR', current_date))\n  OR bill_billing_period_start_date = date_add('MONTH', -1, DATE_TRUNC('MONTH', current_date)) )  \n  AND product_location in ($Regions)\n  AND line_item_usage_account_id IN ($LinkedAccounts)\n),\n\n-- output percentage change ytd\nbill_percentage_change as (\n  SELECT \n    bill_january,\n    bill_one_month_ago,\n    CAST(bill_one_month_ago - bill_january as double) as spend_difference,\n    CAST(((bill_one_month_ago - bill_january) / bill_january) * 100 as double) as percentage_change\n  FROM \n  bill_sum_ytd_and_last_month\n)\n\nSELECT \npercentage_change\nFROM \nbill_percentage_change",
+          "refId": "A"
+        }
+      ],
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "grafana-athena-datasource",
+        "uid": "${Datasource}"
+      },
+      "description": "Invoice trend over the past two months",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 0,
+          "mappings": [],
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "super-light-blue",
+                "value": null
+              },
+              {
+                "color": "super-light-purple",
+                "value": 0
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "percentage_change"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Invoice Trend Past Two Months"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 6,
+        "x": 12,
+        "y": 42
+      },
+      "id": 110,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name"
+      },
+      "pluginVersion": "9.4.7",
+      "targets": [
+        {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": true,
+            "resultReuseMaxAgeInMinutes": 10080
+          },
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${Datasource}"
+          },
+          "format": 1,
+          "rawSQL": "-- Output the bill sum last two months\nWITH bill_sum_last_two_months as (\n  SELECT \n  SUM(CASE\n        WHEN (bill_billing_period_start_date = date_add('MONTH', -2, DATE_TRUNC('MONTH', current_date))) THEN line_item_unblended_cost ELSE 0 \n      END) AS bill_two_months_ago,\n  SUM(CASE\n        WHEN (bill_billing_period_start_date = date_add('MONTH', -1, DATE_TRUNC('MONTH', current_date))) THEN line_item_unblended_cost ELSE 0 \n      END) AS bill_one_month_ago\n  FROM $CurTable\n  where\n  ( bill_billing_period_start_date = date_add('MONTH', -2, DATE_TRUNC('MONTH', current_date))\n  OR bill_billing_period_start_date = date_add('MONTH', -1, DATE_TRUNC('MONTH', current_date)) )  \n  AND product_location in ($Regions)\n  AND line_item_usage_account_id IN ($LinkedAccounts)\n),\n\n-- output percentage change for bill in last two months\nbill_percentage_change as (\nSELECT \n  bill_two_months_ago,\n  bill_one_month_ago,\n  CAST(bill_one_month_ago - bill_two_months_ago as double) as spend_difference,\n  CAST(((bill_one_month_ago - bill_two_months_ago) / bill_two_months_ago) * 100 as double) as percentage_change\nFROM \nbill_sum_last_two_months\n)\n\nSELECT \npercentage_change\nFROM \nbill_percentage_change",
+          "refId": "A"
+        }
+      ],
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "grafana-athena-datasource",
+        "uid": "${Datasource}"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed"
+          },
+          "decimals": 2,
+          "mappings": [],
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "currencyUSD"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "_col0"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Invoice Last Month (unblended)"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 6,
+        "x": 12,
+        "y": 44
+      },
+      "id": 112,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name"
+      },
+      "pluginVersion": "9.4.7",
+      "targets": [
+        {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": true,
+            "resultReuseMaxAgeInMinutes": 10080
+          },
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${Datasource}"
+          },
+          "format": 1,
+          "rawSQL": "-- Output number for last months bill\nSELECT \nSUM(line_item_unblended_cost)\nFROM $CurTable\nwhere\nbill_billing_period_start_date = date_add('MONTH', -1, DATE_TRUNC('MONTH', current_date) )\nAND product_location in ($Regions)\nAND line_item_usage_account_id IN ($LinkedAccounts)",
+          "refId": "A"
+        }
+      ],
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "grafana-athena-datasource",
+        "uid": "${Datasource}"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed"
+          },
+          "decimals": 2,
+          "mappings": [],
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "currencyUSD"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "_col0"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Invoice Two Months Ago (unblended)"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 6,
+        "x": 12,
+        "y": 46
+      },
+      "id": 114,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name"
+      },
+      "pluginVersion": "9.4.7",
+      "targets": [
+        {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": true,
+            "resultReuseMaxAgeInMinutes": 10080
+          },
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${Datasource}"
+          },
+          "format": 1,
+          "rawSQL": "-- Output number for last months bill\nSELECT \nSUM(line_item_unblended_cost)\nFROM $CurTable\nwhere\nbill_billing_period_start_date = date_add('MONTH', -2, DATE_TRUNC('MONTH', current_date) )\nAND product_location in ($Regions)\nAND line_item_usage_account_id IN ($LinkedAccounts)",
+          "refId": "A"
+        }
+      ],
+      "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "datasource": {
+        "type": "datasource",
+        "uid": "grafana"
+      },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 48
+      },
+      "id": 36,
+      "panels": [],
+      "targets": [
+        {
+          "datasource": {
+            "type": "datasource",
+            "uid": "grafana"
+          },
+          "refId": "A"
+        }
+      ],
+      "title": "Per Service",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "grafana-athena-datasource",
+        "uid": "${Datasource}"
+      },
+      "description": "Total spend by service as represented by  SUM of line_item_unblended_cost.\n\nTop 5 namely, remaning grouped under Others.\n\nSelect a service to apply filter to dashboard, or Others to clear service filtering.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-BlPu"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "links": [],
+          "mappings": [],
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "dark-purple",
+                "value": null
+              }
+            ]
+          },
+          "unit": "currencyUSD"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Total"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "gradient",
+                  "type": "gauge"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 14,
+        "w": 8,
+        "x": 0,
+        "y": 49
+      },
+      "id": 118,
+      "options": {
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "frameIndex": 1,
+        "showHeader": false,
+        "sortBy": []
+      },
+      "pluginVersion": "9.4.7",
+      "targets": [
+        {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": true,
+            "resultReuseMaxAgeInMinutes": 10080
+          },
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${Datasource}"
+          },
+          "format": 0,
+          "hide": false,
+          "rawSQL": "SELECT\n  date_trunc('$Granularity', line_item_usage_start_date),\n   line_item_product_code as product,\n  sum(line_item_unblended_cost) as cost\nfrom $CurTable\nWHERE\n  $__timeFilter(line_item_usage_start_date)\n  and product_location in ($Regions)\n  AND line_item_usage_account_id IN ($LinkedAccounts)\n  AND line_item_product_code in ($Services)\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_line_item_type IN ($ChargeType)\n  AND line_item_unblended_cost > 0\nGROUP BY 1, 2\nORDER BY 1\n;\n",
+          "refId": "A"
+        }
+      ],
+      "title": "Total Spend Per Service",
+      "transformations": [
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "cost (.*)",
+            "renamePattern": "$1"
+          }
+        },
+        {
+          "id": "reduce",
+          "options": {
+            "includeTimeField": false,
+            "mode": "seriesToRows",
+            "reducers": [
+              "sum"
+            ]
+          }
+        },
+        {
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "desc": true,
+                "field": "Total"
+              }
+            ]
+          }
+        }
+      ],
+      "transparent": true,
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "grafana-athena-datasource",
+        "uid": "${Datasource}"
+      },
+      "description": "Total spend trend as represented by SUM of line_item_unblended_cost aggregated by bill_billing_period_start_date (monthly).",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 72,
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "smooth",
+            "lineStyle": {
+              "dash": [
+                0,
+                10
+              ],
+              "fill": "dot"
+            },
+            "lineWidth": 1,
+            "pointSize": 4,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "always",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "normal"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "dark-blue",
+                "value": null
+              }
+            ]
+          },
+          "unit": "currencyUSD"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 16,
+        "x": 8,
+        "y": 49
+      },
+      "id": 40,
+      "options": {
+        "legend": {
+          "calcs": [
+            "last"
+          ],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "sortBy": "Last",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": true,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${Datasource}"
+          },
+          "format": 1,
+          "rawSQL": "WITH top_services AS (\nSELECT\nline_item_product_code,\nsum(line_item_unblended_cost)\n\nFROM $CurTable\n\nWHERE\n  $__timeFilter(line_item_usage_start_date)\n  and product_location in ($Regions)\n  AND line_item_usage_account_id IN ($LinkedAccounts)\n  AND $CurTable .line_item_product_code in ($Services)\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_line_item_type IN ($ChargeType)\n\nGROUP BY 1\nORDER BY 2 DESC\n\nLIMIT 5)\n\nSELECT\n  date_trunc('$Granularity', line_item_usage_start_date),\n  $CurTable.line_item_product_code as product,\n  sum($CurTable.line_item_unblended_cost) as cost\nfrom $CurTable join top_services on $CurTable.line_item_product_code = top_services.line_item_product_code\nWHERE\n  $__timeFilter(line_item_usage_start_date)\n  and product_location in ($Regions)\n  AND line_item_usage_account_id IN ($LinkedAccounts)\n  AND $CurTable .line_item_product_code in ($Services)\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_line_item_type IN ($ChargeType)\n  AND $CurTable.line_item_unblended_cost > 0\nGROUP BY 1, 2\nORDER BY 1, 3\n;\n",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "title": "Monthly Spend for Period - Top 5 Services",
+      "transformations": [
+        {
+          "id": "prepareTimeSeries",
+          "options": {}
+        },
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "cost (.*)",
+            "renamePattern": "$1"
+          }
+        }
+      ],
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "grafana-athena-datasource",
+        "uid": "${Datasource}"
+      },
+      "description": "Total spend trend as represented by SUM of line_item_unblended_cost aggregated by bill_billing_period_start_date (monthly).",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 42,
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "smooth",
+            "lineStyle": {
+              "dash": [
+                0,
+                10
+              ],
+              "fill": "dot"
+            },
+            "lineWidth": 1,
+            "pointSize": 4,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "always",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "percent"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "dark-blue",
+                "value": null
+              }
+            ]
+          },
+          "unit": "currencyUSD"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 16,
+        "x": 8,
+        "y": 56
+      },
+      "id": 120,
+      "options": {
+        "legend": {
+          "calcs": [
+            "last"
+          ],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "sortBy": "Last",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": true,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${Datasource}"
+          },
+          "format": 1,
+          "rawSQL": "WITH top_services AS (\nSELECT\nline_item_product_code,\nsum(line_item_unblended_cost)\n\nFROM $CurTable\n\nWHERE\n  $__timeFilter(line_item_usage_start_date)\n  and product_location in ($Regions)\n  AND line_item_usage_account_id IN ($LinkedAccounts)\n  AND $CurTable .line_item_product_code in ($Services)\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_line_item_type IN ($ChargeType)\n\nGROUP BY 1\nORDER BY 2 DESC\n\nLIMIT 5)\n\nSELECT\n  date_trunc('$Granularity', line_item_usage_start_date),\n  $CurTable.line_item_product_code as product,\n  sum($CurTable.line_item_unblended_cost) as cost\nfrom $CurTable left outer join top_services on $CurTable.line_item_product_code = top_services.line_item_product_code\nWHERE\n  $__timeFilter(line_item_usage_start_date)\n  AND top_services.line_item_product_code IS NULL\n  and product_location in ($Regions)\n  AND line_item_usage_account_id IN ($LinkedAccounts)\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_line_item_type IN ($ChargeType)\n  AND $CurTable.line_item_unblended_cost > 0\nGROUP BY 1, 2\nORDER BY 1, 3\n;\n",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "title": "Monthly Spend for Period - Other Services",
+      "transformations": [
+        {
+          "id": "prepareTimeSeries",
+          "options": {}
+        },
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "cost (.*)",
+            "renamePattern": "$1"
+          }
+        }
+      ],
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 63
+      },
+      "id": 56,
+      "panels": [],
+      "title": "Per Region",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "grafana-athena-datasource",
+        "uid": "${Datasource}"
+      },
+      "description": "Spend per region as represented by  SUM of line_item_unblended_cost.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-BlPu"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "links": [],
+          "mappings": [],
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "currencyUSD"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Total"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "gradient",
+                  "type": "gauge"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 14,
+        "w": 8,
+        "x": 0,
+        "y": 64
+      },
+      "id": 122,
+      "options": {
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": false,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "Total"
+          }
+        ]
+      },
+      "pluginVersion": "9.4.7",
+      "targets": [
+        {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": true,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${Datasource}"
+          },
+          "format": 0,
+          "hide": false,
+          "rawSQL": "select \n  date_trunc('$Granularity', line_item_usage_start_date),\n  product_location as location,\n  sum(line_item_unblended_cost) as cost\nfrom $CurTable\n\nWHERE\n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_product_code in ($Services)\n  AND line_item_usage_account_id IN ($LinkedAccounts)\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_line_item_type IN ($ChargeType)\n  AND product_location IN ($Regions)\n  AND line_item_unblended_cost > 0\nGROUP BY 1, 2\nORDER BY 1, 3 desc\n;\n",
+          "refId": "A"
+        }
+      ],
+      "title": "Total Region Spend",
+      "transformations": [
+        {
+          "id": "reduce",
+          "options": {
+            "labelsToFields": true,
+            "reducers": [
+              "sum"
+            ]
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Field": true
+            },
+            "indexByName": {},
+            "renameByName": {}
+          }
+        }
+      ],
+      "transparent": true,
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "grafana-athena-datasource",
+        "uid": "${Datasource}"
+      },
+      "description": "Total spend per region as represented by  SUM of line_item_unblended_cost aggregated by bill_billing_period_start_date (per $Granularity).",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 72,
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "smooth",
+            "lineStyle": {
+              "dash": [
+                0,
+                10
+              ],
+              "fill": "dot"
+            },
+            "lineWidth": 1,
+            "pointSize": 4,
+            "scaleDistribution": {
+              "log": 2,
+              "type": "log"
+            },
+            "showPoints": "always",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "normal"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "dark-blue",
+                "value": null
+              }
+            ]
+          },
+          "unit": "currencyUSD"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 16,
+        "x": 8,
+        "y": 64
+      },
+      "id": 123,
+      "options": {
+        "legend": {
+          "calcs": [
+            "last"
+          ],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "sortBy": "Last",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": true,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${Datasource}"
+          },
+          "format": 1,
+          "rawSQL": "WITH top_regions AS (\nSELECT\nproduct_location,\nsum(line_item_unblended_cost)\n\nFROM $CurTable\n\nWHERE\n$__timeFilter(line_item_usage_start_date)\nAND product_location in ($Regions)\n\nGROUP BY 1\nORDER BY 2 DESC\n\nLIMIT 5)\n\nselect \n  date_trunc('$Granularity', line_item_usage_start_date),\n  product_location as location,\n  sum(line_item_unblended_cost) as cost\nfrom $CurTable join top_regions using (product_location)\n\nWHERE\n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_product_code in ($Services)\n  AND line_item_usage_account_id IN ($LinkedAccounts)\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_line_item_type IN ($ChargeType)\nGROUP BY 1, 2\nORDER BY 1, 3\n;\n",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "title": "Monthly Spend for Region - Top 5 Services",
+      "transformations": [
+        {
+          "id": "prepareTimeSeries",
+          "options": {}
+        },
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "cost (.*)",
+            "renamePattern": "$1"
+          }
+        }
+      ],
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "grafana-athena-datasource",
+        "uid": "${Datasource}"
+      },
+      "description": "Total spend trend as represented by SUM of line_item_unblended_cost aggregated by bill_billing_period_start_date (monthly).",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 42,
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "smooth",
+            "lineStyle": {
+              "dash": [
+                0,
+                10
+              ],
+              "fill": "dot"
+            },
+            "lineWidth": 1,
+            "pointSize": 4,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "always",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "percent"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "dark-blue",
+                "value": null
+              }
+            ]
+          },
+          "unit": "currencyUSD"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 16,
+        "x": 8,
+        "y": 71
+      },
+      "id": 124,
+      "options": {
+        "legend": {
+          "calcs": [
+            "last"
+          ],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "sortBy": "Last",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": true,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${Datasource}"
+          },
+          "format": 1,
+          "rawSQL": "WITH top_regions AS (\nSELECT\nproduct_location,\nsum(line_item_unblended_cost)\n\nFROM $CurTable\n\nWHERE\n$__timeFilter(line_item_usage_start_date)\nAND product_location in ($Regions)\n\nGROUP BY 1\nORDER BY 2 DESC\n\nLIMIT 5)\n\nselect \n  date_trunc('$Granularity', line_item_usage_start_date),\n  $CurTable.product_location as location,\n  sum(line_item_unblended_cost) as cost\nfrom $CurTable left outer join top_regions on $CurTable.product_location = top_regions.product_location\n\nWHERE\n  $__timeFilter(line_item_usage_start_date)\n  AND top_regions.product_location is NULL\n  AND $CurTable .product_location in ($Regions)\n  AND line_item_product_code in ($Services)\n  AND line_item_usage_account_id IN ($LinkedAccounts)\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_line_item_type IN ($ChargeType)\nGROUP BY 1, 2\nORDER BY 1, 3\n;\n",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "title": "Monthly Spend for Period - Other Services",
+      "transformations": [
+        {
+          "id": "prepareTimeSeries",
+          "options": {}
+        },
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "cost (.*)",
+            "renamePattern": "$1"
+          }
+        }
+      ],
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 78
+      },
+      "id": 78,
+      "panels": [],
+      "title": "Purchase Type View",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "datasource",
+        "uid": "grafana"
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 11,
+        "x": 0,
+        "y": 79
+      },
+      "id": 127,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "# EC2 Purchase Type Coverage -  Amortized",
+        "mode": "markdown"
+      },
+      "pluginVersion": "9.4.7",
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "datasource",
+        "uid": "grafana"
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 11,
+        "x": 12,
+        "y": 79
+      },
+      "id": 128,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "# RDS Purchase Type Coverage -  Amortized",
+        "mode": "markdown"
+      },
+      "pluginVersion": "9.4.7",
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "grafana-athena-datasource",
+        "uid": "${Datasource}"
+      },
+      "description": "Amortized breakdown of On-Demand, Reserved and Savings plan for Amazon EC2.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": [],
+          "unit": "currencyUSD"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "On-Demand"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "purple",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Savings Plan"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "super-light-blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Reserved"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Spot"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 3,
+        "x": 0,
+        "y": 81
+      },
+      "id": 125,
+      "options": {
+        "displayLabels": [
+          "name",
+          "percent"
+        ],
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false,
+          "values": [
+            "value"
+          ]
+        },
+        "pieType": "donut",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "9.4.7",
+      "targets": [
+        {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${Datasource}"
+          },
+          "format": 1,
+          "rawSQL": "SELECT \n  date_trunc('$Granularity', line_item_usage_start_date),\n  SUM(CAST(CASE\n    WHEN line_item_line_item_type IN ('Usage') AND line_item_usage_type NOT LIKE '%SpotUsage%' THEN line_item_unblended_cost\n    ELSE 0\n    END AS DOUBLE)) AS \"On-Demand\",\n  SUM(CAST(savings_plan_savings_plan_effective_cost AS DOUBLE)) AS \"Savings Plan\",\n  SUM(CAST(reservation_effective_cost AS DOUBLE)) AS \"Reserved\",\n  SUM(CAST(CASE\n    WHEN line_item_usage_type LIKE '%SpotUsage%' THEN line_item_unblended_cost\n    ELSE 0\n    END AS DOUBLE)) AS \"Spot\"\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  and product_location in ($Regions)\n  AND  line_item_product_code in ($Services)\n  AND line_item_usage_account_id IN ($LinkedAccounts)\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_line_item_type IN ($ChargeType)\n  AND line_item_product_code = 'AmazonEC2'\n  AND line_item_operation LIKE '%RunInstance%'\n  -- AND line_item_line_item_type IN ('Usage','SavingsPlanCoveredUsage', 'Fee','RIFee','DiscountedUsage')\n  AND product_product_family NOT IN ('Data Transfer')\nGROUP BY \n  1",
+          "refId": "A"
+        }
+      ],
+      "title": "EC2 Total",
+      "transformations": [
+        {
+          "id": "groupBy",
+          "options": {
+            "fields": {
+              "case_purchase_option": {
+                "aggregations": [
+                  "sum"
+                ]
+              },
+              "sum_amortized_cost": {
+                "aggregations": [
+                  "sum"
+                ]
+              }
+            }
+          }
+        }
+      ],
+      "type": "piechart"
+    },
+    {
+      "datasource": {
+        "type": "grafana-athena-datasource",
+        "uid": "${Datasource}"
+      },
+      "description": "Amortized breakdown of On-Demand, Reserved and Savings plan for Amazon EC2.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-BlPu"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 1,
+            "drawStyle": "bars",
+            "fillOpacity": 10,
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "smooth",
+            "lineStyle": {
+              "fill": "solid"
+            },
+            "lineWidth": 1,
+            "pointSize": 2,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "currencyUSD"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "On-Demand"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "purple",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Savings Plan"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "super-light-blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Reserved"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Spot"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 9,
+        "x": 3,
+        "y": 81
+      },
+      "id": 80,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "9.4.7",
+      "targets": [
+        {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${Datasource}"
+          },
+          "format": 1,
+          "rawSQL": "SELECT \n  date_trunc('$Granularity', line_item_usage_start_date),\n  SUM(CAST(CASE\n    WHEN line_item_line_item_type IN ('Usage') AND line_item_usage_type NOT LIKE '%SpotUsage%' THEN line_item_unblended_cost\n    ELSE 0\n    END AS DOUBLE)) AS \"On-Demand\",\n  SUM(CAST(savings_plan_savings_plan_effective_cost AS DOUBLE)) AS \"Savings Plan\",\n  SUM(CAST(reservation_effective_cost AS DOUBLE)) AS \"Reserved\",\n  SUM(CAST(CASE\n    WHEN line_item_usage_type LIKE '%SpotUsage%' THEN line_item_unblended_cost\n    ELSE 0\n    END AS DOUBLE)) AS \"Spot\"\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  and product_location in ($Regions)\n  AND  line_item_product_code in ($Services)\n  AND line_item_usage_account_id IN ($LinkedAccounts)\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_line_item_type IN ($ChargeType)\n  AND line_item_product_code = 'AmazonEC2'\n  AND line_item_operation LIKE '%RunInstance%'\n  -- AND line_item_line_item_type IN ('Usage','SavingsPlanCoveredUsage', 'Fee','RIFee','DiscountedUsage')\n  AND product_product_family NOT IN ('Data Transfer')\nGROUP BY \n  1",
+          "refId": "A"
+        }
+      ],
+      "title": "EC2 Over Time",
+      "transformations": [
+        {
+          "id": "groupBy",
+          "options": {
+            "fields": {
+              "case_purchase_option": {
+                "aggregations": [
+                  "sum"
+                ]
+              },
+              "sum_amortized_cost": {
+                "aggregations": [
+                  "sum"
+                ]
+              }
+            }
+          }
+        }
+      ],
+      "transparent": true,
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "grafana-athena-datasource",
+        "uid": "${Datasource}"
+      },
+      "description": "Breakdown of Amazon RDS On-Demand and Reserved Instance Coverage",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": [],
+          "unit": "currencyUSD"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Reserved"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Unused Reserved"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "On-Demand"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "purple",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 3,
+        "x": 12,
+        "y": 81
+      },
+      "id": 129,
+      "options": {
+        "displayLabels": [
+          "name",
+          "percent"
+        ],
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "pieType": "donut",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "9.4.7",
+      "targets": [
+        {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${Datasource}"
+          },
+          "format": 1,
+          "rawSQL": "SELECT \n  date_trunc('$Granularity', line_item_usage_start_date),\n  SUM(CAST(CASE\n    WHEN line_item_line_item_type IN ('Usage') THEN line_item_unblended_cost\n    ELSE 0\n    END AS DOUBLE)) AS \"On-Demand\",\n  SUM(CAST(reservation_effective_cost AS DOUBLE)) AS \"Reserved\",\n  SUM(CAST(reservation_unused_amortized_upfront_fee_for_billing_period AS DOUBLE) + CAST(reservation_unused_recurring_fee AS DOUBLE)) AS \"Unused Reserved\"\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  and product_location in ($Regions)\n  AND  line_item_product_code in ($Services)\n  AND line_item_usage_account_id IN ($LinkedAccounts)\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_line_item_type IN ($ChargeType)\n  AND line_item_product_code = 'AmazonRDS'\n  -- AND line_item_line_item_type IN ('Usage','Fee','RIFee','DiscountedUsage')\n  AND product_product_family NOT IN ('Data Transfer')\nGROUP BY \n  1",
+          "refId": "A"
+        }
+      ],
+      "title": "RDS Total",
+      "transformations": [
+        {
+          "id": "groupBy",
+          "options": {
+            "fields": {
+              "case_purchase_option": {
+                "aggregations": [
+                  "sum"
+                ]
+              },
+              "sum_amortized_cost": {
+                "aggregations": [
+                  "sum"
+                ]
+              }
+            }
+          }
+        }
+      ],
+      "type": "piechart"
+    },
+    {
+      "datasource": {
+        "type": "grafana-athena-datasource",
+        "uid": "${Datasource}"
+      },
+      "description": "Breakdown of Amazon RDS On-Demand and Reserved Instance Coverage",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-BlPu"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 1,
+            "drawStyle": "bars",
+            "fillOpacity": 10,
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "smooth",
+            "lineStyle": {
+              "fill": "solid"
+            },
+            "lineWidth": 1,
+            "pointSize": 2,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "currencyUSD"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Reserved"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Unused Reserved"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "On-Demand"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "purple",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 9,
+        "x": 15,
+        "y": 81
+      },
+      "id": 81,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "9.4.7",
+      "targets": [
+        {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${Datasource}"
+          },
+          "format": 1,
+          "rawSQL": "SELECT \n  date_trunc('$Granularity', line_item_usage_start_date),\n  SUM(CAST(CASE\n    WHEN line_item_line_item_type IN ('Usage') THEN line_item_unblended_cost\n    ELSE 0\n    END AS DOUBLE)) AS \"On-Demand\",\n  SUM(CAST(reservation_effective_cost AS DOUBLE)) AS \"Reserved\",\n  SUM(CAST(reservation_unused_amortized_upfront_fee_for_billing_period AS DOUBLE) + CAST(reservation_unused_recurring_fee AS DOUBLE)) AS \"Unused Reserved\"\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  and product_location in ($Regions)\n  AND  line_item_product_code in ($Services)\n  AND line_item_usage_account_id IN ($LinkedAccounts)\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_line_item_type IN ($ChargeType)\n  AND line_item_product_code = 'AmazonRDS'\n  -- AND line_item_line_item_type IN ('Usage','Fee','RIFee','DiscountedUsage')\n  AND product_product_family NOT IN ('Data Transfer')\nGROUP BY \n  1",
+          "refId": "A"
+        }
+      ],
+      "title": "RDS Over Time",
+      "transformations": [
+        {
+          "id": "groupBy",
+          "options": {
+            "fields": {
+              "case_purchase_option": {
+                "aggregations": [
+                  "sum"
+                ]
+              },
+              "sum_amortized_cost": {
+                "aggregations": [
+                  "sum"
+                ]
+              }
+            }
+          }
+        }
+      ],
+      "transparent": true,
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "datasource",
+        "uid": "grafana"
+      },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 88
+      },
+      "id": 132,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "",
+        "mode": "markdown"
+      },
+      "pluginVersion": "9.4.7",
+      "transparent": true,
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "datasource",
+        "uid": "grafana"
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 7,
+        "x": 0,
+        "y": 89
+      },
+      "id": 130,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "# OpenSearch Purchase Type Coverage -  Amortized",
+        "mode": "markdown"
+      },
+      "pluginVersion": "9.4.7",
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "datasource",
+        "uid": "grafana"
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 7,
+        "x": 8,
+        "y": 89
+      },
+      "id": 133,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "# ElastiCache Purchase Type Coverage -  Amortized",
+        "mode": "markdown"
+      },
+      "pluginVersion": "9.4.7",
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "datasource",
+        "uid": "grafana"
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 7,
+        "x": 16,
+        "y": 89
+      },
+      "id": 135,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "# Redshift Purchase Type Coverage -  Amortized",
+        "mode": "markdown"
+      },
+      "pluginVersion": "9.4.7",
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "grafana-athena-datasource",
+        "uid": "${Datasource}"
+      },
+      "description": "Breakdown of Amazon OpenSearch On-Demand and Reserved Instance Coverage",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-BlPu"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "scheme",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "smooth",
+            "lineStyle": {
+              "dash": [
+                0,
+                10
+              ],
+              "fill": "dot"
+            },
+            "lineWidth": 1,
+            "pointSize": 2,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "On-Demand"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "purple",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Reserved"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Unused Reserved"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 92
+      },
+      "id": 82,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "9.4.7",
+      "targets": [
+        {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${Datasource}"
+          },
+          "format": 1,
+          "rawSQL": "SELECT \n  date_trunc('$Granularity', line_item_usage_start_date),\n  SUM(CAST(CASE\n    WHEN line_item_line_item_type IN ('Usage') THEN line_item_unblended_cost\n    ELSE 0\n    END AS DOUBLE)) AS \"On-Demand\",\n  SUM(CAST(reservation_effective_cost AS DOUBLE)) AS \"Reserved\",\n  SUM(CAST(reservation_unused_amortized_upfront_fee_for_billing_period AS DOUBLE) + CAST(reservation_unused_recurring_fee AS DOUBLE)) AS \"Unused Reserved\"\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  and product_location in ($Regions)\n  AND  line_item_product_code in ($Services)\n  AND line_item_usage_account_id IN ($LinkedAccounts)\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_line_item_type IN ($ChargeType)\n  AND line_item_product_code = 'AmazonES'\n  -- AND line_item_line_item_type IN ('Usage','Fee','RIFee','DiscountedUsage')\n  AND product_product_family NOT IN ('Data Transfer')\nGROUP BY \n  1",
+          "refId": "A"
+        }
+      ],
+      "title": "OpenSearch Purchase Type Coverage -  Amortized",
+      "transformations": [
+        {
+          "id": "groupBy",
+          "options": {
+            "fields": {
+              "case_purchase_option": {
+                "aggregations": [
+                  "sum"
+                ]
+              },
+              "sum_amortized_cost": {
+                "aggregations": [
+                  "sum"
+                ]
+              }
+            }
+          }
+        }
+      ],
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "grafana-athena-datasource",
+        "uid": "${Datasource}"
+      },
+      "description": "Breakdown of Amazon ElastiCache On-Demand and Reserved Instance Coverage",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-BlPu"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "scheme",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "smooth",
+            "lineStyle": {
+              "dash": [
+                0,
+                10
+              ],
+              "fill": "dot"
+            },
+            "lineWidth": 1,
+            "pointSize": 2,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "On-Demand"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "purple",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Reserved"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Unused Reserved"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 92
+      },
+      "id": 83,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "9.4.7",
+      "targets": [
+        {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${Datasource}"
+          },
+          "format": 1,
+          "rawSQL": "SELECT \n  date_trunc('$Granularity', line_item_usage_start_date),\n  SUM(CAST(CASE\n    WHEN line_item_line_item_type IN ('Usage') THEN line_item_unblended_cost\n    ELSE 0\n    END AS DOUBLE)) AS \"On-Demand\",\n  SUM(CAST(reservation_effective_cost AS DOUBLE)) AS \"Reserved\",\n  SUM(CAST(reservation_unused_amortized_upfront_fee_for_billing_period AS DOUBLE) + CAST(reservation_unused_recurring_fee AS DOUBLE)) AS \"Unused Reserved\"\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  and product_location in ($Regions)\n  AND  line_item_product_code in ($Services)\n  AND line_item_usage_account_id IN ($LinkedAccounts)\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_line_item_type IN ($ChargeType)\n  AND line_item_product_code = 'AmazonElastiCache'\n  -- AND line_item_line_item_type IN ('Usage','Fee','RIFee','DiscountedUsage')\n  AND product_product_family NOT IN ('Data Transfer')\nGROUP BY \n  1",
+          "refId": "A"
+        }
+      ],
+      "title": "ElastiCache Purchase Type Coverage -  Amortized",
+      "transformations": [
+        {
+          "id": "groupBy",
+          "options": {
+            "fields": {
+              "case_purchase_option": {
+                "aggregations": [
+                  "sum"
+                ]
+              },
+              "sum_amortized_cost": {
+                "aggregations": [
+                  "sum"
+                ]
+              }
+            }
+          }
+        }
+      ],
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "grafana-athena-datasource",
+        "uid": "${Datasource}"
+      },
+      "description": "Breakdown of Amazon Redshift On-Demand and Reserved Instance Coverage",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-BlPu"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "scheme",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "smooth",
+            "lineStyle": {
+              "dash": [
+                0,
+                10
+              ],
+              "fill": "dot"
+            },
+            "lineWidth": 1,
+            "pointSize": 2,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "On-Demand"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "purple",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Reserved"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Unused Reserved"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 92
+      },
+      "id": 84,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "9.4.7",
+      "targets": [
+        {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${Datasource}"
+          },
+          "format": 1,
+          "rawSQL": "SELECT \n  date_trunc('$Granularity', line_item_usage_start_date),\n  SUM(CAST(CASE\n    WHEN line_item_line_item_type IN ('Usage') THEN line_item_unblended_cost\n    ELSE 0\n    END AS DOUBLE)) AS \"On-Demand\",\n  SUM(CAST(reservation_effective_cost AS DOUBLE)) AS \"Reserved\",\n  SUM(CAST(reservation_unused_amortized_upfront_fee_for_billing_period AS DOUBLE) + CAST(reservation_unused_recurring_fee AS DOUBLE)) AS \"Unused Reserved\"\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  and product_location in ($Regions)\n  AND  line_item_product_code in ($Services)\n  AND line_item_usage_account_id IN ($LinkedAccounts)\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  AND line_item_line_item_type IN ($ChargeType)\n  AND line_item_product_code = 'AmazonRedshift'\n  -- AND line_item_line_item_type IN ('Usage','Fee','RIFee','DiscountedUsage')\n  AND product_product_family NOT IN ('Data Transfer')\nGROUP BY \n  1",
+          "refId": "A"
+        }
+      ],
+      "title": "Redshift Purchase Type Coverage -  Amortized",
+      "transformations": [
+        {
+          "id": "groupBy",
+          "options": {
+            "fields": {
+              "case_purchase_option": {
+                "aggregations": [
+                  "sum"
+                ]
+              },
+              "sum_amortized_cost": {
+                "aggregations": [
+                  "sum"
+                ]
+              }
+            }
+          }
+        }
+      ],
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "datasource",
+        "uid": "grafana"
+      },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 100
+      },
+      "id": 136,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "",
+        "mode": "markdown"
+      },
+      "pluginVersion": "9.4.7",
+      "transparent": true,
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "grafana-athena-datasource",
+        "uid": "${Datasource}"
+      },
+      "description": "This table allows you to parse your savings plan at the set granularity.  It reports the purchasing account and the percentage utilized.  This table allows only the linked_account,  granularity and tag filters.\n\nThe linked account filter will display where the savings plan was used.\nThe tag filter will display the savings plans which were utilized by the tag.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "plan_id"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 339
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 24,
+        "x": 0,
+        "y": 101
+      },
+      "id": 86,
+      "options": {
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "purchase_term"
+          }
+        ]
+      },
+      "pluginVersion": "9.4.7",
+      "targets": [
+        {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${Datasource}"
+          },
+          "format": 1,
+          "rawSQL": "SELECT\n  date_trunc('$Granularity', line_item_usage_start_date) as usage_month,\n  -- DATE_FORMAT((line_item_usage_start_date),'%Y-%m') AS usage_month,\n    -- (used commitment / total commitment) * 100 = utilization %\n  TRY_CAST(((SUM(TRY_CAST(savings_plan_used_commitment AS DECIMAL(16, 8))) / SUM(TRY_CAST(savings_plan_total_commitment_to_date AS DOUBLE))) * 100) AS DECIMAL(3, 0)) AS \"savings_plan_utilization\",\n  savings_plan_end_time AS \"expiration_date\",\n  SPLIT_PART(savings_plan_savings_plan_a_r_n, '/', 2) AS \"plan_id\",\n  bill_payer_account_id AS \"payer_account_number\",\n  SPLIT_PART(savings_plan_savings_plan_a_r_n, ':', 5) AS \"purchasing_account_number\",\n  savings_plan_offering_type AS \"offering_type\",\n  savings_plan_region AS \"region\",\n  -- DATE_FORMAT(FROM_ISO8601_TIMESTAMP(savings_plan_start_time),'%Y-%m-%d') AS day_savings_plan_start_time,\n  savings_plan_payment_option AS \"payment_option\",\n  savings_plan_purchase_term AS \"purchase_term\",\n  SUM(TRY_CAST(savings_plan_total_commitment_to_date AS DOUBLE)) AS \"amortized_total_commitment_to_date\", \n  SUM(TRY_CAST(savings_plan_used_commitment AS DOUBLE)) AS \"used_commitment\",\n  AVG(CASE\n    WHEN line_item_line_item_type = 'SavingsPlanRecurringFee' THEN TRY_CAST(savings_plan_total_commitment_to_date AS DOUBLE)\n  END) AS \"Hourly Commitment\"\nFROM\n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_usage_account_id IN ($LinkedAccounts)\n  -- and product_location in ($Regions)\n  -- AND  line_item_product_code in ($Services)\n  AND resource_tags_user_$TagKey IN ($TagValue)\n  -- AND line_item_line_item_type IN ($ChargeType)\n  AND savings_plan_savings_plan_a_r_n <> ''\n  AND (line_item_line_item_type = 'SavingsPlanRecurringFee' OR line_item_line_item_type = 'SavingsPlanCoveredUsage')\nGROUP BY\n  -- SPLIT_PART(savings_plan_savings_plan_a_r_n, '/', 2),\n  1, 3, 4, 5, 6,\n  savings_plan_offering_type,\n  savings_plan_region,\n  -- DATE_FORMAT(FROM_ISO8601_TIMESTAMP(savings_plan_start_time),'%Y-%m-%d'),\n  savings_plan_end_time,\n  savings_plan_payment_option,\n  savings_plan_purchase_term\nORDER BY\n  usage_month DESC,\n  savings_plan_utilization ASC,\n  savings_plan_end_time DESC;\n",
+          "refId": "A"
+        }
+      ],
+      "title": "Savings Plans Explorer",
+      "type": "table"
+    }
+  ],
+  "refresh": "",
+  "revision": 1,
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "current": {},
+        "hide": 2,
+        "includeAll": false,
+        "multi": false,
+        "name": "Datasource",
+        "options": [],
+        "query": "grafana-athena-datasource",
+        "queryValue": "",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "type": "datasource"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "grafana-athena-datasource",
+          "uid": "${Datasource}"
+        },
+        "definition": "",
+        "hide": 2,
+        "includeAll": false,
+        "label": "CUR Table",
+        "multi": false,
+        "name": "CurTable",
+        "options": [],
+        "query": {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "format": 1,
+          "rawSQL": "show tables"
+        },
+        "refresh": 1,
+        "regex": "^(?!cost_and_usage_data_status).+$",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "grafana-athena-datasource",
+          "uid": "${Datasource}"
+        },
+        "definition": "",
+        "description": "Select Linked Account",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Linked Accounts",
+        "multi": true,
+        "name": "LinkedAccounts",
+        "options": [],
+        "query": {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "format": 1,
+          "rawSQL": "SELECT DISTINCT(line_item_usage_account_id) FROM $CurTable;"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 3,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "grafana-athena-datasource",
+          "uid": "${Datasource}"
+        },
+        "definition": "",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Regions",
+        "multi": true,
+        "name": "Regions",
+        "options": [],
+        "query": {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "format": 1,
+          "rawSQL": "select distinct product_location from $CurTable where product_location != '';"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "grafana-athena-datasource",
+          "uid": "${Datasource}"
+        },
+        "definition": "",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Services",
+        "multi": true,
+        "name": "Services",
+        "options": [],
+        "query": {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "format": 1,
+          "rawSQL": "select distinct line_item_product_code from $CurTable;\n"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "week",
+          "value": "week"
+        },
+        "description": "Adjust the period granularity for cost graphs",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Granularity",
+        "multi": false,
+        "name": "Granularity",
+        "options": [
+          {
+            "selected": false,
+            "text": "month",
+            "value": "month"
+          },
+          {
+            "selected": true,
+            "text": "week",
+            "value": "week"
+          },
+          {
+            "selected": false,
+            "text": "day",
+            "value": "day"
+          },
+          {
+            "selected": false,
+            "text": "hour",
+            "value": "hour"
+          }
+        ],
+        "query": "month,week,day,hour",
+        "queryValue": "",
+        "skipUrlSync": false,
+        "type": "custom"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "grafana-athena-datasource",
+          "uid": "${Datasource}"
+        },
+        "definition": "",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Charge Type",
+        "multi": true,
+        "name": "ChargeType",
+        "options": [],
+        "query": {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "format": 1,
+          "rawSQL": "SELECT DISTINCT(line_item_line_item_type) from $CurTable;"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "grafana-athena-datasource",
+          "uid": "${Datasource}"
+        },
+        "definition": "",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Tag Key",
+        "multi": false,
+        "name": "TagKey",
+        "options": [],
+        "query": {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "format": 1,
+          "rawSQL": "show columns from $CurTable;"
+        },
+        "refresh": 1,
+        "regex": "/resource_tags_user_(.+)/",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": {
+          "type": "grafana-athena-datasource",
+          "uid": "${Datasource}"
+        },
+        "definition": "",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Tag Value",
+        "multi": true,
+        "name": "TagValue",
+        "options": [],
+        "query": {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "format": 1,
+          "rawSQL": "SELECT DISTINCT(resource_tags_user_$TagKey) FROM $CurTable WHERE resource_tags_user_$TagKey IS NOT NULL AND NOT resource_tags_user_$TagKey = '';"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "current": {
+          "isNone": true,
+          "selected": false,
+          "text": "None",
+          "value": ""
+        },
+        "datasource": {
+          "type": "grafana-athena-datasource",
+          "uid": "${Datasource}"
+        },
+        "definition": "",
+        "hide": 2,
+        "includeAll": false,
+        "label": "Cost Category Name",
+        "multi": false,
+        "name": "CostCategoryName",
+        "options": [],
+        "query": {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "format": 1,
+          "rawSQL": "show columns from $CurTable;"
+        },
+        "refresh": 1,
+        "regex": "/cost_category_(.+)/",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "grafana-athena-datasource",
+          "uid": "${Datasource}"
+        },
+        "definition": "",
+        "hide": 2,
+        "includeAll": true,
+        "label": "Cost Category Value",
+        "multi": true,
+        "name": "CostCategoryValue",
+        "options": [],
+        "query": {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "format": 1,
+          "rawSQL": "select DISTINCT(cost_category_$CostCategoryName) \nFROM $CurTable;"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "grafana-athena-datasource",
+          "uid": "${Datasource}"
+        },
+        "definition": "",
+        "description": "Calculate the spend percentage from the top 25 accounts in the AWS Organization.",
+        "hide": 2,
+        "includeAll": false,
+        "multi": false,
+        "name": "PanelTop25SpendPercentage",
+        "options": [],
+        "query": {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "format": 1,
+          "rawSQL": "with total_spend as (\n    SELECT\n    line_item_usage_account_id as account,\n    sum(line_item_unblended_cost) as total_spend\n    FROM\n    $CurTable\n    where\n    bill_billing_period_start_date = date_add('MONTH', -1, DATE_TRUNC('MONTH', current_date))\n    Group by \n    line_item_usage_account_id\n),\n\ntop10_spend as (\n    SELECT\n    line_item_usage_account_id as account,\n    sum(line_item_unblended_cost) as top25_spend\n    FROM\n    $CurTable\n    where\n    bill_billing_period_start_date = date_add('MONTH', -1, DATE_TRUNC('MONTH', current_date))\n    Group by \n    line_item_usage_account_id\n    LIMIT 10\n)\n\n\nSELECT\n    CAST( (sum(top10_spend) / sum(total_spend) * 100) as VARCHAR) as percentage_from_top25\nFROM\n    total_spend\nINNER JOIN top10_spend ON total_spend.account = top10_spend.account;\n"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "grafana-athena-datasource",
+          "uid": "${Datasource}"
+        },
+        "definition": "",
+        "hide": 2,
+        "includeAll": false,
+        "multi": false,
+        "name": "TotalAccountInOrganization",
+        "options": [],
+        "query": {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "format": 1,
+          "rawSQL": "SELECT \nCAST(COUNT(DISTINCT(line_item_usage_account_id)) as VARCHAR) as account_count\nFROM \n$CurTable\n"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-30d",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "COAST - FinOps Dashboard",
+  "uid": "FPN3tqSVKK",
+  "version": 2,
+  "weekStart": ""
+}
