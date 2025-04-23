@@ -1,0 +1,689 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Provisions AWS Managed Grafana workspace and supporting resources.
+
+###########################################################################
+# Author: Chris Strzelczyk
+# Project: COAST: https://github.com/aws-samples/coast-grafana-cost-intelligence-dashboards
+###########################################################################
+
+Parameters:
+  ResourcePrefix:
+    Type: String
+    Default: "coast"
+    Description: "Prefix prepended to resource names and as the value field in tags."
+    MaxLength: 16 
+    AllowedPattern: "^[a-z0-9]{1,61}+$"
+  
+  catalog:
+    Type: String
+    Default: "AwsDataCatalog"
+    Description: "The Athena catalog name"
+  
+  database:
+    Type: String
+    Default: "cid_data_export"
+    Description: "The Athena database name"
+
+Resources:
+###########################################################################
+# Create Amazon Managed Grafana workspace and necessary role/permissions
+###########################################################################
+  
+  GrafanaWorkspace: #Create Grafana workspace
+    Type: AWS::Grafana::Workspace
+    DependsOn: 
+      - GrafanaWorkspaceRole
+    Properties: 
+      AccountAccessType: CURRENT_ACCOUNT
+      AuthenticationProviders: 
+        - AWS_SSO
+      DataSources: 
+        - CLOUDWATCH
+        - ATHENA
+      Description: 'Grafana Dashboard Project Workspace'
+      GrafanaVersion: '10.4'
+      PluginAdminEnabled: true
+      Name: !Sub 
+        - "grafana-dashboards-${ResourcePrefix}-${UniqueId}"
+        - UniqueId: !Select [ 0, !Split [ '-', !Select [ 2, !Split [ '/', !Ref 'AWS::StackId' ] ] ] ]
+      NotificationDestinations: 
+        - SNS
+      PermissionType: SERVICE_MANAGED
+      RoleArn: !Ref GrafanaWorkspaceRole
+
+  GrafanaWorkspaceRole: 
+    Type: AWS::IAM::Role
+    DependsOn: 
+      - AthenaQueryResultsBucket
+    Properties: 
+      RoleName: !Sub 
+        - "grafana-dashboards-${ResourcePrefix}-${UniqueId}"
+        - UniqueId: !Select [ 0, !Split [ '-', !Select [ 2, !Split [ '/', !Ref 'AWS::StackId' ] ] ] ]
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service: 'grafana.amazonaws.com'
+          Action: 'sts:AssumeRole'
+      Description: 'Grafana Dashboard Project Workspace Role'
+      Tags:
+        - Key: "project"
+          Value: !Sub ${ResourcePrefix}
+      ManagedPolicyArns: 
+        - 'arn:aws:iam::aws:policy/service-role/AmazonGrafanaAthenaAccess'
+        - 'arn:aws:iam::aws:policy/service-role/AmazonGrafanaCloudWatchAccess'
+      Policies:
+        - PolicyName: AthenaQueryResultsBucketAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:ListBucket
+                  - s3:GetBucketLocation
+                  - s3:DeleteObject
+                Resource:
+                  - !Sub 'arn:aws:s3:::${AthenaQueryResultsBucket}'
+                  - !Sub 'arn:aws:s3:::${AthenaQueryResultsBucket}/*'
+      Path: /
+  
+  SNSNotificationsTopic: #SNS Notification for Grafana
+    Type: 'AWS::SNS::Topic'
+    Properties:
+      Tags:
+        - Key: "project"
+          Value: !Sub ${ResourcePrefix}
+      TopicName: !Sub 
+        - "grafana-dashboards-${ResourcePrefix}-${UniqueId}"
+        - UniqueId: !Select [ 0, !Split [ '-', !Select [ 2, !Split [ '/', !Ref 'AWS::StackId' ] ] ] ]
+
+###########################################################################
+# Build Athena Workgroup and Output Bucket
+###########################################################################
+
+  AthenaQueryResultsBucket: 
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    Properties:
+      BucketName: !Sub 
+        - "grafana-dashboards-${ResourcePrefix}-athena-output-${UniqueId}"
+        - UniqueId: !Select [ 0, !Split [ '-', !Select [ 2, !Split [ '/', !Ref 'AWS::StackId' ] ] ] ]       
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      AccessControl: BucketOwnerFullControl
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      LifecycleConfiguration:
+        Rules:
+          - Id: DeleteContent
+            Status: 'Enabled'
+            ExpirationInDays: 30
+      VersioningConfiguration:
+        Status: Enabled
+      Tags:
+        - Key: "project"
+          Value: !Sub ${ResourcePrefix}
+
+  AthenaWorkGroup:  
+    Type: AWS::Athena::WorkGroup
+    DependsOn:
+      - AthenaQueryResultsBucket
+    Properties:
+      Name: !Sub 
+        - "grafana-dashboards-${ResourcePrefix}-${UniqueId}"
+        - UniqueId: !Select [ 0, !Split [ '-', !Select [ 2, !Split [ '/', !Ref 'AWS::StackId' ] ] ] ] 
+      Description: 'Athena Workgroup utilized to group dashboard query executions'
+      RecursiveDeleteOption: true
+      Tags:
+        - Key: "GrafanaDataSource"
+          Value: "true"
+        - Key: "project"
+          Value: !Sub ${ResourcePrefix}
+      WorkGroupConfiguration:
+        EnforceWorkGroupConfiguration: true
+        PublishCloudWatchMetricsEnabled: true
+        ResultConfiguration:
+          EncryptionConfiguration:
+            EncryptionOption: SSE_S3
+          OutputLocation: !Sub 's3://${AthenaQueryResultsBucket}'
+          AclConfiguration:
+            S3AclOption: BUCKET_OWNER_FULL_CONTROL
+
+  ProvisionGrafanaLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: GrafanaWorkspaceAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - grafana:*
+                Resource: !Sub 'arn:aws:grafana:${AWS::Region}:${AWS::AccountId}:/workspaces/${GrafanaWorkspace}'
+        - PolicyName: AthenaAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:ListBucket
+                  - s3:GetBucketLocation
+                  - s3:DeleteObject
+                Resource:
+                  - !Sub 'arn:aws:s3:::${AthenaQueryResultsBucket}'
+                  - !Sub 'arn:aws:s3:::${AthenaQueryResultsBucket}/*'
+
+  ProvisionGrafanaLambdaFunction:
+    Type: AWS::Lambda::Function
+    DependsOn:
+      - ProvisionGrafanaLambdaRole
+      - GrafanaWorkspace
+      - AthenaWorkGroup
+    Properties:
+      Handler: index.handler
+      Role: !GetAtt ProvisionGrafanaLambdaRole.Arn
+      Code:
+        ZipFile: |
+          import boto3
+          import json
+          import random
+          import logging
+          import time
+          import os
+          import urllib.request
+          import urllib.error
+
+          from botocore.exceptions import ClientError
+
+          # Step 2: Init Grafana client
+          project_prefix = 'grafana-dashboards'
+          gc = boto3.client('grafana')  # Requires correct permissions in Lambda IAM role
+          TTL = 300 #time to live for service account api key
+
+          logging.basicConfig(level=logging.INFO)
+          logger = logging.getLogger(__name__)
+
+          def create_workspace_service_account(workspace_id:str, sa_name:str, grafana_role:str = 'ADMIN') -> dict:
+              """
+              Creates a service account for a Grafana workspace.
+
+              Args:
+                  workspace_id (str): The ID of the Grafana workspace.
+                  sa_name (str): The name of the service account.
+                  grafana_role (str, optional): The role of the service account. Defaults to 'ADMIN'.
+
+              Returns:
+                  dict: The response from the Grafana API.
+              """
+              sa_response = gc.create_workspace_service_account(
+                  grafanaRole=grafana_role,
+                  name=sa_name,
+                  workspaceId=workspace_id
+              )
+              return sa_response
+
+          def create_workspace_api_key(workspace_id:str, key_name:str, ttl:int, sa_id:str) -> str:
+              """
+              Creates an API key for a Grafana workspace.
+
+              Args:
+                  workspace_id (str): The ID of the Grafana workspace.
+                  sa_name: service account name
+                  ttl: time to live for key in sec
+                  key_name: unique key name 
+
+              Returns:
+                  dict: The response from the Grafana API.
+              """
+
+              delete_all_workspace_api_keys(workspace_id, sa_id)
+
+              number = random.randint(1, 100)
+
+              # Step 5: Create short-lived token
+              token_response = gc.create_workspace_service_account_token(
+                  workspaceId=workspace_id,
+                  serviceAccountId=sa_id,
+                  name=f"{key_name}_{number}",
+                  secondsToLive=ttl  # 10 minutes
+              )
+
+              key = token_response.get('serviceAccountToken', {}).get('key')
+              if not key:
+                  raise ValueError("Missing expected token['serviceAccountToken']['key']")
+              
+              return token_response['serviceAccountToken']['key']
+
+          def get_workspace_service_account_id_for_project(workspace_id:str) -> str:
+              f"""
+              Returns the serice accounts id for the service account with name:{project_prefix}-sa
+
+              Args:
+                  workspace_id (str): The ID of the Grafana workspace.
+
+              Returns:
+                  str: The id as str
+              """
+              sa_id = [ sa['id'] for sa in gc.list_workspace_service_accounts(workspaceId=workspace_id)['serviceAccounts'] if sa['name'] == f'{project_prefix}-sa' ]
+              if sa_id:
+                  return sa_id[0]
+              else:
+                  return ''
+
+          def delete_workspace_api_tokens_for_project(workspace_id:str, sa_id:str) -> list:
+              #get service account by name    
+              deleted_tokens = []
+              if sa_id:
+                  #list of all tokens for the service account
+                  print(f"Deleting all API tokens for service account: {sa_id}")
+                  tokens = [ sat['id'] for sat in gc.list_workspace_service_account_tokens(workspaceId=workspace_id, serviceAccountId=sa_id)['serviceAccountTokens'] if sat['name'].startswith(f'{project_prefix}-api-key') ]
+                  for token in tokens:
+                      deleted_tokens.append(token)
+                      gc.delete_workspace_service_account_token(workspaceId=workspace_id, serviceAccountId=sa_id, tokenId=token) 
+              
+              return deleted_tokens
+
+          def get_grafana_headers(api_key:str) -> dict:
+              """
+              Get grafana headers
+
+              Returns:
+                  dict: The headers for the Grafana API.
+              """
+              headers = {
+                  'Accept': 'application/json',
+                  'Authorization': f'Bearer {api_key}',
+                  'Content-Type': 'application/json'
+              }
+              return headers
+
+          def grafana_get_request(api_key: str, url: str, headers: dict = None) -> dict:
+              """
+              Send a GET request to the Grafana API using urllib (standard library).
+
+              Args:
+                  api_key (str): The API key for the Grafana workspace.
+                  url (str): The full API URL.
+                  headers (dict): Optional HTTP headers.
+
+              Returns:
+                  dict: Parsed JSON response.
+              """
+              if not headers:
+                  headers = get_grafana_headers(api_key)
+
+              print(f"Sending GET request to: {url}")
+              print(f"Headers: {headers}")
+
+              req = urllib.request.Request(url, headers=headers, method='GET')
+
+              try:
+                  with urllib.request.urlopen(req) as response:
+                      body = response.read()
+                      status_code = response.getcode()
+                      print(f"Response Status: {status_code}")
+                      print(f"Response Body: {body}")
+                      return { 'staus_code': status_code, 'body': json.loads(body) }
+              except urllib.error.HTTPError as e:
+                  print(f"HTTPError: {e.code} - {e.reason}")
+                  print(e.read())
+                  raise
+              except urllib.error.URLError as e:
+                  print(f"URLError: {e.reason}")
+                  raise
+
+          def grafana_post_request(
+              name: str,
+              ds_type: str,
+              api_key: str,
+              url: str,
+              region: str = 'us-east-1',
+              headers: dict = None,
+              payload: dict = None,
+              empty_payload: bool = False
+          ) -> dict:
+              """
+              Send a POST request to the Grafana API using urllib.
+
+              Args:
+                  name (str): datasource name
+                  ds_type (str): datasource type (e.g., 'cloudwatch')
+                  api_key (str): API key for Grafana
+                  url (str): API endpoint
+                  region (str): AWS region
+                  headers (dict): optional headers
+                  payload (dict): optional payload
+                  empty_payload (bool): whether to send an empty payload
+
+              Returns:
+                  HTTPResponse object from urllib
+              """
+              if not headers:
+                  headers = get_grafana_headers(api_key)
+
+              if not payload and not empty_payload:
+                  payload = {
+                      'name': f'{project_prefix}-{name}', 
+                      'type': ds_type, 
+                      'access': 'proxy', 
+                      'jsonData': {
+                          'authType': 'ec2_iam_role',
+                          'defaultRegion': region
+                      }
+                  }
+
+              data = b'' if empty_payload else json.dumps(payload).encode('utf-8')
+
+              print(f"Sending POST request to: {url}")
+              print(f"Headers: {headers}")
+              print(f"Payload: {payload if not empty_payload else '{}'}")
+
+              req = urllib.request.Request(url, data=data, headers=headers, method='POST')
+
+              try:
+                  with urllib.request.urlopen(req) as response:
+                      body = response.read()
+                      status_code = response.getcode()
+                      print(f"Response Status: {status_code}")
+                      print(f"Response Body: {body}")
+                      return { 'staus_code': status_code, 'body': json.loads(body) }
+              except urllib.error.HTTPError as e:
+                  if e.code == 409:
+                      print(f"Datasource {name} already exists")
+                      return { 'staus_code': e.code, 'body': None }
+                  print(f"HTTPError: {e.code} - {e.reason}")
+                  print(e.read())
+                  raise
+              except urllib.error.URLError as e:
+                  print(f"URLError: {e.reason}")
+                  raise
+
+          def delete_workspace_service_account(workspace_id:str, sa_name:str) -> int:
+              """
+              Deletes a service account by name for a Grafana workspace.
+
+              Args:
+                  workspace_id (str): The ID of the Grafana workspace.
+                  sa_name (str): The ID of the service account.
+
+              Returns:
+                  int: The response HTTPStatusCode of the delete operation
+              """
+              service_accounts = gc.list_workspace_service_accounts(workspaceId=workspace_id)
+
+              for account in service_accounts['serviceAccounts']:
+                  if account['name'] == sa_name:
+                      sa_id = account['id']
+                      break
+
+              sa_response = gc.delete_workspace_service_account(
+                  workspaceId=workspace_id,
+                  serviceAccountId=sa_id
+              )
+              
+              return sa_response['ResponseMetadata']['HTTPStatusCode']
+
+          def delete_all_workspace_api_keys(workspace_id:str, sa_id:str) -> tuple:
+              """
+              Deletes an API key for a Grafana workspace.
+
+              Args:
+                  workspace_id (str): The ID of the Grafana workspace.
+                  key_id (str): The ID of the API key.
+
+              Returns:
+                  tuple: (number of initial tokens, number of tokens afer delete)
+              """
+
+              existing_tokens = gc.list_workspace_service_account_tokens(
+                  workspaceId=workspace_id,
+                  serviceAccountId=sa_id)['serviceAccountTokens']
+
+              for token in existing_tokens:
+                  gc.delete_workspace_service_account_token(workspaceId=workspace_id, serviceAccountId=sa_id, tokenId=token['id'])
+              
+              tokens = gc.list_workspace_service_account_tokens(
+                  workspaceId=workspace_id,
+                  serviceAccountId=sa_id)['serviceAccountTokens']
+              
+              if len(tokens) > 0:
+                  logger.warning("Failed to delete all tokens")
+                  print(f"Failed to delete all tokens: {tokens}")
+
+              return (len(existing_tokens), len(tokens))
+
+          def send_cfn_response(event, context, success:bool, data:dict = None, reason:str = None) -> None:
+              if 'ResourceProperties' in event:
+                  import cfnresponse
+                  status = cfnresponse.SUCCESS if success else cfnresponse.FAILED
+                  response_data = data or {}
+                  physical_resource_id = context.log_stream_name  
+
+                  print(f"Sending CFN response: status={status}, reason={reason}, data={response_data}")
+                  cfnresponse.send(
+                      event=event,
+                      context=context,
+                      responseStatus=status,
+                      responseData=response_data,
+                      physicalResourceId=physical_resource_id,
+                      reason=reason
+                  )
+
+              else:
+                  print(f"Event not in context, skipping CFN response")
+                  if not success:
+                      print(reason)
+                      raise ValueError
+                  else:
+                      print(data)
+                      return
+
+          def handler(event, context):
+              # Step 1: Extract workspaceId and other parameters from CloudFormation event
+              
+              if 'ResourceProperties' in event:
+                  request_type:str = event['RequestType']
+                  stack_id:str = event['StackId']
+                  region:str = stack_id.split(':')[3]
+                  workspace_id:str = os.environ['WORKSPACE_ID']
+                  catalog = os.environ['CATALOG']
+                  database = os.environ['DATABASE']
+                  workgroup = os.environ['WORKGROUP']
+              else:
+                  request_type:str = event['RequestType']
+                  stack_id:str = event['StackId']
+                  region:str = stack_id.split(':')[3]
+                  workspace_id = event['WorkspaceId']
+                  catalog = event['Catalog']
+                  database = event['Database']
+                  workgroup = event['Workgroup']
+              
+              url = f"https://{workspace_id}.grafana-workspace.{region}.amazonaws.com"
+              datasource_api_path = "api/datasources"
+              plugin_api_path = "api/plugins/grafana-athena-datasource/install"
+              
+              
+              # Step 2: Create service account
+              if request_type == 'Create':
+                  try:
+                      sa_response = create_workspace_service_account(workspace_id, f'{project_prefix}-sa')
+                  except ClientError as e:
+                      if e.response['Error']['Code'] == 'ConflictException':
+                          print(f"Service account already exists, skipping creation")
+                          sa_response = {'id': get_workspace_service_account_id_for_project(workspace_id)}
+                      else:
+                          reason = f"Failed to create service account: {e}"
+                          print(reason)
+                          send_cfn_response(event, context, False, reason=reason)
+                  
+                  ## validate service account id
+                  if 'id' in sa_response:
+                      print(f"Service account found with ID: {sa_response['id']}")
+                      service_account_id = str(sa_response['id'])
+                      if not service_account_id:
+                          #Not having an id is a critical fail
+                          reason = f"Lambda failed to create or find service account."
+                          print(reason)
+                          send_cfn_response(event, context, False, reason=reason)
+                  else:
+                      #Not having an id is a critical fail
+                      reason = f"Lambda failed to create or find service account."
+                      print(reason)
+                      send_cfn_response(event, context, False, reason=reason)
+            
+                  ## delete api keys for service account
+                  print(f'Deleting tokens for service account id: {service_account_id}')
+                  deleted_tokens = delete_workspace_api_tokens_for_project(workspace_id, service_account_id)
+
+                  ## Create api key for service account
+                  try:
+                      time.sleep(1)
+                      print(f"creating api key")
+                      api_key = create_workspace_api_key(workspace_id, f'{project_prefix}-api-key', TTL, service_account_id)
+                  except ValueError as e:
+                      #Failing to create an API key is a critical fail
+                      reason = f"Failed to create API key: {e}"
+                      print(reason)
+                      send_cfn_response(event, context, False, reason=reason)
+                  except Exception as e:
+                      reason = f"Failed to create API key: {e}"
+                      print(reason)
+                      send_cfn_response(event, context, False, reason=reason)
+                  
+                  ## create cloudwatch datasource
+                  api_url = f"{url}/{datasource_api_path}"
+                  try:
+                      datasource = 'cloudwatch'
+                      time.sleep(1)
+                      response = grafana_post_request(datasource, datasource, api_key, api_url, region)
+                  except Exception as e:
+                      reason = f"Failed to create datasource: {e}"
+                      print(reason)
+                      send_cfn_response(event, context, False, reason=reason)
+                  
+                  ## install Athean plugin 
+                  datasource = 'athena'
+                  api_url = f"{url}/{plugin_api_path}"
+                  try:
+                      print(f'installing athena plugin')
+                      response = grafana_post_request('', '', api_key, api_url, empty_payload=True)
+                      
+                      #wait for plugin to install
+                      time.sleep(10)
+                  except Exception as e:
+                      pass # this install operation routinely comes back as failed but install completes.
+                  
+                  #create Athena datasource
+                  datasource = 'athena'
+                  api_url = f"{url}/{datasource_api_path}"
+                  jsonData = {
+                      'authType': 'ec2_iam_role', 
+                      'defaultRegion': region, 
+                      'catalog': catalog, 
+                      'database': database, 
+                      'workgroup': workgroup
+                  }
+                  payload = {
+                      'name': f'{project_prefix}-{datasource}', 
+                      'type': 'grafana-athena-datasource', 
+                      'access': 'proxy', 
+                      'jsonData': jsonData
+                  }
+                  try:
+                      response = grafana_post_request('athena', 'grafana-athena-datasource', api_key, api_url, region, payload=payload)
+                  except Exception as e:
+                      reason = f"Failed to create datasource: {e}"
+                      print(reason)
+                      send_cfn_response(event, context, False, reason=reason)
+                  
+                  msg={"Message": "Done"}
+                  print(msg)
+                  send_cfn_response(event, context, True, data=msg)
+                  return {"Status": "SUCCESS", "Message": "Datasource created"}
+
+              if request_type == 'Delete':
+                  sa_id = get_workspace_service_account_id_for_project(workspace_id)
+                  deleted_tokens = delete_workspace_api_tokens_for_project(workspace_id, sa_id)
+                  api_key = create_workspace_api_key(workspace_id, f'{project_prefix}-api-key', TTL, sa_id)
+                  #delete datasources
+                  api_url = f'{url}/{datasource_api_path}'
+
+                  msg={"Message": "The service account and data sources will be deleted when CFN removes the workspace.  Do nothing here."}
+                  send_cfn_response(event, context, True, data=msg)
+              if request_type == 'Update':
+                  msg={"Message": "Update not supported in this version. Do nothing here."}
+                  send_cfn_response(event, context, True, data=msg)
+              return 
+      Runtime: python3.12
+      Timeout: 300
+      MemorySize: 128
+      Environment:
+        Variables:
+          WORKSPACE_ID: !Ref GrafanaWorkspace
+          CATALOG: !Ref catalog
+          DATABASE: !Ref database
+          WORKGROUP: !Ref AthenaWorkGroup
+      Tags:
+        - Key: "project"
+          Value: !Sub ${ResourcePrefix}
+
+  ProvisionGrafanaCustomResource:
+    Type: Custom::ProvisionGrafana
+    DependsOn: 
+      - ProvisionGrafanaLambdaFunction
+    Properties:
+      ServiceToken: !GetAtt ProvisionGrafanaLambdaFunction.Arn
+      WorkspaceId: !Ref GrafanaWorkspace
+      Catalog: !Ref catalog
+      Database: !Ref database
+      Workgroup: !Ref AthenaWorkGroup
+
+Outputs:
+  GrafanaWorkspaceID:
+    Description: "Grafana workspace ID"
+    Value: !Ref GrafanaWorkspace
+
+  GrafanaWorkspaceName:
+    Description: "Grafana workspace name"
+    Value: !GetAtt GrafanaWorkspace.Name
+  
+  GrafanaRoleArn:
+    Description: "Grafana role ARN"
+    Value: !Ref GrafanaWorkspaceRole
+  
+  AthenaWorkGroup:
+    Description: "Athena workgroup - utilized to group dashboard queries"
+    Value: !Ref 'AthenaWorkGroup'
+  
+  SNSNotificationsTopic:
+    Description: "SNS Notification Topic for Grafana"
+    Value: !Ref SNSNotificationsTopic
+
+  LambdaFunction:
+    Description: "Lambda Function ARN"
+    Value: !GetAtt ProvisionGrafanaLambdaFunction.Arn
+
+
