@@ -1,6 +1,20 @@
 # COAST - Cost Optimization and Saving Toolkit for Amazon Managed Grafana
 
-## About
+<p align="center">
+<img alt="GitHub commit activity" src="https://img.shields.io/github/commit-activity/m/aws-samples/coast-grafana-cost-intelligence-dashboards">
+
+</p>
+
+<p align="center">
+<a href="#introduction">Introduction</a> &nbsp;&bull;&nbsp;
+<a href="#installation">Installation</a> &nbsp;&bull;&nbsp;
+<a href="#documentation">Documentation</a> &nbsp;&bull;&nbsp;
+<a href="#dashboards">Dashboards</a> &nbsp;&bull;&nbsp;
+<a href="#issue">Issue?</a>
+</p>
+
+### Introduction
+---
 
 COAST is an open-source collection of Grafana dashboards that provide the capability to combine and observe AWS resource performance metrics with AWS cost and usage report (CUR) data. These dashboards assist customers in promoting financial accountability, optimizing costs, tracking usage goals, implementing governance best practices, and achieving operational excellence across all Well-Architected pillars. Utilizing Amazon Managed Grafana allows us to use an open-source platform that is very popular with the engineering community.
 
@@ -14,7 +28,8 @@ COAST is an open-source collection of Grafana dashboards that provide the capabi
 
 COAST is deployed via CloudFormation, which allows for the provisioning of [Amazon Managed Grafana](https://aws.amazon.com/grafana/) and supporting resources and policies. The dashboards themselves are json based files which may be imported on EC2-based Grafana deployments; however, the configuration of data sources, plugins and supporting roles and policies would be manual. 
 
-## Suggested Deployment and Configuration
+### Installation
+---
 
 ##### Step 1.
 
@@ -36,15 +51,17 @@ Deploy COAST within the central monitoring account (data collection account). Th
 
 [Link to CFN]()
 
+### Documentation
+---
 
-### Post Installation Steps
+###### Post Installation Steps
 - Grafana workspaces require an identity provider (IdP) to enable users to log in to the workspace.
 - We recommend AWS IAM Identity Center (the CloudFormation template creates the Grafana workspace with AWS IAM Identity Center enabled). 
 - Add at least one Admin user under the Authentication tab in the Grafana Workspace console.  For additional instructions, see the [Grafana User Guide](https://docs.aws.amazon.com/grafana/latest/userguide/AMG-manage-users-and-groups-AMG.html) to setup user access.
 - Login to the COAST Grafana workspace URL using the identity configured above.
 - Import the dashboards you require as per the instructions below
 
-  #### Importing Dashboards
+###### Importing Dashboards
 
 You may now import dashboards available in the grafana_dashboards folder of this repository. Select a dashboard to import. This will populate the dashboard name and UID.
 
@@ -53,26 +70,33 @@ You may now import dashboards available in the grafana_dashboards folder of this
 - Some dashboards will require additional configuration (i.e., CloudWatch Container Insights for the AmazonEKS dashboards). These installation steps will be specified in the README file within the dashboard folder
 
 After importing the dashboards, follow the dashboard's readme file to set your variables and understand the data visualizations.
-  
-  ##### Amazon EKS Split Cost Dashboard
 
-  description to be added...
-  
-  ##### Auto Scaling Dashboard
-
-  Designed to give a view into your Auto Scaling workloads by Auto Scaling group and tag/key values. This dashboard is based on the CUR Legacy format and requires a CUR Legacy data source as well as a CloudWatch data source. See the [Readme](https://github.com/aws-samples/coast-grafana-cost-intelligence-dashboards/tree/main/grafana_dashboards/auto_scaling) file for installation instructions.
-
-## Associated Cost
+######  Associated Cost
 COAST is an open-source solution and is completely free to use. However, you will be responsible for any AWS costs associated with underlying AWS services. Costs to consider:
 
 [Amazon Managed Grafana Pricing](https://aws.amazon.com/grafana/pricing/)
 
 [CloudWatch Grafana Plugin Cost](https://grafana.com/docs/grafana/latest/datasources/aws-cloudwatch/#control-pricing)
 
-## Support
-COAST is supported by Technical Account Managers and Solution Architects of AWS on a best-effort basis. However, users are encouraged to ask questions, open issues, contribute, and provide feedback.
 
-## Contributing
+### Dashboards
+---
+  
+###### Amazon EKS Split Cost Dashboard
+
+  description to be added...
+  
+###### Auto Scaling Dashboard
+
+  Designed to give a view into your Auto Scaling workloads by Auto Scaling group and tag/key values. This dashboard is based on the CUR Legacy format and requires a CUR Legacy data source as well as a CloudWatch data source. See the [Readme](https://github.com/aws-samples/coast-grafana-cost-intelligence-dashboards/tree/main/grafana_dashboards/auto_scaling) file for installation instructions.
+
+
+### Issues
+---
+COAST is supported by Technical Account Managers and Solution Architects of AWS on a best-effort basis. However, users are encouraged to open Github issues, ask questions, contribute, and provide feedback.
+
+### Contribution
+---
 The core team for COAST include the following, in alphabetical order:
 
 - Chris Strzelczyk
@@ -82,5 +106,6 @@ The core team for COAST include the following, in alphabetical order:
 
 However, we welcome the wider open-source community to this project. See [CONTRIBUTING](https://github.com/aws-samples/COAST/blob/main/CONTRIBUTING.md) for more information.
 
-## License
+### License
+---
 This library is licensed under the MIT-0 License. See the [LICENSE](https://github.com/aws-samples/COAST/blob/main/LICENSE) file.
