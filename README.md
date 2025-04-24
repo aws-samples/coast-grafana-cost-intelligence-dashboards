@@ -72,11 +72,17 @@ You may now import dashboards available in the grafana_dashboards folder of this
 After importing the dashboards, follow the dashboard's readme file to set your variables and understand the data visualizations.
 
 ######  Associated Cost
+
+> [!IMPORTANT]
+> Costs are associated with operating this dashboard.  Costs depend on usage and the size of your datasets, be sure to get a complete understanding of costs before deployment. 
+
 COAST is an open-source solution and is completely free to use. However, you will be responsible for any AWS costs associated with underlying AWS services. Costs to consider:
 
 [Amazon Managed Grafana Pricing](https://aws.amazon.com/grafana/pricing/)
 
 [CloudWatch Grafana Plugin Cost](https://grafana.com/docs/grafana/latest/datasources/aws-cloudwatch/#control-pricing)
+
+Each dashboard may have additional cost implications. Details are provided in the README file associated with each dashboard.
 
 
 ### Dashboards
