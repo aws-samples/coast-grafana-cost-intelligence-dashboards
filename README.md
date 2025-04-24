@@ -1,4 +1,7 @@
-# COAST - Cost Optimization and Saving Toolkit for Amazon Managed Grafana
+<p align="center">
+<h1 align="center">COAST</h2>
+<h5 align="center">Cost Dashboards for Engineers</h5>
+</p>
 
 <p align="center">
 <img alt="GitHub commit activity" src="https://img.shields.io/github/commit-activity/m/aws-samples/coast-grafana-cost-intelligence-dashboards">
