@@ -73,6 +73,7 @@ Resources:
       ManagedPolicyArns: 
         - 'arn:aws:iam::aws:policy/service-role/AmazonGrafanaAthenaAccess'
         - 'arn:aws:iam::aws:policy/service-role/AmazonGrafanaCloudWatchAccess'
+        - !Sub 'arn:aws:iam::${AWS::AccountId}:policy/cidDataExportsReadAccess'
       Policies:
         - PolicyName: AthenaQueryResultsBucketAccess
           PolicyDocument:
@@ -685,5 +686,7 @@ Outputs:
   LambdaFunction:
     Description: "Lambda Function ARN"
     Value: !GetAtt ProvisionGrafanaLambdaFunction.Arn
+
+
 
 
