@@ -47,9 +47,14 @@ You may now import dashboards available in the grafana_dashboards folder of this
 After importing the dashboards, follow the dashboard's readme file to set your variables and understand the data visualizations.
 
 ######  Associated Cost
+> [!IMPORTANT]
+> Costs are associated with operating this dashboard.  Costs depend on usage and the size of your datasets, be sure to get a complete understanding of costs before deployment. 
+
 CloudWatch Container Insights is a paid feature of CloudWatch.  Please see the pricing page for cost calculations.
 
 [CloudWatch Pricing](https://aws.amazon.com/cloudwatch/pricing/)
+
+Additional costs have been outlined in the [project README](../../README.md)
 
 ### License
 ---
