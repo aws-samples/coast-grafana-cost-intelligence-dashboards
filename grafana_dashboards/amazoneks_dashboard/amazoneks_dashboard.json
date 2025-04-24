@@ -843,7 +843,7 @@
             "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
           },
           "format": 1,
-          "rawSQL": "SELECT \n    product_instance_type,\n    COUNT(*) as instance_type_count\nFROM (\n    SELECT DISTINCT \n        line_item_resource_id, \n        product_instance_type,\n        line_item_usage_type \n    FROM cur2 \n    WHERE line_item_resource_id in (\n        SELECT DISTINCT(split_line_item_parent_resource_id) \n        FROM $CurTable\n        WHERE \n        $__timeFilter(line_item_usage_start_date) \n        AND line_item_operation LIKE 'EKSPod-EC2' \n        AND line_item_usage_type LIKE '%EKS-EC2-vCPU-Hours' \n        AND SPLIT_PART(line_item_resource_id, ':', 4) = '$Regions'\n        AND resource_tags['aws_eks_cluster_name'] = '$EKSCluster'\n        AND split_line_item_parent_resource_id LIKE '%i-%'\n    ) \n    AND line_item_usage_type LIKE '%Box%'\n) as subquery\nGROUP BY product_instance_type\nORDER BY instance_type_count DESC;\n",
+          "rawSQL": "SELECT \n    product_instance_type,\n    COUNT(*) as instance_type_count\nFROM (\n    SELECT DISTINCT \n        line_item_resource_id, \n        product_instance_type,\n        line_item_usage_type \n    FROM $CurTable \n    WHERE line_item_resource_id in (\n        SELECT DISTINCT(split_line_item_parent_resource_id) \n        FROM $CurTable\n        WHERE \n        $__timeFilter(line_item_usage_start_date) \n        AND line_item_operation LIKE 'EKSPod-EC2' \n        AND line_item_usage_type LIKE '%EKS-EC2-vCPU-Hours' \n        AND SPLIT_PART(line_item_resource_id, ':', 4) = '$Regions'\n        AND resource_tags['aws_eks_cluster_name'] = '$EKSCluster'\n        AND split_line_item_parent_resource_id LIKE '%i-%'\n    ) \n    AND line_item_usage_type LIKE '%Box%'\n) as subquery\nGROUP BY product_instance_type\nORDER BY instance_type_count DESC;\n",
           "refId": "A"
         }
       ],
@@ -927,7 +927,7 @@
             "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
           },
           "format": 1,
-          "rawSQL": "SELECT \nSPLIT_PART(line_item_resource_id, '/', 3) as namespace,\nSUM(split_line_item_split_cost) as cost\nFROM \n  cur2\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_product_code IN ('AmazonEKS')\n  AND line_item_line_item_type  IN ('DiscountedUsage', 'Usage', 'SavingsPlanCoveredUsage','SavingsPlanRecurringFee','SavingsPlanNegation','SavingsPlanUpfrontFee')\n  AND split_line_item_split_cost > 0\n  AND SPLIT_PART(line_item_resource_id, ':', 4) = '$Regions'\n  AND resource_tags['aws_eks_cluster_name'] = '$EKSCluster'\nGROUP BY \n1",
+          "rawSQL": "SELECT \nSPLIT_PART(line_item_resource_id, '/', 3) as namespace,\nSUM(split_line_item_split_cost) as cost\nFROM \n$CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_product_code IN ('AmazonEKS')\n  AND line_item_line_item_type  IN ('DiscountedUsage', 'Usage', 'SavingsPlanCoveredUsage','SavingsPlanRecurringFee','SavingsPlanNegation','SavingsPlanUpfrontFee')\n  AND split_line_item_split_cost > 0\n  AND SPLIT_PART(line_item_resource_id, ':', 4) = '$Regions'\n  AND resource_tags['aws_eks_cluster_name'] = '$EKSCluster'\nGROUP BY \n1",
           "refId": "A"
         }
       ],
@@ -1011,7 +1011,7 @@
             "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
           },
           "format": 1,
-          "rawSQL": "SELECT \nSPLIT_PART(line_item_resource_id, '/', 3) as namespace,\nSUM(split_line_item_unused_cost) as cost\nFROM \n  cur2\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_product_code IN ('AmazonEKS')\n  AND line_item_line_item_type  IN ('DiscountedUsage', 'Usage', 'SavingsPlanCoveredUsage','SavingsPlanRecurringFee','SavingsPlanNegation','SavingsPlanUpfrontFee')\n  AND split_line_item_unused_cost > 0\n  AND SPLIT_PART(line_item_resource_id, ':', 4) = '$Regions'\n  AND resource_tags['aws_eks_cluster_name'] = '$EKSCluster'\nGROUP BY \n1",
+          "rawSQL": "SELECT \nSPLIT_PART(line_item_resource_id, '/', 3) as namespace,\nSUM(split_line_item_unused_cost) as cost\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_product_code IN ('AmazonEKS')\n  AND line_item_line_item_type  IN ('DiscountedUsage', 'Usage', 'SavingsPlanCoveredUsage','SavingsPlanRecurringFee','SavingsPlanNegation','SavingsPlanUpfrontFee')\n  AND split_line_item_unused_cost > 0\n  AND SPLIT_PART(line_item_resource_id, ':', 4) = '$Regions'\n  AND resource_tags['aws_eks_cluster_name'] = '$EKSCluster'\nGROUP BY \n1",
           "refId": "A"
         }
       ],
@@ -1089,7 +1089,7 @@
             "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
           },
           "format": 1,
-          "rawSQL": "SELECT \nSUM(split_line_item_unused_cost) + SUM(split_line_item_split_cost) as cost\nFROM \n  cur2\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_product_code IN ('AmazonEKS', 'AmazonEC2')\n  AND line_item_line_item_type  IN ('DiscountedUsage', 'Usage', 'SavingsPlanCoveredUsage','SavingsPlanRecurringFee','SavingsPlanNegation','SavingsPlanUpfrontFee')\n  AND SPLIT_PART(line_item_resource_id, ':', 4) = '$Regions'\n  AND resource_tags['aws_eks_cluster_name'] = '$EKSCluster'\n",
+          "rawSQL": "SELECT \nSUM(split_line_item_unused_cost) + SUM(split_line_item_split_cost) as cost\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_product_code IN ('AmazonEKS', 'AmazonEC2')\n  AND line_item_line_item_type  IN ('DiscountedUsage', 'Usage', 'SavingsPlanCoveredUsage','SavingsPlanRecurringFee','SavingsPlanNegation','SavingsPlanUpfrontFee')\n  AND SPLIT_PART(line_item_resource_id, ':', 4) = '$Regions'\n  AND resource_tags['aws_eks_cluster_name'] = '$EKSCluster'\n",
           "refId": "A"
         }
       ],
@@ -1167,7 +1167,7 @@
             "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
           },
           "format": 1,
-          "rawSQL": "SELECT \nSUM(line_item_unblended_cost) as cost\nFROM \n  cur2\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_product_code = 'AmazonEKS'\n  AND line_item_usage_type LIKE '%AmazonEKS-Hours:perCluster'\n  AND product_region_code = '$Regions'\n  AND SPLIT_PART(line_item_resource_id, '/', 2) =  '$EKSCluster'\n",
+          "rawSQL": "SELECT \nSUM(line_item_unblended_cost) as cost\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_product_code = 'AmazonEKS'\n  AND line_item_usage_type LIKE '%AmazonEKS-Hours:perCluster'\n  AND product_region_code = '$Regions'\n  AND SPLIT_PART(line_item_resource_id, '/', 2) =  '$EKSCluster'\n",
           "refId": "A"
         }
       ],
@@ -2833,8 +2833,8 @@
       {
         "current": {
           "selected": false,
-          "text": "i-06009cb8a60504c6c",
-          "value": "i-06009cb8a60504c6c"
+          "text": "i-00000111112222a2b",
+          "value": "i-00000111112222a2b"
         },
         "description": "Input the Instance ID to populate performance and cost and usage data in panels",
         "hide": 0,
@@ -2844,7 +2844,7 @@
         "name": "InstanceId",
         "options": [],
         "query": "",
-        "queryValue": "i-0bd361f32fd4bbb32",
+        "queryValue": "i-00000111112222a2b",
         "skipUrlSync": false,
         "type": "custom"
       },
