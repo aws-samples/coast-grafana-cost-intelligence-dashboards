@@ -403,7 +403,7 @@
           },
           "format": 1,
           "hide": false,
-          "rawSQL": "SELECT\ndate_trunc('$CURGranularity', line_item_usage_start_date) as date,\nSUM(split_line_item_split_cost + split_line_item_unused_cost) as Cost\nFROM\n$CurTable\nWHERE\n$__timeFilter(line_item_usage_start_date) \nAND line_item_operation LIKE 'EKSPod-EC2' \nAND line_item_usage_type LIKE '%EKS-EC2-vCPU-Hours'\nAND SPLIT_PART(line_item_resource_id, ':', 4) = '$Regions'\nAND resource_tags['aws_eks_cluster_name'] = '$EKSCluster'\nGROUP BY\n1\n",
+          "rawSQL": "SELECT\ndate_trunc('$CURGranularity', line_item_usage_start_date) as date,\nSUM(split_line_item_split_cost + split_line_item_unused_cost) as Cost\nFROM\n$CurTable\nWHERE\n$__timeFilter(line_item_usage_start_date) \nAND line_item_operation LIKE 'EKSPod-EC2' \nAND line_item_usage_type LIKE '%EKS-EC2-vCPU-Hours'\nAND line_item_usage_account_id = '$LinkedAccounts'\nAND SPLIT_PART(line_item_resource_id, ':', 4) = '$Regions'\nAND resource_tags['aws_eks_cluster_name'] = '$EKSCluster'\nGROUP BY\n1\n",
           "refId": "Compute"
         }
       ],
@@ -580,7 +580,7 @@
           },
           "format": 1,
           "hide": false,
-          "rawSQL": "SELECT\ndate_trunc('$CURGranularity', line_item_usage_start_date) as date,\nSUM(split_line_item_split_cost + split_line_item_unused_cost) as Cost\nFROM\n$CurTable\nWHERE\n$__timeFilter(line_item_usage_start_date) \nAND line_item_operation LIKE 'EKSPod-EC2' \nAND line_item_usage_type LIKE '%EKS-EC2-GB-Hours'\nAND SPLIT_PART(line_item_resource_id, ':', 4) = '$Regions'\nAND resource_tags['aws_eks_cluster_name'] = '$EKSCluster'\nGROUP BY\n1\n",
+          "rawSQL": "SELECT\ndate_trunc('$CURGranularity', line_item_usage_start_date) as date,\nSUM(split_line_item_split_cost + split_line_item_unused_cost) as Cost\nFROM\n$CurTable\nWHERE\n$__timeFilter(line_item_usage_start_date) \nAND line_item_operation LIKE 'EKSPod-EC2' \nAND line_item_usage_type LIKE '%EKS-EC2-GB-Hours'\nAND line_item_usage_account_id = '$LinkedAccounts'\nAND SPLIT_PART(line_item_resource_id, ':', 4) = '$Regions'\nAND resource_tags['aws_eks_cluster_name'] = '$EKSCluster'\nGROUP BY\n1\n",
           "refId": "Total"
         }
       ],
@@ -757,7 +757,7 @@
           },
           "format": 1,
           "hide": false,
-          "rawSQL": "SELECT\ndate_trunc('$CURGranularity', line_item_usage_start_date) as date,\nSUM(split_line_item_public_on_demand_unused_cost) + SUM(split_line_item_public_on_demand_split_cost) as Cost\nFROM\n$CurTable\nWHERE\n$__timeFilter(line_item_usage_start_date) \nAND line_item_operation LIKE 'EKSPod-EC2' \nAND (line_item_usage_type LIKE '%EKS-EC2-GB-Hours' OR line_item_usage_type LIKE '%EKS-EC2-vCPU-Hours')\nAND SPLIT_PART(line_item_resource_id, ':', 4) = '$Regions'\nAND resource_tags['aws_eks_cluster_name'] = '$EKSCluster'\nGROUP BY\n1\n",
+          "rawSQL": "SELECT\ndate_trunc('$CURGranularity', line_item_usage_start_date) as date,\nSUM(split_line_item_public_on_demand_unused_cost) + SUM(split_line_item_public_on_demand_split_cost) as Cost\nFROM\n$CurTable\nWHERE\n$__timeFilter(line_item_usage_start_date) \nAND line_item_operation LIKE 'EKSPod-EC2' \nAND (line_item_usage_type LIKE '%EKS-EC2-GB-Hours' OR line_item_usage_type LIKE '%EKS-EC2-vCPU-Hours')\nAND line_item_usage_account_id = '$LinkedAccounts'\nAND SPLIT_PART(line_item_resource_id, ':', 4) = '$Regions'\nAND resource_tags['aws_eks_cluster_name'] = '$EKSCluster'\nGROUP BY\n1\n",
           "refId": "Total"
         }
       ],
@@ -843,7 +843,7 @@
             "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
           },
           "format": 1,
-          "rawSQL": "SELECT \n    product_instance_type,\n    COUNT(*) as instance_type_count\nFROM (\n    SELECT DISTINCT \n        line_item_resource_id, \n        product_instance_type,\n        line_item_usage_type \n    FROM $CurTable \n    WHERE line_item_resource_id in (\n        SELECT DISTINCT(split_line_item_parent_resource_id) \n        FROM $CurTable\n        WHERE \n        $__timeFilter(line_item_usage_start_date) \n        AND line_item_operation LIKE 'EKSPod-EC2' \n        AND line_item_usage_type LIKE '%EKS-EC2-vCPU-Hours' \n        AND SPLIT_PART(line_item_resource_id, ':', 4) = '$Regions'\n        AND resource_tags['aws_eks_cluster_name'] = '$EKSCluster'\n        AND split_line_item_parent_resource_id LIKE '%i-%'\n    ) \n    AND line_item_usage_type LIKE '%Box%'\n) as subquery\nGROUP BY product_instance_type\nORDER BY instance_type_count DESC;\n",
+          "rawSQL": "SELECT \n    product_instance_type,\n    COUNT(*) as instance_type_count\nFROM (\n    SELECT DISTINCT \n        line_item_resource_id, \n        product_instance_type,\n        line_item_usage_type \n    FROM $CurTable \n    WHERE line_item_resource_id in (\n        SELECT DISTINCT(split_line_item_parent_resource_id) \n        FROM $CurTable\n        WHERE \n        $__timeFilter(line_item_usage_start_date) \n        AND line_item_operation LIKE 'EKSPod-EC2' \n        AND line_item_usage_type LIKE '%EKS-EC2-vCPU-Hours' \n        AND split_line_item_parent_resource_id LIKE '%i-%'\n        AND line_item_usage_account_id = '$LinkedAccounts'\n        AND SPLIT_PART(line_item_resource_id, ':', 4) = '$Regions'\n        AND resource_tags['aws_eks_cluster_name'] = '$EKSCluster'\n    ) \n    AND line_item_usage_type LIKE '%Box%'\n) as subquery\nGROUP BY product_instance_type\nORDER BY instance_type_count DESC;\n",
           "refId": "A"
         }
       ],
@@ -927,7 +927,7 @@
             "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
           },
           "format": 1,
-          "rawSQL": "SELECT \nSPLIT_PART(line_item_resource_id, '/', 3) as namespace,\nSUM(split_line_item_split_cost) as cost\nFROM \n$CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_product_code IN ('AmazonEKS')\n  AND line_item_line_item_type  IN ('DiscountedUsage', 'Usage', 'SavingsPlanCoveredUsage','SavingsPlanRecurringFee','SavingsPlanNegation','SavingsPlanUpfrontFee')\n  AND split_line_item_split_cost > 0\n  AND SPLIT_PART(line_item_resource_id, ':', 4) = '$Regions'\n  AND resource_tags['aws_eks_cluster_name'] = '$EKSCluster'\nGROUP BY \n1",
+          "rawSQL": "SELECT \nSPLIT_PART(line_item_resource_id, '/', 3) as namespace,\nSUM(split_line_item_split_cost) as cost\nFROM \n$CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_product_code IN ('AmazonEKS')\n  AND line_item_line_item_type  IN ('DiscountedUsage', 'Usage', 'SavingsPlanCoveredUsage','SavingsPlanRecurringFee','SavingsPlanNegation','SavingsPlanUpfrontFee')\n  AND split_line_item_split_cost > 0.0\n  AND line_item_usage_account_id = '$LinkedAccounts'\n  AND SPLIT_PART(line_item_resource_id, ':', 4) = '$Regions'\n  AND resource_tags['aws_eks_cluster_name'] = '$EKSCluster'\nGROUP BY \n1",
           "refId": "A"
         }
       ],
@@ -1011,7 +1011,7 @@
             "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
           },
           "format": 1,
-          "rawSQL": "SELECT \nSPLIT_PART(line_item_resource_id, '/', 3) as namespace,\nSUM(split_line_item_unused_cost) as cost\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_product_code IN ('AmazonEKS')\n  AND line_item_line_item_type  IN ('DiscountedUsage', 'Usage', 'SavingsPlanCoveredUsage','SavingsPlanRecurringFee','SavingsPlanNegation','SavingsPlanUpfrontFee')\n  AND split_line_item_unused_cost > 0\n  AND SPLIT_PART(line_item_resource_id, ':', 4) = '$Regions'\n  AND resource_tags['aws_eks_cluster_name'] = '$EKSCluster'\nGROUP BY \n1",
+          "rawSQL": "SELECT \nSPLIT_PART(line_item_resource_id, '/', 3) as namespace,\nSUM(split_line_item_unused_cost) as cost\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_product_code IN ('AmazonEKS')\n  AND line_item_line_item_type  IN ('DiscountedUsage', 'Usage', 'SavingsPlanCoveredUsage','SavingsPlanRecurringFee','SavingsPlanNegation','SavingsPlanUpfrontFee')\n  AND split_line_item_unused_cost > 0.0\n  AND line_item_usage_account_id = '$LinkedAccounts'\n  AND SPLIT_PART(line_item_resource_id, ':', 4) = '$Regions'\n  AND resource_tags['aws_eks_cluster_name'] = '$EKSCluster'\nGROUP BY \n1",
           "refId": "A"
         }
       ],
@@ -1089,7 +1089,7 @@
             "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
           },
           "format": 1,
-          "rawSQL": "SELECT \nSUM(split_line_item_unused_cost) + SUM(split_line_item_split_cost) as cost\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_product_code IN ('AmazonEKS', 'AmazonEC2')\n  AND line_item_line_item_type  IN ('DiscountedUsage', 'Usage', 'SavingsPlanCoveredUsage','SavingsPlanRecurringFee','SavingsPlanNegation','SavingsPlanUpfrontFee')\n  AND SPLIT_PART(line_item_resource_id, ':', 4) = '$Regions'\n  AND resource_tags['aws_eks_cluster_name'] = '$EKSCluster'\n",
+          "rawSQL": "SELECT \nSUM(split_line_item_unused_cost) + SUM(split_line_item_split_cost) as cost\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_product_code IN ('AmazonEKS', 'AmazonEC2')\n  AND line_item_line_item_type  IN ('DiscountedUsage', 'Usage', 'SavingsPlanCoveredUsage','SavingsPlanRecurringFee','SavingsPlanNegation','SavingsPlanUpfrontFee')\n  AND line_item_usage_account_id = '$LinkedAccounts'\n  AND SPLIT_PART(line_item_resource_id, ':', 4) = '$Regions'\n  AND resource_tags['aws_eks_cluster_name'] = '$EKSCluster'\n",
           "refId": "A"
         }
       ],
@@ -1167,7 +1167,7 @@
             "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
           },
           "format": 1,
-          "rawSQL": "SELECT \nSUM(line_item_unblended_cost) as cost\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_product_code = 'AmazonEKS'\n  AND line_item_usage_type LIKE '%AmazonEKS-Hours:perCluster'\n  AND product_region_code = '$Regions'\n  AND SPLIT_PART(line_item_resource_id, '/', 2) =  '$EKSCluster'\n",
+          "rawSQL": "SELECT \nSUM(line_item_unblended_cost) as cost\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_product_code = 'AmazonEKS'\n  AND line_item_usage_type LIKE '%AmazonEKS-Hours:perCluster'\n  AND line_item_usage_account_id = '$LinkedAccounts'\n  AND product_region_code = '$Regions'\n  AND SPLIT_PART(line_item_resource_id, '/', 2) =  '$EKSCluster'\n",
           "refId": "A"
         }
       ],
@@ -1251,7 +1251,7 @@
             "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
           },
           "format": 1,
-          "rawSQL": "SELECT\nSUM(CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN savings_plan_savings_plan_effective_cost\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN reservation_effective_cost\n    WHEN line_item_line_item_type = 'Usage' THEN line_item_unblended_cost\n    ELSE 0 \n  END) AS Cost\nFROM\n$CurTable\nWHERE\n$__timeFilter(line_item_usage_start_date) \nAND line_item_usage_type like '%DataTransfer%'\nAND product_from_region_code = '$Regions'\nAND resource_tags['aws_eks_cluster_name'] = '$EKSCluster';",
+          "rawSQL": "SELECT\nSUM(CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN savings_plan_savings_plan_effective_cost\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN reservation_effective_cost\n    WHEN line_item_line_item_type = 'Usage' THEN line_item_unblended_cost\n    ELSE 0 \n  END) AS Cost\nFROM\n$CurTable\nWHERE\n$__timeFilter(line_item_usage_start_date) \nAND line_item_usage_type like '%DataTransfer%'\nAND line_item_usage_account_id = '$LinkedAccounts'\nAND product_from_region_code = '$Regions'\nAND resource_tags['aws_eks_cluster_name'] = '$EKSCluster';",
           "refId": "A"
         }
       ],
@@ -1428,7 +1428,7 @@
           },
           "format": 1,
           "hide": false,
-          "rawSQL": "SELECT\ndate_trunc('$CURGranularity', line_item_usage_start_date) as date,\nSUM(line_item_unblended_cost) as Cost\nFROM\n$CurTable\nWHERE\n$__timeFilter(line_item_usage_start_date) \nAND line_item_usage_type like '%DataTransfer%'\nAND product_from_region_code = '$Regions'\nAND resource_tags['aws_eks_cluster_name'] = '$EKSCluster'\nGROUP BY\n1\n",
+          "rawSQL": "SELECT\ndate_trunc('$CURGranularity', line_item_usage_start_date) as date,\nSUM(line_item_unblended_cost) as Cost\nFROM\n$CurTable\nWHERE\n$__timeFilter(line_item_usage_start_date) \nAND line_item_usage_type like '%DataTransfer%'\nAND line_item_usage_account_id = '$LinkedAccounts'\nAND product_from_region_code = '$Regions'\nAND resource_tags['aws_eks_cluster_name'] = '$EKSCluster'\nGROUP BY\n1\n",
           "refId": "DataTransfer"
         }
       ],
@@ -1436,7 +1436,7 @@
       "type": "timeseries"
     },
     {
-      "collapsed": false,
+      "collapsed": true,
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -1444,88 +1444,89 @@
         "y": 37
       },
       "id": 131,
-      "panels": [],
-      "title": "Top 500 Instances by Cost",
-      "type": "row"
-    },
-    {
-      "datasource": {
-        "type": "grafana-athena-datasource",
-        "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
-      },
-      "description": "Instances observed in the $EKSCluster for period: ",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "align": "auto",
-            "cellOptions": {
-              "type": "auto"
-            },
-            "inspect": false
-          },
-          "decimals": 1,
-          "fieldMinMax": false,
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "currencyUSD"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 17,
-        "w": 24,
-        "x": 0,
-        "y": 38
-      },
-      "id": 132,
-      "options": {
-        "cellHeight": "sm",
-        "footer": {
-          "countRows": false,
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
-        },
-        "showHeader": true
-      },
-      "pluginVersion": "10.4.1",
-      "targets": [
+      "panels": [
         {
-          "connectionArgs": {
-            "catalog": "__default",
-            "database": "__default",
-            "region": "__default",
-            "resultReuseEnabled": false,
-            "resultReuseMaxAgeInMinutes": 60
-          },
           "datasource": {
             "type": "grafana-athena-datasource",
             "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
           },
-          "format": 1,
-          "rawSQL": "SELECT \n  line_item_resource_id as Instance,\n  product_instance_type,\n  CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN 'Savings Plan'\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN 'Reserved Instance'\n    WHEN line_item_line_item_type = 'Usage' THEN 'On Demand'\n    ELSE 'On Demand'\n  END AS \"Purchase Type\",\n  SUM(CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN savings_plan_savings_plan_effective_cost\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN reservation_effective_cost\n    WHEN line_item_line_item_type = 'Usage' THEN line_item_unblended_cost\n    ELSE 0 \n  END) AS \"Amortized Cost\",\n  SUM(line_item_unblended_cost) as \"Unblended Cost\"\nFROM \n  $CurTable\nWHERE\n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_usage_account_id IN ('$LinkedAccounts')\n  AND product_region_code in ('$Regions')\n  AND line_item_product_code = 'AmazonEC2'\n  AND line_item_operation = 'RunInstances'\n  AND line_item_resource_id LIKE 'i-%'\n  AND line_item_usage_type LIKE ('%Box%')\n  AND product['vcpu'] <> ''\n  AND resource_tags['user_eks_cluster_name'] = '$EKSCluster'\nGROUP BY\n1,2,3\nORDER BY \n\"Amortized Cost\" DESC\nLIMIT 500;\n",
-          "refId": "A"
+          "description": "Instances observed in the $EKSCluster for period: ",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false
+              },
+              "decimals": 1,
+              "fieldMinMax": false,
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "currencyUSD"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 17,
+            "w": 24,
+            "x": 0,
+            "y": 38
+          },
+          "id": 132,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "showHeader": true
+          },
+          "pluginVersion": "10.4.1",
+          "targets": [
+            {
+              "connectionArgs": {
+                "catalog": "__default",
+                "database": "__default",
+                "region": "__default",
+                "resultReuseEnabled": false,
+                "resultReuseMaxAgeInMinutes": 60
+              },
+              "datasource": {
+                "type": "grafana-athena-datasource",
+                "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
+              },
+              "format": 1,
+              "rawSQL": "SELECT \n  line_item_resource_id as Instance,\n  product_instance_type,\n  CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN 'Savings Plan'\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN 'Reserved Instance'\n    WHEN line_item_line_item_type = 'Usage' THEN 'On Demand'\n    ELSE 'On Demand'\n  END AS \"Purchase Type\",\n  SUM(CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN savings_plan_savings_plan_effective_cost\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN reservation_effective_cost\n    WHEN line_item_line_item_type = 'Usage' THEN line_item_unblended_cost\n    ELSE 0 \n  END) AS \"Amortized Cost\",\n  SUM(line_item_unblended_cost) as \"Unblended Cost\"\nFROM \n  $CurTable\nWHERE\n  $__timeFilter(line_item_usage_start_date)\n  \n  AND line_item_product_code = 'AmazonEC2'\n  AND line_item_operation = 'RunInstances'\n  AND line_item_resource_id LIKE 'i-%'\n  AND line_item_usage_type LIKE ('%Box%')\n  AND product['vcpu'] <> ''\n  AND product_region_code = '$Regions'\n  AND line_item_usage_account_id = '$LinkedAccounts'\n  AND resource_tags['user_eks_cluster_name'] = '$EKSCluster'\nGROUP BY\n1,2,3\nORDER BY \n\"Amortized Cost\" DESC\nLIMIT 500;\n",
+              "refId": "A"
+            }
+          ],
+          "title": "EKS Cluster 500 Instances by Cost",
+          "type": "table"
         }
       ],
-      "title": "EKS Cluster 500 Instances by Cost",
-      "type": "table"
+      "title": "Top 500 Instances by Cost",
+      "type": "row"
     },
     {
       "collapsed": false,
@@ -1533,7 +1534,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 55
+        "y": 38
       },
       "id": 122,
       "panels": [],
@@ -1550,7 +1551,7 @@
         "h": 4,
         "w": 24,
         "x": 0,
-        "y": 56
+        "y": 39
       },
       "id": 127,
       "options": {
@@ -1596,7 +1597,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -1636,7 +1638,7 @@
         "h": 4,
         "w": 8,
         "x": 0,
-        "y": 60
+        "y": 43
       },
       "id": 124,
       "options": {
@@ -1670,7 +1672,7 @@
             "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
           },
           "format": 1,
-          "rawSQL": "SELECT \n  SUM(CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN savings_plan_savings_plan_effective_cost\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN reservation_effective_cost\n    WHEN line_item_line_item_type = 'Usage' THEN line_item_unblended_cost\n    ELSE 0 \n  END) AS \"Total Instance Amortized Cost\"\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_resource_id = '$InstanceId'\n  AND line_item_product_code = 'AmazonEC2'\n  AND line_item_operation = 'RunInstances'\n  AND line_item_line_item_type NOT IN ('Tax')\nORDER BY \n  \"Total Instance Amortized Cost\" DESC;",
+          "rawSQL": "SELECT \n  SUM(CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN savings_plan_savings_plan_effective_cost\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN reservation_effective_cost\n    WHEN line_item_line_item_type = 'Usage' THEN line_item_unblended_cost\n    ELSE 0 \n  END) AS \"Total Instance Amortized Cost\"\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_resource_id = '$InstanceId'\n  AND line_item_product_code = 'AmazonEC2'\n  AND line_item_operation = 'RunInstances'\n  AND line_item_usage_type LIKE '%BoxUsage%'\n  AND line_item_line_item_type NOT IN ('Tax')\nORDER BY \n  \"Total Instance Amortized Cost\" DESC;",
           "refId": "A"
         }
       ],
@@ -1714,7 +1716,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               }
             ]
           },
@@ -1726,7 +1729,7 @@
         "h": 4,
         "w": 4,
         "x": 8,
-        "y": 60
+        "y": 43
       },
       "id": 134,
       "options": {
@@ -1760,7 +1763,7 @@
             "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
           },
           "format": 1,
-          "rawSQL": "SELECT \n  DATE_FORMAT(line_item_usage_start_date, '%M %d, %Y ') as \"Last Seen Timestamp\"\nFROM \n  $CurTable\nWHERE \n  line_item_usage_start_date >= date_add('month', -12, current_date)\n  AND line_item_resource_id = '$InstanceId'\n  AND line_item_product_code = 'AmazonEC2'\n  AND line_item_operation = 'RunInstances'\n  AND line_item_usage_type LIKE '%Box%'\n  AND line_item_line_item_type NOT IN ('Tax') \nORDER BY \"Last Seen Timestamp\" DESC\nLIMIT 1",
+          "rawSQL": "SELECT \n  DATE_FORMAT(line_item_usage_start_date, '%M %d, %Y ') as \"Last Seen Timestamp\"\nFROM \n  $CurTable\nWHERE \n  -- line_item_usage_start_date >= date_add('month', -12, current_date)\n  line_item_resource_id = '$InstanceId'\n  AND line_item_product_code = 'AmazonEC2'\n  AND line_item_operation = 'RunInstances'\n  AND line_item_usage_type LIKE '%Box%'\n  AND line_item_line_item_type NOT IN ('Tax') \nORDER BY \"Last Seen Timestamp\" DESC\nLIMIT 1",
           "refId": "A"
         }
       ],
@@ -1829,7 +1832,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -1877,7 +1881,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 60
+        "y": 43
       },
       "id": 123,
       "options": {
@@ -1909,7 +1913,7 @@
           },
           "format": 1,
           "hide": false,
-          "rawSQL": "SELECT \n  date_trunc('$CURGranularity', line_item_usage_start_date) as date,\n  SUM(CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN savings_plan_savings_plan_effective_cost\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN reservation_effective_cost\n    WHEN line_item_line_item_type = 'Usage' THEN line_item_unblended_cost\n    ELSE 0 \n  END) AS \"Total Instance Amortized Cost\"\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_resource_id = '$InstanceId'\n  AND line_item_product_code = 'AmazonEC2'\n  AND line_item_operation = 'RunInstances'\n  AND line_item_usage_type LIKE ('%Box%')\n  AND line_item_line_item_type NOT IN ('Tax')\nGROUP BY\n1\nORDER BY \n  \"Total Instance Amortized Cost\" DESC;",
+          "rawSQL": "SELECT \n  date_trunc('$CURGranularity', line_item_usage_start_date) as date,\n  SUM(CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN savings_plan_savings_plan_effective_cost\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN reservation_effective_cost\n    WHEN line_item_line_item_type = 'Usage' THEN line_item_unblended_cost\n    ELSE 0 \n  END) AS \"Total Instance Amortized Cost\"\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_resource_id = '$InstanceId'\n  AND line_item_product_code = 'AmazonEC2'\n  AND line_item_operation = 'RunInstances'\n  AND line_item_usage_type LIKE '%BoxUsage%'\n  AND line_item_line_item_type NOT IN ('Tax')\nGROUP BY\n1\nORDER BY \n  \"Total Instance Amortized Cost\" DESC;",
           "refId": "cur_data"
         },
         {
@@ -1968,7 +1972,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -1997,7 +2002,7 @@
         "h": 4,
         "w": 4,
         "x": 0,
-        "y": 64
+        "y": 47
       },
       "id": 125,
       "options": {
@@ -2032,7 +2037,7 @@
             "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
           },
           "format": 1,
-          "rawSQL": "SELECT \n  line_item_unblended_rate as \"public_rate\",\n  product_instance_type\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_resource_id = '$InstanceId'\n  AND line_item_product_code = 'AmazonEC2'\n  AND line_item_operation = 'RunInstances'\n  AND line_item_usage_type LIKE ('%Box%')\n  AND line_item_line_item_type NOT IN ('Tax')\nORDER BY \n  line_item_usage_start_date DESC\nLIMIT 1",
+          "rawSQL": "SELECT \n  line_item_unblended_rate as \"public_rate\",\n  product_instance_type\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_resource_id = '$InstanceId'\n  AND line_item_product_code = 'AmazonEC2'\n  AND line_item_operation = 'RunInstances'\n  AND line_item_usage_type LIKE '%BoxUsage%'\n  AND line_item_line_item_type NOT IN ('Tax')\nORDER BY \n  line_item_usage_start_date DESC\nLIMIT 1;",
           "refId": "A"
         }
       ],
@@ -2076,7 +2081,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               }
             ]
           },
@@ -2088,7 +2094,7 @@
         "h": 4,
         "w": 4,
         "x": 4,
-        "y": 64
+        "y": 47
       },
       "id": 133,
       "options": {
@@ -2122,7 +2128,7 @@
             "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
           },
           "format": 1,
-          "rawSQL": "SELECT \n  DISTINCT\n  CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN 'Savings Plan'\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN 'Reserved Instance'\n    WHEN line_item_line_item_type = 'Usage' THEN 'On Demand'\n    ELSE 'Other'\n  END\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_resource_id = '$InstanceId'\n  AND line_item_product_code = 'AmazonEC2'\n  AND line_item_operation = 'RunInstances'\n  AND line_item_usage_type LIKE '%Box%'\n  AND line_item_line_item_type NOT IN ('Tax') ",
+          "rawSQL": "SELECT \n  DISTINCT\n  CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN 'Savings Plan'\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN 'Reserved Instance'\n    WHEN line_item_line_item_type = 'Usage' THEN 'On Demand'\n    ELSE 'Other'\n  END\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_resource_id = '$InstanceId'\n  AND line_item_product_code = 'AmazonEC2'\n  AND line_item_operation = 'RunInstances'\n  AND line_item_usage_type LIKE '%BoxUsage%'\n  AND line_item_line_item_type NOT IN ('Tax') ",
           "refId": "A"
         }
       ],
@@ -2150,7 +2156,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "orange"
+                "color": "orange",
+                "value": null
               }
             ]
           },
@@ -2182,7 +2189,7 @@
         "h": 4,
         "w": 4,
         "x": 8,
-        "y": 64
+        "y": 47
       },
       "id": 126,
       "options": {
@@ -2204,6 +2211,7 @@
       "pluginVersion": "10.4.1",
       "targets": [
         {
+          "accountId": "all",
           "datasource": {
             "type": "cloudwatch",
             "uid": "${DS_GRAFANA-DASHBOARDS-CLOUDWATCH}"
@@ -2293,7 +2301,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -2341,7 +2350,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 68
+        "y": 51
       },
       "id": 129,
       "options": {
@@ -2395,7 +2404,7 @@
           },
           "format": 1,
           "hide": false,
-          "rawSQL": "SELECT \n  date_trunc('$CURGranularity', line_item_usage_start_date) as date,\n  SUM(line_item_unblended_cost) as datatransfer_cost\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_resource_id = '$InstanceId'\n  AND line_item_product_code = 'AmazonEC2'\n  AND line_item_operation = 'RunInstances'\n  AND line_item_usage_type LIKE ('%Bytes')\n  AND line_item_line_item_type NOT IN ('Tax')\nGROUP BY\n1",
+          "rawSQL": "SELECT \n  date_trunc('$CURGranularity', line_item_usage_start_date) as date,\n  SUM(line_item_unblended_cost) as datatransfer_cost\nFROM \n  $CurTable\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_resource_id = '$InstanceId'\n  AND line_item_product_code = 'AmazonEC2'\n  AND line_item_operation = 'RunInstances'\n  AND line_item_usage_type LIKE '%Bytes'\n  AND line_item_line_item_type NOT IN ('Tax')\nGROUP BY\n1",
           "refId": "cur_data"
         }
       ],
@@ -2464,7 +2473,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -2480,7 +2490,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 68
+        "y": 51
       },
       "id": 128,
       "options": {
@@ -2535,7 +2545,7 @@
         "current": {
           "selected": false,
           "text": "grafana-dashboards-athena",
-          "value": "bejuoktb5g268f"
+          "value": "bejuu8c6ikb9cf"
         },
         "hide": 2,
         "includeAll": false,
@@ -2553,7 +2563,7 @@
         "current": {
           "selected": false,
           "text": "grafana-dashboards-cloudwatch",
-          "value": "dejuokjdfiby8c"
+          "value": "bejuu85wjcw00d"
         },
         "hide": 2,
         "includeAll": false,
@@ -2833,8 +2843,8 @@
       {
         "current": {
           "selected": false,
-          "text": "i-00000111112222a2b",
-          "value": "i-00000111112222a2b"
+          "text": "i-000222333444555",
+          "value": "i-000222333444555"
         },
         "description": "Input the Instance ID to populate performance and cost and usage data in panels",
         "hide": 0,
@@ -2844,7 +2854,7 @@
         "name": "InstanceId",
         "options": [],
         "query": "",
-        "queryValue": "i-00000111112222a2b",
+        "queryValue": "i-000222333444555",
         "skipUrlSync": false,
         "type": "custom"
       },
@@ -2959,6 +2969,6 @@
   "timezone": "utc",
   "title": "AmazonEKS Split Cost Dashboard",
   "uid": "edwb2yrv7rwg0b",
-  "version": 7,
+  "version": 20,
   "weekStart": ""
 }
