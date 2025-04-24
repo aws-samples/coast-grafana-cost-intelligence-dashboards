@@ -33,7 +33,7 @@ COAST is deployed via CloudFormation, which allows for the provisioning of [Amaz
 
 ##### Step 1.
 
-We recommend deploying dashboards in a dedicated monitoring account to aggregate Cost and Usage Report (CUR) data and CloudWatch cross-account metrics. This separation from the payer management account enhances security by consolidating observability functions in a tightly controlled environment. To deploy the COAST Grafana dashboard infrastructure, we recommend utilizing the data collection engine of the Cloud Intelligence Dashboards which has built an architecture and deployment for central CUR aggregation utilized for the CID Dashboards. 
+We recommend deploying dashboards in a dedicated monitoring account to aggregate Cost and Usage Report (CUR) data and CloudWatch cross-account metrics. This separation from the payer management account enhances security by consolidating observability functions in a tightly controlled environment. To deploy the COAST Grafana dashboard infrastructure, we recommend utilizing the data collection engine of the **Cloud Intelligence Dashboards** which has built an architecture and deployment for central CUR aggregation utilized for the CID Dashboards. 
 
 The CID Data Collection Lab provides CloudFormation templates to copy CUR 2.0 data from your Management Account to a dedicated one. You can use it to aggregate data from multiple Management (Payer) Accounts or multiple Linked Accounts.
 
@@ -41,7 +41,7 @@ The CID Data Collection Lab provides CloudFormation templates to copy CUR 2.0 da
 
 ##### Step 2.
 
-Most dashboards will have a requirement of CloudWatch metrics to visualize performance metrics. As a best practice, we recommend the configuration of CloudWatch cross-account observability into the central monitoring account (data collection account).
+Most dashboards will have a requirement of CloudWatch metrics to visualize performance metrics. As a best practice, we recommend the configuration of **CloudWatch cross-account observability** into the central monitoring account (data collection account).
 
 [Configure CloudWatch cross-account observability](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-Unified-Cross-Account.html)
 
@@ -49,7 +49,7 @@ Most dashboards will have a requirement of CloudWatch metrics to visualize perfo
 
 Deploy COAST within the central monitoring account (data collection account). The COAST CloudFormation template builds the Amazon Grafana Workspace, installs the Athena plugin, and configures the Athena plugin with the deployed CUR and CloudWatch.
 
-[Link to CFN]()
+[Provision COAST](cloudformation/provision-coast-services.yaml)
 
 ### Documentation
 ---
@@ -84,7 +84,9 @@ COAST is an open-source solution and is completely free to use. However, you wil
   
 ###### Amazon EKS Split Cost Dashboard
 
-  description to be added...
+  The AmazonEKS Split Cost Allocation Dashboard combines the split cost allocation data available within the cost and usage (CUR) report and marries the data with CloudWatch performance metrics to graph performance metrics over cost.  The Amazon EKS Split Cost Allocation Dashboard is crucial for engineers as it provides a unified view of cost and performance metrics, enabling them to make informed decisions, optimize resource usage, and ensure efficient cloud operations.
+
+  [AmazonEKS Split Cost Dashboard](grafana_dashboards/amazoneks_dashboard/amazoneks_dashboard.json)
   
 ###### Auto Scaling Dashboard
 
