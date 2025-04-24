@@ -10,23 +10,30 @@ COAST is an open-source collection of Grafana dashboards that provide the capabi
 - COAST dashboards may integrate with your existing Grafana deployments.
 - COAST dashboards support filtering on multiple dimensions, including account and region.
 
+###### Amazon Managed Grafana
+
+COAST is deployed via CloudFormation, which allows for the provisioning of [Amazon Managed Grafana](https://aws.amazon.com/grafana/) and supporting resources and policies. The dashboards themselves are json based files which may be imported on EC2-based Grafana deployments; however, the configuration of data sources, plugins and supporting roles and policies would be manual. 
+
 ## Suggested Deployment and Configuration
 
 ##### Step 1.
 
-As a best practice, we recommend the deployment of the dashboards in a central management account (data collection account) which has the capability to aggregate Cost and Usage data (CUR) in addition to cross-account metrics to observe cost and performance with Grafana. To deploy the dashboards, we recommend utilizing the data collection engine of the Cloud Intelligence Dashboards which has built an architecture and deployment for central CUR aggregation utilized for the [CID Dashboards](https://catalog.workshops.aws/awscid/en-US).  
+We recommend deploying dashboards in a dedicated monitoring account to aggregate Cost and Usage Report (CUR) data and CloudWatch cross-account metrics. This separation from the payer management account enhances security by consolidating observability functions in a tightly controlled environment. To deploy the COAST Grafana dashboard infrastructure, we recommend utilizing the data collection engine of the Cloud Intelligence Dashboards which has built an architecture and deployment for central CUR aggregation utilized for the CID Dashboards. 
 
-COAST is deployed via CloudFormation, which allows for the provisioning of the necessary [AWS Data Exports](https://aws.amazon.com/aws-cost-management/aws-data-exports/) and [Amazon Managed Grafana](https://aws.amazon.com/grafana/) resources. The dashboards may be imported on EC2-based Grafana deployments; however, the configuration of data sources and plugins would be manual. 
+The CID Data Collection Lab provides CloudFormation templates to copy CUR 2.0 data from your Management Account to a dedicated one. You can use it to aggregate data from multiple Management (Payer) Accounts or multiple Linked Accounts.
+
+<a href="https://catalog.workshops.aws/awscid/en-US/dashboards/foundational/cudos-cid-kpi/deploy" style="display: inline-block; padding: 10px 20px; background-color: #0066cc; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">Deploy CID Data Collection</a>
+
 
 ##### Step 2.
 
-Most dashboards will have a requirement of CloudWatch metrics to visualize performance metrics. As a best practice, we recommend the configuration of CloudWatch cross-account observability into the central management account (data collection account).
+Most dashboards will have a requirement of CloudWatch metrics to visualize performance metrics. As a best practice, we recommend the configuration of CloudWatch cross-account observability into the central monitoring account (data collection account).
 
 [Configure CloudWatch cross-account observability](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-Unified-Cross-Account.html)
 
 ##### Step 3. 
 
-Deploy COAST within the central management account (data collection account). The COAST CloudFormation template builds the Amazon Grafana Workspace, installs the Athena plugin, and configures the Athena plugin with the deployed CUR and CloudWatch.
+Deploy COAST within the central monitoring account (data collection account). The COAST CloudFormation template builds the Amazon Grafana Workspace, installs the Athena plugin, and configures the Athena plugin with the deployed CUR and CloudWatch.
 
 [Link to CFN]()
 
