@@ -86,7 +86,7 @@ COAST is an open-source solution and is completely free to use. However, you wil
 
   The AmazonEKS Split Cost Allocation Dashboard combines the split cost allocation data available within the cost and usage (CUR) report and marries the data with CloudWatch performance metrics to graph performance metrics over cost.  The Amazon EKS Split Cost Allocation Dashboard is crucial for engineers as it provides a unified view of cost and performance metrics, enabling them to make informed decisions, optimize resource usage, and ensure efficient cloud operations.
 
-  [AmazonEKS Split Cost Dashboard](grafana_dashboards/amazoneks_dashboard/amazoneks_dashboard.json)
+  [AmazonEKS Split Cost Dashboard](grafana_dashboards/amazoneks_dashboard/README.md)
   
 ###### Auto Scaling Dashboard
 
