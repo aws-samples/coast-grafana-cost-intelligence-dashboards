@@ -37,7 +37,7 @@ We recommend deploying dashboards in a dedicated monitoring account to aggregate
 
 The CID Data Collection Lab provides CloudFormation templates to copy CUR 2.0 data from your Management Account to a dedicated one. You can use it to aggregate data from multiple Management (Payer) Accounts or multiple Linked Accounts.
 
-[<kbd> <br> Deploy CID Data Collection <br> </kbd>][https://catalog.workshops.aws/awscid/en-US/dashboards/foundational/cudos-cid-kpi/deploy]
+[Deploy CID Data Collection](https://catalog.workshops.aws/awscid/en-US/dashboards/foundational/cudos-cid-kpi/deploy)
 
 ##### Step 2.
 
