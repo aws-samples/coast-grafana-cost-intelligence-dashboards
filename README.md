@@ -44,9 +44,13 @@ The CID Data Collection Lab provides CloudFormation templates to copy CUR 2.0 da
 
 ##### Step 2.
 
-Most dashboards will have a requirement of CloudWatch metrics to visualize performance metrics. As a best practice, we recommend the configuration of **CloudWatch cross-account observability** into the central monitoring account (data collection account).
+Most dashboards will have a requirement of CloudWatch metrics to visualize performance metrics. As a best practice, we recommend the configuration of **CloudWatch cross-account observability** into the central monitoring account (data collection account).  Each account (source account) that you wish to collect CloudWatch metrics from will need to configure each region to send metrics to the monitoring account (data collection account).
 
-[Configure CloudWatch cross-account observability](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-Unified-Cross-Account.html)
+In the data collection account, in the CloudWatch settings, Select *Configure* under *Monitoring account configuration*.  Select *Logs* and *Metrics* as the data selection, and fill in a comma seperated list of accounts under *List source accounts* (note there is a process for collecting metrics from the entire Organization, see the CloudWatch instructions in the link above).  You will need to copy the *Monitoring accounts sink ARN* of the data collection account in each region.  This information is available under the *Configuration details* of the CloudWatch *Monitoring account configuration*.
+
+In each source account in each region, in the CloudWatch settions, select *Source account configuration*.  Select *Logs* and *Metrics* as the data.  Paste in the *Sink ARN* from the data collection account (from the same region).  Then select *Account name* as the identifier.  
+
+For more in-depth instructions, see [Configure CloudWatch cross-account observability](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-Unified-Cross-Account.html). 
 
 ##### Step 3. 
 
@@ -91,6 +95,14 @@ Each dashboard may have additional cost implications. Details are provided in th
 ### Dashboards
 ---
   
+###### Amazon EC2 Dashboard
+
+  The EC2 Instance Dashboard displays EC2 instance compute cost, usage and performance metric information filtered by account and region. One section also filters by tag. The filter panel will refresh based on selections of previous filters. For example, when an account is selected the Region menu will only show regions, instances and tags observed in that account for the time period selected.
+
+  [AmazonEKS Split Cost Dashboard](grafana_dashboards/amazonec2_dashboard/README.md)
+
+<img src="images/amazonec2_dashboard_instance_explorer.png">
+
 ###### Amazon EKS Split Cost Dashboard
 
   The AmazonEKS Split Cost Allocation Dashboard combines the split cost allocation data available within the cost and usage (CUR) report and marries the data with CloudWatch performance metrics to graph performance metrics over cost.  The Amazon EKS Split Cost Allocation Dashboard is crucial for engineers as it provides a unified view of cost and performance metrics, enabling them to make informed decisions, optimize resource usage, and ensure efficient cloud operations.
