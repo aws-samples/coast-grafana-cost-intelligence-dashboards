@@ -101,7 +101,7 @@ Each dashboard may have additional cost implications. Details are provided in th
 
   [AmazonEC2 Dashboard](grafana_dashboards/amazonec2_dashboard/README.md)
 
-<img src="images/amazonec2_dashboard_instance_explorer.png">
+<img src="images/amazonec2_dashboard.png">
 <br>
 <img src="images/amazonec2_dashboard_instance_explorer.png">
 
