@@ -99,7 +99,7 @@ Each dashboard may have additional cost implications. Details are provided in th
 
   The EC2 Instance Dashboard displays EC2 instance compute cost, usage and performance metric information filtered by account and region. One section also filters by tag. The filter panel will refresh based on selections of previous filters. For example, when an account is selected the Region menu will only show regions, instances and tags observed in that account for the time period selected.
 
-  [AmazonEKS Split Cost Dashboard](grafana_dashboards/amazonec2_dashboard/README.md)
+  [AmazonEC2 Dashboard](grafana_dashboards/amazonec2_dashboard/README.md)
 
 <img src="images/amazonec2_dashboard_instance_explorer.png">
 
