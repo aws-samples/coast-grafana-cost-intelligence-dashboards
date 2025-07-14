@@ -20,8 +20,7 @@ The Athena Dashboard displays Amazon Athena cost, usage and performance metric i
 
 CloudWatch metrics are available in certain graphs where a common key can be defined between CUR data and CloudWatch data (i.e. workgroup name). For metrics to work correctly, you need the CloudWatch data source enabled. For CloudWatch cross-account/cross-region to work correctly you need to have CloudWatch (cross-account) metrics configured. 
 
-<img src="../../images/amazonec2_dashboard.png"><br>
-<img src="../../images/amazonec2_dashboard_instance_explorer.png">
+<img src="../../images/amazonathena_dashboard.png"><br>
 
 
 ### Installation
