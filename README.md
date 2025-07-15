@@ -1,20 +1,17 @@
-<p align="center">
-<h1 align="center">COAST</h2>
-<h5 align="center">Cost Dashboards for Engineers</h5>
-</p>
+<div align="center">
 
-<p align="center">
+<h1 align="center">COAST</h1>
+<h5 align="center">Cost Dashboards for Engineers</h5>
+
 <img alt="GitHub commit activity" src="https://img.shields.io/github/commit-activity/m/aws-samples/coast-grafana-cost-intelligence-dashboards">
 
-</p>
-
-<p align="center">
 <a href="#introduction">Introduction</a> &nbsp;&bull;&nbsp;
 <a href="#installation">Installation</a> &nbsp;&bull;&nbsp;
 <a href="#documentation">Documentation</a> &nbsp;&bull;&nbsp;
 <a href="#dashboards">Dashboards</a> &nbsp;&bull;&nbsp;
 <a href="#issue">Issue?</a>
-</p>
+
+</div>
 
 ### Introduction
 ---
@@ -46,9 +43,9 @@ The CID Data Collection Lab provides CloudFormation templates to copy CUR 2.0 da
 
 Most dashboards will have a requirement of CloudWatch metrics to visualize performance metrics. As a best practice, we recommend the configuration of **CloudWatch cross-account observability** into the central monitoring account (data collection account).  Each account (source account) that you wish to collect CloudWatch metrics from will need to configure each region to send metrics to the monitoring account (data collection account).
 
-In the data collection account, in the CloudWatch settings, Select *Configure* under *Monitoring account configuration*.  Select *Logs* and *Metrics* as the data selection, and fill in a comma seperated list of accounts under *List source accounts* (note there is a process for collecting metrics from the entire Organization, see the CloudWatch instructions in the link above).  You will need to copy the *Monitoring accounts sink ARN* of the data collection account in each region.  This information is available under the *Configuration details* of the CloudWatch *Monitoring account configuration*.
+In the data collection account, in the CloudWatch settings, Select *Configure* under *Monitoring account configuration*.  Select *Logs* and *Metrics* as the data selection, and fill in a comma separated list of accounts under *List source accounts* (note there is a process for collecting metrics from the entire Organization, see the CloudWatch instructions in the link above).  You will need to copy the *Monitoring accounts sink ARN* of the data collection account in each region.  This information is available under the *Configuration details* of the CloudWatch *Monitoring account configuration*.
 
-In each source account in each region, in the CloudWatch settions, select *Source account configuration*.  Select *Logs* and *Metrics* as the data.  Paste in the *Sink ARN* from the data collection account (from the same region).  Then select *Account name* as the identifier.  
+In each source account in each region, in the CloudWatch settings, select *Source account configuration*.  Select *Logs* and *Metrics* as the data.  Paste in the *Sink ARN* from the data collection account (from the same region).  Then select *Account name* as the identifier.  
 
 For more in-depth instructions, see [Configure CloudWatch cross-account observability](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-Unified-Cross-Account.html). 
 
@@ -91,15 +88,14 @@ COAST is an open-source solution and is completely free to use. However, you wil
 
 Each dashboard may have additional cost implications. Details are provided in the README file associated with each dashboard.
 
-
 ### Dashboards
 ---
-  
+
 ###### Amazon EC2 Dashboard
 
-  The EC2 Instance Dashboard displays EC2 instance compute cost, usage and performance metric information filtered by account and region. One section also filters by tag. The filter panel will refresh based on selections of previous filters. For example, when an account is selected the Region menu will only show regions, instances and tags observed in that account for the time period selected.
+The EC2 Instance Dashboard displays EC2 instance compute cost, usage and performance metric information filtered by account and region. One section also filters by tag. The filter panel will refresh based on selections of previous filters. For example, when an account is selected the Region menu will only show regions, instances and tags observed in that account for the time period selected.
 
-  [AmazonEC2 Dashboard](grafana_dashboards/ec2_dashboard/README.md)
+[AmazonEC2 Dashboard](grafana_dashboards/ec2_dashboard/README.md)
 
 <img src="images/amazonec2_dashboard.png">
 <br>
@@ -107,31 +103,32 @@ Each dashboard may have additional cost implications. Details are provided in th
 
 ##### Athena Dashboard
 
-The Athena Dashboard displays Amazon Athena cost over CloudWatch metrics such as ProcessedBytes or TotalExecutionTime.  Usage and performance metric information is filtered by account and region. One section also filters by tag. The filter panel will refresh based on selections of previous filters. For example, when an account is selected the Region menu will only show regions, workgroups and tags observed in that account for the time period selected.
+The Athena Dashboard displays Amazon Athena cost over CloudWatch metrics such as ProcessedBytes or TotalExecutionTime. Usage and performance metric information is filtered by account and region. One section also filters by tag. The filter panel will refresh based on selections of previous filters. For example, when an account is selected the Region menu will only show regions, workgroups and tags observed in that account for the time period selected.
 
 <img src="images/amazonathena_dashboard.png">
 
 ###### Auto Scaling Dashboard
 
- The Auto scaling dashboard provides comprehensive visibility into your Auto scaling workloads, organized by Auto scaling group name and tag/key values. Built on the CUR 2 format, it requires both CUR 2 and CloudWatch data sources. The dashboard consolidates autoscaling workload resources, enabling you to monitor both cost and performance metrics in a single unified view.
+The Auto scaling dashboard provides comprehensive visibility into your Auto scaling workloads, organized by Auto scaling group name and tag/key values. Built on the CUR 2 format, it requires both CUR 2 and CloudWatch data sources. The dashboard consolidates autoscaling workload resources, enabling you to monitor both cost and performance metrics in a single unified view.
 
- <img src="images/autoscaling_dashboard.png">
+<img src="images/autoscaling_dashboard.png">
 
 ###### Amazon EKS Split Cost Dashboard
 
-  The AmazonEKS Split Cost Allocation Dashboard combines the split cost allocation data available within the cost and usage (CUR) report and marries the data with CloudWatch performance metrics to graph performance metrics over cost.  The Amazon EKS Split Cost Allocation Dashboard is crucial for engineers as it provides a unified view of cost and performance metrics, enabling them to make informed decisions, optimize resource usage, and ensure efficient cloud operations.
+The AmazonEKS Split Cost Allocation Dashboard combines the split cost allocation data available within the cost and usage (CUR) report and marries the data with CloudWatch performance metrics to graph performance metrics over cost. The Amazon EKS Split Cost Allocation Dashboard is crucial for engineers as it provides a unified view of cost and performance metrics, enabling them to make informed decisions, optimize resource usage, and ensure efficient cloud operations.
 
-  [AmazonEKS Split Cost Dashboard](grafana_dashboards/amazoneks_dashboard/README.md)
+[AmazonEKS Split Cost Dashboard](grafana_dashboards/amazoneks_dashboard/README.md)
 
-  <img src="images/amazoneks_dashboard.jpg">
-
+<img src="images/amazoneks_dashboard.jpg">
 
 ### Issues
 ---
+
 COAST is supported by Technical Account Managers and Solution Architects of AWS on a best-effort basis. However, users are encouraged to open Github issues, ask questions, contribute, and provide feedback.
 
 ### Contribution
 ---
+
 The core team for COAST include the following, in alphabetical order:
 
 - Chris Strzelczyk
@@ -143,4 +140,5 @@ However, we welcome the wider open-source community to this project. See [CONTRI
 
 ### License
 ---
+
 This library is licensed under the MIT-0 License. See the [LICENSE](https://github.com/aws-samples/COAST/blob/main/LICENSE) file.
