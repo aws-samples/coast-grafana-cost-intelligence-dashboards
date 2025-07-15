@@ -105,6 +105,18 @@ Each dashboard may have additional cost implications. Details are provided in th
 <br>
 <img src="images/amazonec2_dashboard_instance_explorer.png">
 
+##### Athena Dashboard
+
+The Athena Dashboard displays Amazon Athena cost over CloudWatch metrics such as ProcessedBytes or TotalExecutionTime.  Usage and performance metric information is filtered by account and region. One section also filters by tag. The filter panel will refresh based on selections of previous filters. For example, when an account is selected the Region menu will only show regions, workgroups and tags observed in that account for the time period selected.
+
+<img src="images/amazonathena_dashboard.png">
+
+###### Auto Scaling Dashboard
+
+ The Auto scaling dashboard provides comprehensive visibility into your Auto scaling workloads, organized by Auto scaling group name and tag/key values. Built on the CUR 2 format, it requires both CUR 2 and CloudWatch data sources. The dashboard consolidates autoscaling workload resources, enabling you to monitor both cost and performance metrics in a single unified view.
+
+ <img src="images/autoscaling_dashboard.png">
+
 ###### Amazon EKS Split Cost Dashboard
 
   The AmazonEKS Split Cost Allocation Dashboard combines the split cost allocation data available within the cost and usage (CUR) report and marries the data with CloudWatch performance metrics to graph performance metrics over cost.  The Amazon EKS Split Cost Allocation Dashboard is crucial for engineers as it provides a unified view of cost and performance metrics, enabling them to make informed decisions, optimize resource usage, and ensure efficient cloud operations.
@@ -112,10 +124,6 @@ Each dashboard may have additional cost implications. Details are provided in th
   [AmazonEKS Split Cost Dashboard](grafana_dashboards/amazoneks_dashboard/README.md)
 
   <img src="images/amazoneks_dashboard.jpg">
-  
-###### Auto Scaling Dashboard
-
-  Designed to give a view into your Auto Scaling workloads by Auto Scaling group and tag/key values. This dashboard is based on the CUR Legacy format and requires a CUR Legacy data source as well as a CloudWatch data source. See the [Readme](https://github.com/aws-samples/coast-grafana-cost-intelligence-dashboards/tree/main/grafana_dashboards/auto_scaling) file for installation instructions.
 
 
 ### Issues
