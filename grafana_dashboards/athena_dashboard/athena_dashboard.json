@@ -250,7 +250,7 @@
           },
           "format": 1,
           "hide": false,
-          "rawSQL": "SELECT \nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date) as line_item_usage_start_date,\nSPLIT_PART(SPLIT_PART(line_item_resource_id, ':',  6), '/', 2) as workgroup,\nSUM(line_item_unblended_cost) as unblended_cost\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonAthena'\nAND line_item_line_item_type in ('Usage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nGROUP BY\nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date),\nSPLIT_PART(SPLIT_PART(line_item_resource_id, ':',  6), '/', 2)\nORDER BY\nline_item_usage_start_date DESC\n",
+          "rawSQL": "SELECT \nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date) as line_item_usage_start_date,\nSUM(line_item_unblended_cost) as unblended_cost\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonAthena'\nAND line_item_line_item_type in ('Usage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nGROUP BY\nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date)\nORDER BY\nline_item_usage_start_date DESC\n",
           "refId": "CUR"
         }
       ],
@@ -348,7 +348,7 @@
           "refId": "CUR"
         }
       ],
-      "title": "Athena Cost for ${AccountId} in ${Region} - ${__from:date:iso} - ${__to:date:iso}",
+      "title": "Athena Total Cost for ${AccountId} in ${Region} - ${__from:date:iso} - ${__to:date:iso}",
       "transparent": true,
       "type": "stat"
     },
@@ -673,7 +673,32 @@
           },
           "unit": "currencyUSD"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "__systemRef": "hideSeriesFrom",
+            "matcher": {
+              "id": "byNames",
+              "options": {
+                "mode": "exclude",
+                "names": [
+                  "Workgroup"
+                ],
+                "prefix": "All except:",
+                "readOnly": true
+              }
+            },
+            "properties": [
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": true
+                }
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 8,
@@ -1040,39 +1065,27 @@
       "type": "timeseries"
     },
     {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 35
-      },
-      "id": 33,
-      "panels": [],
-      "title": "Tag Explorer",
-      "type": "row"
-    },
-    {
       "datasource": {
         "type": "datasource",
         "uid": "-- Mixed --"
       },
-      "description": "Athena cost -  Tag: (${TagKey}, ${TagValue})",
+      "description": "Athena Cost from CUR for Workgroup: ${Workgroup}. \nCloudWatch DPUAllocated capacity reservation allocated per reservation.  \nDPUConsumed capacity reservation per workgroup measures the number of bytes that Athena scanned per DML query in the capacity reservation.  ",
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "continuous-GrYlRd"
+            "fixedColor": "dark-purple",
+            "mode": "shades"
           },
           "custom": {
             "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
+            "axisLabel": "DPU",
+            "axisPlacement": "right",
             "barAlignment": 0,
             "drawStyle": "line",
-            "fillOpacity": 20,
-            "gradientMode": "scheme",
+            "fillOpacity": 0,
+            "gradientMode": "none",
             "hideFrom": {
               "legend": false,
               "tooltip": false,
@@ -1080,7 +1093,7 @@
             },
             "insertNulls": false,
             "lineInterpolation": "smooth",
-            "lineWidth": 3,
+            "lineWidth": 1,
             "pointSize": 5,
             "scaleDistribution": {
               "type": "linear"
@@ -1108,30 +1121,129 @@
                 "value": 80
               }
             ]
-          }
+          },
+          "unit": "none"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "CUR"
+            },
+            "properties": [
+              {
+                "id": "custom.axisLabel",
+                "value": "Cost"
+              },
+              {
+                "id": "custom.axisPlacement",
+                "value": "left"
+              },
+              {
+                "id": "unit",
+                "value": "currencyUSD"
+              },
+              {
+                "id": "displayName",
+                "value": "Cost"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "continuous-GrYlRd"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 3
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 20
+              },
+              {
+                "id": "custom.lineInterpolation",
+                "value": "smooth"
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green",
+                      "value": null
+                    },
+                    {
+                      "color": "red",
+                      "value": 80
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "custom.gradientMode",
+                "value": "scheme"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "CWAllocated"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-yellow",
+                  "mode": "shades"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "CWConsumed"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-green",
+                  "mode": "shades"
+                }
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 36
+        "y": 35
       },
-      "id": 34,
+      "id": 36,
       "options": {
         "legend": {
           "calcs": [],
-          "displayMode": "hidden",
-          "placement": "right",
-          "showLegend": false
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
         },
         "tooltip": {
-          "mode": "single",
+          "mode": "multi",
           "sort": "none"
         }
       },
-      "pluginVersion": "10.4.1",
       "targets": [
         {
           "connectionArgs": {
@@ -1147,107 +1259,271 @@
           },
           "format": 1,
           "hide": false,
-          "rawSQL": "SELECT \nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date) as line_item_usage_start_date,\nSPLIT_PART(SPLIT_PART(line_item_resource_id, ':',  6), '/', 2) as workgroup,\nSUM(line_item_unblended_cost) as unblended_cost\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonAthena'\nAND line_item_line_item_type in ('Usage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nAND resource_tags['${TagKey}'] = '${TagValue}'\nGROUP BY\nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date),\nSPLIT_PART(SPLIT_PART(line_item_resource_id, ':',  6), '/', 2)\nORDER BY\nline_item_usage_start_date DESC\n",
+          "rawSQL": "SELECT \nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date) as line_item_usage_start_date,\nSPLIT_PART(SPLIT_PART(line_item_resource_id, ':',  6), '/', 2) as workgroup,\nSUM(line_item_unblended_cost) as unblended_cost\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonAthena'\nAND line_item_line_item_type in ('Usage')\nAND line_item_usage_type LIKE '%ReservedCapacityInDPUHours'\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\n-- AND SPLIT_PART(SPLIT_PART(line_item_resource_id, ':',  6), '/', 2) = '${Workgroup}'\nGROUP BY\nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date),\nSPLIT_PART(SPLIT_PART(line_item_resource_id, ':',  6), '/', 2)\nORDER BY\nline_item_usage_start_date DESC\n",
           "refId": "CUR"
-        }
-      ],
-      "title": "Athena Cost for ${AccountId} in ${Region} -  Tag: (${TagKey}, ${TagValue})",
-      "transformations": [
+        },
         {
-          "id": "groupBy",
-          "options": {
-            "fields": {
-              "line_item_usage_start_date": {
-                "aggregations": [],
-                "operation": "groupby"
-              },
-              "unblended_cost": {
-                "aggregations": [],
-                "operation": "groupby"
-              },
-              "workgroup": {
-                "aggregations": [],
-                "operation": "groupby"
-              }
-            }
-          }
+          "accountId": "all",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "${DS_GRAFANA-DASHBOARDS-CLOUDWATCH}"
+          },
+          "dimensions": {},
+          "expression": "REMOVE_EMPTY(SEARCH('{\"AWS/Athena\",\"Capacity Reservation\"} \"DPUAllocated\" :aws.AccountId=\"${AccountId}\"', 'Average', ${CWGranularity}))",
+          "hide": false,
+          "id": "",
+          "label": "",
+          "logGroups": [],
+          "matchExact": true,
+          "metricEditorMode": 1,
+          "metricName": "",
+          "metricQueryType": 0,
+          "namespace": "",
+          "period": "",
+          "queryMode": "Metrics",
+          "refId": "CWAllocated",
+          "region": "$Region",
+          "sqlExpression": "",
+          "statistic": "Average"
+        },
+        {
+          "accountId": "all",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "${DS_GRAFANA-DASHBOARDS-CLOUDWATCH}"
+          },
+          "dimensions": {},
+          "expression": "REMOVE_EMPTY(SEARCH('{\"AWS/Athena\",\"WorkGroup\",\"Capacity Reservation\"} \"DPUConsumed\" WorkGroup=\"${Workgroup}\" :aws.AccountId=\"${AccountId}\"', 'Average', ${CWGranularity}))",
+          "hide": false,
+          "id": "",
+          "label": "",
+          "logGroups": [],
+          "matchExact": true,
+          "metricEditorMode": 1,
+          "metricName": "",
+          "metricQueryType": 0,
+          "namespace": "",
+          "period": "",
+          "queryMode": "Metrics",
+          "refId": "CWConsumed",
+          "region": "$Region",
+          "sqlExpression": "",
+          "statistic": "Average"
         }
       ],
-      "transparent": true,
+      "title": "Athena Total Capacity Reservation Cost over Capacity Reservation Metrics for ${AccountId} in ${Region}",
       "type": "timeseries"
     },
     {
-      "datasource": {
-        "type": "datasource",
-        "uid": "-- Mixed --"
-      },
-      "description": "Athena cost -  Tag: (${TagKey}, ${TagValue}) -  ${__from:date:iso} - ${__to:date:iso}",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "displayName": "Unblended Cost",
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          },
-          "unit": "currencyUSD"
-        },
-        "overrides": []
-      },
+      "collapsed": true,
       "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 36
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 43
       },
-      "id": 35,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showPercentChange": false,
-        "textMode": "auto",
-        "wideLayout": true
-      },
-      "pluginVersion": "10.4.1",
-      "targets": [
+      "id": 33,
+      "panels": [
         {
-          "connectionArgs": {
-            "catalog": "__default",
-            "database": "__default",
-            "region": "__default",
-            "resultReuseEnabled": false,
-            "resultReuseMaxAgeInMinutes": 60
-          },
           "datasource": {
-            "type": "grafana-athena-datasource",
-            "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
+            "type": "datasource",
+            "uid": "-- Mixed --"
           },
-          "format": 1,
-          "hide": false,
-          "rawSQL": "SELECT \nSUM(line_item_unblended_cost) AS cost\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonAthena'\nAND line_item_line_item_type in ('Usage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nAND resource_tags['${TagKey}'] = '${TagValue}';\n\n",
-          "refId": "CUR"
+          "description": "Athena cost -  Tag: (${TagKey}, ${TagValue})",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "continuous-GrYlRd"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 20,
+                "gradientMode": "scheme",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "smooth",
+                "lineWidth": 3,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 44
+          },
+          "id": 34,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "hidden",
+              "placement": "right",
+              "showLegend": false
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "10.4.1",
+          "targets": [
+            {
+              "connectionArgs": {
+                "catalog": "__default",
+                "database": "__default",
+                "region": "__default",
+                "resultReuseEnabled": false,
+                "resultReuseMaxAgeInMinutes": 60
+              },
+              "datasource": {
+                "type": "grafana-athena-datasource",
+                "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
+              },
+              "format": 1,
+              "hide": false,
+              "rawSQL": "SELECT \nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date) as line_item_usage_start_date,\nSPLIT_PART(SPLIT_PART(line_item_resource_id, ':',  6), '/', 2) as workgroup,\nSUM(line_item_unblended_cost) as unblended_cost\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonAthena'\nAND line_item_line_item_type in ('Usage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nAND resource_tags['${TagKey}'] = '${TagValue}'\nGROUP BY\nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date),\nSPLIT_PART(SPLIT_PART(line_item_resource_id, ':',  6), '/', 2)\nORDER BY\nline_item_usage_start_date DESC\n",
+              "refId": "CUR"
+            }
+          ],
+          "title": "Athena Cost for ${AccountId} in ${Region} -  Tag: (${TagKey}, ${TagValue})",
+          "transformations": [
+            {
+              "id": "groupBy",
+              "options": {
+                "fields": {
+                  "line_item_usage_start_date": {
+                    "aggregations": [],
+                    "operation": "groupby"
+                  },
+                  "unblended_cost": {
+                    "aggregations": [],
+                    "operation": "groupby"
+                  },
+                  "workgroup": {
+                    "aggregations": [],
+                    "operation": "groupby"
+                  }
+                }
+              }
+            }
+          ],
+          "transparent": true,
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "datasource",
+            "uid": "-- Mixed --"
+          },
+          "description": "Athena cost -  Tag: (${TagKey}, ${TagValue}) -  ${__from:date:iso} - ${__to:date:iso}",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "displayName": "Unblended Cost",
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "currencyUSD"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 44
+          },
+          "id": 35,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "10.4.1",
+          "targets": [
+            {
+              "connectionArgs": {
+                "catalog": "__default",
+                "database": "__default",
+                "region": "__default",
+                "resultReuseEnabled": false,
+                "resultReuseMaxAgeInMinutes": 60
+              },
+              "datasource": {
+                "type": "grafana-athena-datasource",
+                "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
+              },
+              "format": 1,
+              "hide": false,
+              "rawSQL": "SELECT \nSUM(line_item_unblended_cost) AS cost\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonAthena'\nAND line_item_line_item_type in ('Usage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nAND resource_tags['${TagKey}'] = '${TagValue}';\n\n",
+              "refId": "CUR"
+            }
+          ],
+          "title": "Athena Cost for ${AccountId} in ${Region} -  Tag: (${TagKey}, ${TagValue}) ",
+          "transparent": true,
+          "type": "stat"
         }
       ],
-      "title": "Athena Cost for ${AccountId} in ${Region} -  Tag: (${TagKey}, ${TagValue}) ",
-      "transparent": true,
-      "type": "stat"
+      "title": "Tag Explorer",
+      "type": "row"
     }
   ],
   "refresh": "",
@@ -1434,7 +1710,7 @@
       },
       {
         "current": {
-          "selected": false,
+          "selected": true,
           "text": "day",
           "value": "day"
         },
@@ -1579,7 +1855,7 @@
     ]
   },
   "time": {
-    "from": "now-30d",
+    "from": "now-7d",
     "to": "now-1440m"
   },
   "timepicker": {
@@ -1589,6 +1865,6 @@
   "timezone": "browser",
   "title": "Athena Dashboard",
   "uid": "eermzld59o2kgc",
-  "version": 51,
+  "version": 64,
   "weekStart": ""
 }
