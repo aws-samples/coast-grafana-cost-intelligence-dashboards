@@ -112,7 +112,7 @@
       "type": "text"
     },
     {
-      "collapsed": false,
+      "collapsed": true,
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -120,1320 +120,1312 @@
         "y": 10
       },
       "id": 15,
-      "panels": [],
+      "panels": [
+        {
+          "datasource": {
+            "type": "datasource",
+            "uid": "-- Mixed --"
+          },
+          "description": "Amortized cost for  EC2 Compute ",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "fixedColor": "dark-green",
+                "mode": "shades",
+                "seriesBy": "max"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "series",
+                "axisLabel": "Amortized Cost",
+                "axisPlacement": "left",
+                "axisSoftMin": 5,
+                "axisWidth": 75,
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 25,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "smooth",
+                "lineStyle": {
+                  "dash": [
+                    0,
+                    10
+                  ],
+                  "fill": "dot"
+                },
+                "lineWidth": 1,
+                "pointSize": 2,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "displayName": "Amortized Cost",
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  }
+                ]
+              },
+              "unit": "currencyUSD"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "unit_cost"
+                },
+                "properties": [
+                  {
+                    "id": "displayName",
+                    "value": "unit_cost"
+                  },
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "purple",
+                      "mode": "shades"
+                    }
+                  },
+                  {
+                    "id": "custom.lineStyle"
+                  },
+                  {
+                    "id": "custom.lineInterpolation",
+                    "value": "smooth"
+                  },
+                  {
+                    "id": "custom.fillOpacity",
+                    "value": 0
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "count_instances"
+                },
+                "properties": [
+                  {
+                    "id": "displayName",
+                    "value": "instance_count"
+                  },
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "blue",
+                      "mode": "shades"
+                    }
+                  },
+                  {
+                    "id": "unit",
+                    "value": "none"
+                  },
+                  {
+                    "id": "custom.axisPlacement",
+                    "value": "right"
+                  },
+                  {
+                    "id": "custom.axisLabel",
+                    "value": "Instance Count"
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 11
+          },
+          "id": 11,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "connectionArgs": {
+                "catalog": "__default",
+                "database": "__default",
+                "region": "__default",
+                "resultReuseEnabled": false,
+                "resultReuseMaxAgeInMinutes": 60
+              },
+              "datasource": {
+                "type": "grafana-athena-datasource",
+                "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
+              },
+              "format": 1,
+              "hide": false,
+              "rawSQL": "SELECT \nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date) as line_item_usage_start_date,\nCOUNT(DISTINCT(line_item_resource_id)) as count_instances,\nSUM(CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN savings_plan_savings_plan_effective_cost\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN reservation_effective_cost\n    WHEN line_item_line_item_type = 'Usage' THEN line_item_unblended_cost\n    ELSE 0 \n  END) AS amortized_cost\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2' \nAND line_item_operation LIKE '%RunInstances%' \nAND line_item_usage_type NOT LIKE '%DataXfer%' \nAND product_servicecode <> 'AWSDataTransfer' \nAND line_item_resource_id NOT LIKE 'arn:%:capacity-reservation/%'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nGROUP BY\nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date)\nORDER BY\nline_item_usage_start_date DESC\n",
+              "refId": "CUR"
+            }
+          ],
+          "title": "EC2 Compute Cost for ${AccountId} in ${Region}",
+          "transformations": [
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "unit_cost",
+                "binary": {
+                  "left": "amortized_cost",
+                  "operator": "/",
+                  "right": "count_instances"
+                },
+                "mode": "binary",
+                "reduce": {
+                  "reducer": "sum"
+                },
+                "replaceFields": false
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "count_instances": false
+                },
+                "includeByName": {},
+                "indexByName": {},
+                "renameByName": {}
+              }
+            }
+          ],
+          "transparent": true,
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "datasource",
+            "uid": "-- Mixed --"
+          },
+          "description": "Amortized cost includes EC2 Compute: ${__from:date:iso} - ${__to:date:iso}",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "displayName": "Amortized Cost",
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  }
+                ]
+              },
+              "unit": "currencyUSD"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 11
+          },
+          "id": 12,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "10.4.1",
+          "targets": [
+            {
+              "connectionArgs": {
+                "catalog": "__default",
+                "database": "__default",
+                "region": "__default",
+                "resultReuseEnabled": false,
+                "resultReuseMaxAgeInMinutes": 60
+              },
+              "datasource": {
+                "type": "grafana-athena-datasource",
+                "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
+              },
+              "format": 1,
+              "hide": false,
+              "rawSQL": "SELECT \nSUM(CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN savings_plan_savings_plan_effective_cost\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN reservation_effective_cost\n    WHEN line_item_line_item_type = 'Usage' THEN line_item_unblended_cost\n    ELSE 0 \n  END) AS amortized_cost\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2' \nAND line_item_operation LIKE '%RunInstances%' \nAND line_item_usage_type NOT LIKE '%DataXfer%' \nAND product_servicecode <> 'AWSDataTransfer' \nAND line_item_resource_id NOT LIKE 'arn:%:capacity-reservation/%'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}';\n\n",
+              "refId": "CUR"
+            }
+          ],
+          "title": "EC2 Compute Cost for ${AccountId} in ${Region} - ${__from:date:iso} - ${__to:date:iso}",
+          "transparent": true,
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "datasource",
+            "uid": "-- Mixed --"
+          },
+          "description": "Amortized cost for  EC2 Compute ",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "fixedColor": "dark-green",
+                "mode": "shades",
+                "seriesBy": "max"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "series",
+                "axisLabel": "Amortized Cost",
+                "axisPlacement": "left",
+                "axisSoftMin": 5,
+                "axisWidth": 75,
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 25,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "smooth",
+                "lineStyle": {
+                  "dash": [
+                    0,
+                    10
+                  ],
+                  "fill": "dot"
+                },
+                "lineWidth": 1,
+                "pointSize": 2,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "displayName": "Savings Plan Spend",
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  }
+                ]
+              },
+              "unit": "currencyUSD"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byFrameRefID",
+                  "options": "ReservedInstance"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "dark-orange",
+                      "mode": "shades"
+                    }
+                  },
+                  {
+                    "id": "custom.axisColorMode",
+                    "value": "text"
+                  },
+                  {
+                    "id": "displayName",
+                    "value": "Reserved Instance Spend"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byFrameRefID",
+                  "options": "OnDemand"
+                },
+                "properties": [
+                  {
+                    "id": "displayName",
+                    "value": "OnDemand"
+                  },
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "dark-purple",
+                      "mode": "shades"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 19
+          },
+          "id": 13,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "connectionArgs": {
+                "catalog": "__default",
+                "database": "__default",
+                "region": "__default",
+                "resultReuseEnabled": false,
+                "resultReuseMaxAgeInMinutes": 60
+              },
+              "datasource": {
+                "type": "grafana-athena-datasource",
+                "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
+              },
+              "format": 1,
+              "hide": false,
+              "rawSQL": "SELECT \nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date) as line_item_usage_start_date,\nSUM(CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN savings_plan_savings_plan_effective_cost\n    ELSE 0 \n  END) AS savings_plan_spend\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2' \nAND line_item_operation LIKE '%RunInstances%' \nAND line_item_usage_type NOT LIKE '%DataXfer%' \nAND product_servicecode <> 'AWSDataTransfer' \nAND line_item_resource_id NOT LIKE 'arn:%:capacity-reservation/%'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nGROUP BY\nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date)\nORDER BY\nline_item_usage_start_date DESC\n",
+              "refId": "SavingsPlan"
+            },
+            {
+              "connectionArgs": {
+                "catalog": "__default",
+                "database": "__default",
+                "region": "__default",
+                "resultReuseEnabled": false,
+                "resultReuseMaxAgeInMinutes": 60
+              },
+              "datasource": {
+                "type": "grafana-athena-datasource",
+                "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
+              },
+              "format": 1,
+              "hide": false,
+              "rawSQL": "SELECT \nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date) as line_item_usage_start_date,\nSUM(CASE\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN reservation_effective_cost\n    ELSE 0 \n  END) AS reserved_instance_spend\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2' \nAND line_item_operation LIKE '%RunInstances%' \nAND line_item_usage_type NOT LIKE '%DataXfer%' \nAND product_servicecode <> 'AWSDataTransfer' \nAND line_item_resource_id NOT LIKE 'arn:%:capacity-reservation/%'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nGROUP BY\nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date)\nORDER BY\nline_item_usage_start_date DESC\n",
+              "refId": "ReservedInstance"
+            },
+            {
+              "connectionArgs": {
+                "catalog": "__default",
+                "database": "__default",
+                "region": "__default",
+                "resultReuseEnabled": false,
+                "resultReuseMaxAgeInMinutes": 60
+              },
+              "datasource": {
+                "type": "grafana-athena-datasource",
+                "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
+              },
+              "format": 1,
+              "hide": false,
+              "rawSQL": "SELECT \nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date) as line_item_usage_start_date,\nSUM(CASE\n    WHEN line_item_line_item_type = 'Usage' THEN line_item_unblended_cost\n    ELSE 0 \n  END) AS ondemand_spend\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2' \nAND line_item_operation LIKE '%RunInstances%' \nAND line_item_usage_type NOT LIKE '%DataXfer%' \nAND product_servicecode <> 'AWSDataTransfer' \nAND line_item_resource_id NOT LIKE 'arn:%:capacity-reservation/%'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nGROUP BY\nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date)\nORDER BY\nline_item_usage_start_date DESC\n",
+              "refId": "OnDemand"
+            }
+          ],
+          "title": "EC2 Compute cost by purchase type for ${AccountId} in ${Region}",
+          "transparent": true,
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "datasource",
+            "uid": "-- Mixed --"
+          },
+          "description": "Top 10 instance types",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "fixedColor": "dark-green",
+                "mode": "shades"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "Amortized Cost",
+                "axisPlacement": "auto",
+                "axisSoftMin": 5,
+                "fillOpacity": 80,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineWidth": 1,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "displayName": "Instance Types",
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  }
+                ]
+              },
+              "unit": "currencyUSD"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 19
+          },
+          "id": 14,
+          "options": {
+            "barRadius": 0,
+            "barWidth": 0.97,
+            "fullHighlight": false,
+            "groupWidth": 0.7,
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "orientation": "auto",
+            "showValue": "auto",
+            "stacking": "none",
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            },
+            "xTickLabelRotation": 0,
+            "xTickLabelSpacing": 0
+          },
+          "pluginVersion": "10.4.1",
+          "targets": [
+            {
+              "connectionArgs": {
+                "catalog": "__default",
+                "database": "__default",
+                "region": "__default",
+                "resultReuseEnabled": false,
+                "resultReuseMaxAgeInMinutes": 60
+              },
+              "datasource": {
+                "type": "grafana-athena-datasource",
+                "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
+              },
+              "format": 1,
+              "hide": false,
+              "rawSQL": "SELECT \nproduct_instance_type,\nSUM(CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN savings_plan_savings_plan_effective_cost\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN reservation_effective_cost\n    WHEN line_item_line_item_type = 'Usage' THEN line_item_unblended_cost\n    ELSE 0 \n  END) AS amortized_cost\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2' \nAND line_item_operation LIKE '%RunInstances%' \nAND line_item_usage_type NOT LIKE '%DataXfer%' \nAND product_servicecode <> 'AWSDataTransfer' \nAND line_item_resource_id NOT LIKE 'arn:%:capacity-reservation/%'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nGROUP BY\nproduct_instance_type\nORDER BY \namortized_cost DESC\nLIMIT 10;\n",
+              "refId": "InstanceTypes"
+            }
+          ],
+          "title": "Comput Spend by Instance Type in  ${AccountId} in ${Region}",
+          "transparent": true,
+          "type": "barchart"
+        },
+        {
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
+          },
+          "description": "Top 100 Instance by amortized cost for time period",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "filterable": true,
+                "inspect": false,
+                "minWidth": 50
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "currencyUSD"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 12,
+            "x": 0,
+            "y": 27
+          },
+          "id": 26,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "enablePagination": true,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "showHeader": true
+          },
+          "pluginVersion": "10.4.1",
+          "targets": [
+            {
+              "connectionArgs": {
+                "catalog": "__default",
+                "database": "__default",
+                "region": "__default",
+                "resultReuseEnabled": false,
+                "resultReuseMaxAgeInMinutes": 60
+              },
+              "datasource": {
+                "type": "grafana-athena-datasource",
+                "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
+              },
+              "format": 1,
+              "rawSQL": "SELECT\nline_item_resource_id as instance_id,\nSUM(CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN savings_plan_savings_plan_effective_cost\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN reservation_effective_cost\n    WHEN line_item_line_item_type = 'Usage' THEN line_item_unblended_cost\n    ELSE 0 \n  END) AS amortized_cost\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date) \nAND line_item_product_code = 'AmazonEC2' \nAND line_item_operation LIKE '%RunInstances%' \nAND line_item_usage_type NOT LIKE '%DataXfer%' \nAND product_servicecode <> 'AWSDataTransfer' \nAND line_item_resource_id NOT LIKE 'arn:%:capacity-reservation/%'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nGROUP BY\nline_item_resource_id\nORDER BY\namortized_cost DESC\nLIMIT 100",
+              "refId": "CUR"
+            }
+          ],
+          "title": "Top 100 Instances by Cost",
+          "type": "table"
+        }
+      ],
       "title": "EC2 Compute Overview - ${AccountId} in ${Region}",
       "type": "row"
     },
     {
-      "datasource": {
-        "type": "datasource",
-        "uid": "-- Mixed --"
-      },
-      "description": "Amortized cost for  EC2 Compute ",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "fixedColor": "dark-green",
-            "mode": "shades",
-            "seriesBy": "max"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "series",
-            "axisLabel": "Amortized Cost",
-            "axisPlacement": "left",
-            "axisSoftMin": 5,
-            "axisWidth": 75,
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 25,
-            "gradientMode": "opacity",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "smooth",
-            "lineStyle": {
-              "dash": [
-                0,
-                10
-              ],
-              "fill": "dot"
-            },
-            "lineWidth": 1,
-            "pointSize": 2,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "displayName": "Amortized Cost",
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          },
-          "unit": "currencyUSD"
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "unit_cost"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "unit_cost"
-              },
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "purple",
-                  "mode": "shades"
-                }
-              },
-              {
-                "id": "custom.lineStyle"
-              },
-              {
-                "id": "custom.lineInterpolation",
-                "value": "smooth"
-              },
-              {
-                "id": "custom.fillOpacity",
-                "value": 0
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "count_instances"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "instance_count"
-              },
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "blue",
-                  "mode": "shades"
-                }
-              },
-              {
-                "id": "unit",
-                "value": "none"
-              },
-              {
-                "id": "custom.axisPlacement",
-                "value": "right"
-              },
-              {
-                "id": "custom.axisLabel",
-                "value": "Instance Count"
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 11
-      },
-      "id": 11,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "connectionArgs": {
-            "catalog": "__default",
-            "database": "__default",
-            "region": "__default",
-            "resultReuseEnabled": false,
-            "resultReuseMaxAgeInMinutes": 60
-          },
-          "datasource": {
-            "type": "grafana-athena-datasource",
-            "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
-          },
-          "format": 1,
-          "hide": false,
-          "rawSQL": "SELECT \nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date) as line_item_usage_start_date,\nCOUNT(DISTINCT(line_item_resource_id)) as count_instances,\nSUM(CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN savings_plan_savings_plan_effective_cost\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN reservation_effective_cost\n    WHEN line_item_line_item_type = 'Usage' THEN line_item_unblended_cost\n    ELSE 0 \n  END) AS amortized_cost\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2'\nAND line_item_operation = 'RunInstances'\nAND line_item_usage_type LIKE '%Box%'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nGROUP BY\nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date)\nORDER BY\nline_item_usage_start_date DESC\n",
-          "refId": "CUR"
-        }
-      ],
-      "title": "EC2 Compute Cost for ${AccountId} in ${Region}",
-      "transformations": [
-        {
-          "id": "calculateField",
-          "options": {
-            "alias": "unit_cost",
-            "binary": {
-              "left": "amortized_cost",
-              "operator": "/",
-              "right": "count_instances"
-            },
-            "mode": "binary",
-            "reduce": {
-              "reducer": "sum"
-            },
-            "replaceFields": false
-          }
-        },
-        {
-          "id": "organize",
-          "options": {
-            "excludeByName": {
-              "count_instances": false
-            },
-            "includeByName": {},
-            "indexByName": {},
-            "renameByName": {}
-          }
-        }
-      ],
-      "transparent": true,
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "datasource",
-        "uid": "-- Mixed --"
-      },
-      "description": "Amortized cost includes EC2 Compute: ${__from:date:iso} - ${__to:date:iso}",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "displayName": "Amortized Cost",
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          },
-          "unit": "currencyUSD"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 11
-      },
-      "id": 12,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showPercentChange": false,
-        "textMode": "auto",
-        "wideLayout": true
-      },
-      "pluginVersion": "10.4.1",
-      "targets": [
-        {
-          "connectionArgs": {
-            "catalog": "__default",
-            "database": "__default",
-            "region": "__default",
-            "resultReuseEnabled": false,
-            "resultReuseMaxAgeInMinutes": 60
-          },
-          "datasource": {
-            "type": "grafana-athena-datasource",
-            "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
-          },
-          "format": 1,
-          "hide": false,
-          "rawSQL": "SELECT \nSUM(CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN savings_plan_savings_plan_effective_cost\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN reservation_effective_cost\n    WHEN line_item_line_item_type = 'Usage' THEN line_item_unblended_cost\n    ELSE 0 \n  END) AS amortized_cost\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2'\nAND line_item_operation = 'RunInstances'\nAND line_item_usage_type LIKE '%Box%'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}';\n\n",
-          "refId": "CUR"
-        }
-      ],
-      "title": "EC2 Compute Cost for ${AccountId} in ${Region} - ${__from:date:iso} - ${__to:date:iso}",
-      "transparent": true,
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "datasource",
-        "uid": "-- Mixed --"
-      },
-      "description": "Amortized cost for  EC2 Compute ",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "fixedColor": "dark-green",
-            "mode": "shades",
-            "seriesBy": "max"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "series",
-            "axisLabel": "Amortized Cost",
-            "axisPlacement": "left",
-            "axisSoftMin": 5,
-            "axisWidth": 75,
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 25,
-            "gradientMode": "opacity",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "smooth",
-            "lineStyle": {
-              "dash": [
-                0,
-                10
-              ],
-              "fill": "dot"
-            },
-            "lineWidth": 1,
-            "pointSize": 2,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "displayName": "Savings Plan Spend",
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          },
-          "unit": "currencyUSD"
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byFrameRefID",
-              "options": "ReservedInstance"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "dark-orange",
-                  "mode": "shades"
-                }
-              },
-              {
-                "id": "custom.axisColorMode",
-                "value": "text"
-              },
-              {
-                "id": "displayName",
-                "value": "Reserved Instance Spend"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byFrameRefID",
-              "options": "OnDemand"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "OnDemand"
-              },
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "dark-purple",
-                  "mode": "shades"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 19
-      },
-      "id": 13,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "connectionArgs": {
-            "catalog": "__default",
-            "database": "__default",
-            "region": "__default",
-            "resultReuseEnabled": false,
-            "resultReuseMaxAgeInMinutes": 60
-          },
-          "datasource": {
-            "type": "grafana-athena-datasource",
-            "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
-          },
-          "format": 1,
-          "hide": false,
-          "rawSQL": "SELECT \nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date) as line_item_usage_start_date,\nSUM(CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN savings_plan_savings_plan_effective_cost\n    ELSE 0 \n  END) AS savings_plan_spend\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2'\nAND line_item_operation = 'RunInstances'\nAND line_item_usage_type LIKE '%Box%'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nGROUP BY\nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date)\nORDER BY\nline_item_usage_start_date DESC\n",
-          "refId": "SavingsPlan"
-        },
-        {
-          "connectionArgs": {
-            "catalog": "__default",
-            "database": "__default",
-            "region": "__default",
-            "resultReuseEnabled": false,
-            "resultReuseMaxAgeInMinutes": 60
-          },
-          "datasource": {
-            "type": "grafana-athena-datasource",
-            "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
-          },
-          "format": 1,
-          "hide": false,
-          "rawSQL": "SELECT \nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date) as line_item_usage_start_date,\nSUM(CASE\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN reservation_effective_cost\n    ELSE 0 \n  END) AS reserved_instance_spend\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2'\nAND line_item_operation = 'RunInstances'\nAND line_item_usage_type LIKE '%Box%'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nGROUP BY\nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date)\nORDER BY\nline_item_usage_start_date DESC\n",
-          "refId": "ReservedInstance"
-        },
-        {
-          "connectionArgs": {
-            "catalog": "__default",
-            "database": "__default",
-            "region": "__default",
-            "resultReuseEnabled": false,
-            "resultReuseMaxAgeInMinutes": 60
-          },
-          "datasource": {
-            "type": "grafana-athena-datasource",
-            "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
-          },
-          "format": 1,
-          "hide": false,
-          "rawSQL": "SELECT \nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date) as line_item_usage_start_date,\nSUM(CASE\n    WHEN line_item_line_item_type = 'Usage' THEN line_item_unblended_cost\n    ELSE 0 \n  END) AS ondemand_spend\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2'\nAND line_item_operation = 'RunInstances'\nAND line_item_usage_type LIKE '%Box%'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nGROUP BY\nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date)\nORDER BY\nline_item_usage_start_date DESC\n",
-          "refId": "OnDemand"
-        }
-      ],
-      "title": "EC2 Compute cost by purchase type for ${AccountId} in ${Region}",
-      "transparent": true,
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "datasource",
-        "uid": "-- Mixed --"
-      },
-      "description": "Top 10 instance types",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "fixedColor": "dark-green",
-            "mode": "shades"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "Amortized Cost",
-            "axisPlacement": "auto",
-            "axisSoftMin": 5,
-            "fillOpacity": 80,
-            "gradientMode": "opacity",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineWidth": 1,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "displayName": "Instance Types",
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          },
-          "unit": "currencyUSD"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 19
-      },
-      "id": 14,
-      "options": {
-        "barRadius": 0,
-        "barWidth": 0.97,
-        "fullHighlight": false,
-        "groupWidth": 0.7,
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "orientation": "auto",
-        "showValue": "auto",
-        "stacking": "none",
-        "tooltip": {
-          "mode": "multi",
-          "sort": "none"
-        },
-        "xTickLabelRotation": 0,
-        "xTickLabelSpacing": 0
-      },
-      "pluginVersion": "10.4.1",
-      "targets": [
-        {
-          "connectionArgs": {
-            "catalog": "__default",
-            "database": "__default",
-            "region": "__default",
-            "resultReuseEnabled": false,
-            "resultReuseMaxAgeInMinutes": 60
-          },
-          "datasource": {
-            "type": "grafana-athena-datasource",
-            "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
-          },
-          "format": 1,
-          "hide": false,
-          "rawSQL": "SELECT \nproduct_instance_type,\nSUM(CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN savings_plan_savings_plan_effective_cost\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN reservation_effective_cost\n    WHEN line_item_line_item_type = 'Usage' THEN line_item_unblended_cost\n    ELSE 0 \n  END) AS amortized_cost\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2'\nAND line_item_operation = 'RunInstances'\nAND line_item_usage_type LIKE '%Box%'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nGROUP BY\nproduct_instance_type\nORDER BY \namortized_cost DESC\nLIMIT 10;\n",
-          "refId": "InstanceTypes"
-        }
-      ],
-      "title": "Comput Spend by Instance Type in  ${AccountId} in ${Region}",
-      "transparent": true,
-      "type": "barchart"
-    },
-    {
-      "datasource": {
-        "type": "grafana-athena-datasource",
-        "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
-      },
-      "description": "Top 100 Instance by amortized cost for time period",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "align": "auto",
-            "cellOptions": {
-              "type": "auto"
-            },
-            "filterable": true,
-            "inspect": false,
-            "minWidth": 50
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "currencyUSD"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 9,
-        "w": 12,
-        "x": 0,
-        "y": 27
-      },
-      "id": 26,
-      "options": {
-        "cellHeight": "sm",
-        "footer": {
-          "countRows": false,
-          "enablePagination": true,
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
-        },
-        "showHeader": true
-      },
-      "pluginVersion": "10.4.1",
-      "targets": [
-        {
-          "connectionArgs": {
-            "catalog": "__default",
-            "database": "__default",
-            "region": "__default",
-            "resultReuseEnabled": false,
-            "resultReuseMaxAgeInMinutes": 60
-          },
-          "datasource": {
-            "type": "grafana-athena-datasource",
-            "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
-          },
-          "format": 1,
-          "rawSQL": "SELECT\nline_item_resource_id as instance_id,\nSUM(CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN savings_plan_savings_plan_effective_cost\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN reservation_effective_cost\n    WHEN line_item_line_item_type = 'Usage' THEN line_item_unblended_cost\n    ELSE 0 \n  END) AS amortized_cost\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date) \nAND line_item_product_code = 'AmazonEC2'\nAND line_item_operation = 'RunInstances'\nAND line_item_usage_type LIKE '%Box%'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nGROUP BY\nline_item_resource_id\nORDER BY\namortized_cost DESC\nLIMIT 100",
-          "refId": "CUR"
-        }
-      ],
-      "title": "Top 100 Instances by Cost",
-      "type": "table"
-    },
-    {
-      "collapsed": false,
+      "collapsed": true,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 36
+        "y": 11
       },
       "id": 18,
-      "panels": [],
+      "panels": [
+        {
+          "datasource": {
+            "type": "datasource",
+            "uid": "-- Mixed --"
+          },
+          "description": "Amortized cost for  EC2 Compute ",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "fixedColor": "dark-green",
+                "mode": "shades",
+                "seriesBy": "max"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "series",
+                "axisLabel": "Amortized Cost",
+                "axisPlacement": "left",
+                "axisSoftMin": 5,
+                "axisWidth": 75,
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 25,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "smooth",
+                "lineStyle": {
+                  "dash": [
+                    0,
+                    10
+                  ],
+                  "fill": "dot"
+                },
+                "lineWidth": 1,
+                "pointSize": 2,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "displayName": "Amortized Cost",
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  }
+                ]
+              },
+              "unit": "currencyUSD"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "unit_cost"
+                },
+                "properties": [
+                  {
+                    "id": "displayName",
+                    "value": "unit_cost"
+                  },
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "purple",
+                      "mode": "shades"
+                    }
+                  },
+                  {
+                    "id": "custom.lineStyle"
+                  },
+                  {
+                    "id": "custom.lineInterpolation",
+                    "value": "smooth"
+                  },
+                  {
+                    "id": "custom.fillOpacity",
+                    "value": 0
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "count_instances"
+                },
+                "properties": [
+                  {
+                    "id": "displayName",
+                    "value": "instance_count"
+                  },
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "blue",
+                      "mode": "shades"
+                    }
+                  },
+                  {
+                    "id": "unit",
+                    "value": "none"
+                  },
+                  {
+                    "id": "custom.axisPlacement",
+                    "value": "right"
+                  },
+                  {
+                    "id": "custom.axisLabel",
+                    "value": "Instance Count"
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 12
+          },
+          "id": 24,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "connectionArgs": {
+                "catalog": "__default",
+                "database": "__default",
+                "region": "__default",
+                "resultReuseEnabled": false,
+                "resultReuseMaxAgeInMinutes": 60
+              },
+              "datasource": {
+                "type": "grafana-athena-datasource",
+                "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
+              },
+              "format": 1,
+              "hide": false,
+              "rawSQL": "SELECT \nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date) as line_item_usage_start_date,\nCOUNT(DISTINCT(line_item_resource_id)) as count_instances,\nSUM(CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN savings_plan_savings_plan_effective_cost\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN reservation_effective_cost\n    WHEN line_item_line_item_type = 'Usage' THEN line_item_unblended_cost\n    ELSE 0 \n  END) AS amortized_cost\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2' \nAND line_item_operation LIKE '%RunInstances%' \nAND line_item_usage_type NOT LIKE '%DataXfer%' \nAND product_servicecode <> 'AWSDataTransfer' \nAND line_item_resource_id NOT LIKE 'arn:%:capacity-reservation/%'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nAND resource_tags['${TagKey}'] = '${TagValue}'\nGROUP BY\nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date)\nORDER BY\nline_item_usage_start_date DESC\n",
+              "refId": "CUR"
+            }
+          ],
+          "title": "EC2 Compute Cost for ${AccountId} in ${Region} -  Tag: (${TagKey}, ${TagValue})",
+          "transformations": [
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "unit_cost",
+                "binary": {
+                  "left": "amortized_cost",
+                  "operator": "/",
+                  "right": "count_instances"
+                },
+                "mode": "binary",
+                "reduce": {
+                  "reducer": "sum"
+                },
+                "replaceFields": false
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "count_instances": false
+                },
+                "includeByName": {},
+                "indexByName": {},
+                "renameByName": {}
+              }
+            }
+          ],
+          "transparent": true,
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "datasource",
+            "uid": "-- Mixed --"
+          },
+          "description": "Amortized cost includes EC2 Compute: ${__from:date:iso} - ${__to:date:iso}",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "displayName": "Amortized EC2 Cost for Tag",
+              "mappings": [],
+              "noValue": "$0",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  }
+                ]
+              },
+              "unit": "currencyUSD"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 12
+          },
+          "id": 20,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "10.4.1",
+          "targets": [
+            {
+              "connectionArgs": {
+                "catalog": "__default",
+                "database": "__default",
+                "region": "__default",
+                "resultReuseEnabled": false,
+                "resultReuseMaxAgeInMinutes": 60
+              },
+              "datasource": {
+                "type": "grafana-athena-datasource",
+                "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
+              },
+              "format": 1,
+              "hide": false,
+              "rawSQL": "SELECT \nSUM(CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN savings_plan_savings_plan_effective_cost\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN reservation_effective_cost\n    WHEN line_item_line_item_type = 'Usage' THEN line_item_unblended_cost\n    ELSE 0 \n  END) AS amortized_cost\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2' \nAND line_item_operation LIKE '%RunInstances%' \nAND line_item_usage_type NOT LIKE '%DataXfer%' \nAND product_servicecode <> 'AWSDataTransfer' \nAND line_item_resource_id NOT LIKE 'arn:%:capacity-reservation/%'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nAND resource_tags['${TagKey}'] = '${TagValue}';\n\n",
+              "refId": "CUR"
+            }
+          ],
+          "title": "EC2 Compute Cost for ${AccountId} in ${Region} -  Tag: (${TagKey}, ${TagValue})",
+          "transparent": true,
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "datasource",
+            "uid": "-- Mixed --"
+          },
+          "description": "Amortized cost for  EC2 Compute ",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "fixedColor": "dark-green",
+                "mode": "shades",
+                "seriesBy": "max"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "series",
+                "axisLabel": "Amortized Cost",
+                "axisPlacement": "left",
+                "axisSoftMin": 5,
+                "axisWidth": 75,
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 25,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "smooth",
+                "lineStyle": {
+                  "dash": [
+                    0,
+                    10
+                  ],
+                  "fill": "dot"
+                },
+                "lineWidth": 1,
+                "pointSize": 2,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "displayName": "Savings Plan Spend",
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  }
+                ]
+              },
+              "unit": "currencyUSD"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byFrameRefID",
+                  "options": "ReservedInstance"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "dark-orange",
+                      "mode": "shades"
+                    }
+                  },
+                  {
+                    "id": "custom.axisColorMode",
+                    "value": "text"
+                  },
+                  {
+                    "id": "displayName",
+                    "value": "Reserved Instance Spend"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byFrameRefID",
+                  "options": "OnDemand"
+                },
+                "properties": [
+                  {
+                    "id": "displayName",
+                    "value": "OnDemand"
+                  },
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "dark-purple",
+                      "mode": "shades"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 20
+          },
+          "id": 21,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "connectionArgs": {
+                "catalog": "__default",
+                "database": "__default",
+                "region": "__default",
+                "resultReuseEnabled": false,
+                "resultReuseMaxAgeInMinutes": 60
+              },
+              "datasource": {
+                "type": "grafana-athena-datasource",
+                "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
+              },
+              "format": 1,
+              "hide": false,
+              "rawSQL": "SELECT \nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date) as line_item_usage_start_date,\nSUM(CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN savings_plan_savings_plan_effective_cost\n    ELSE 0 \n  END) AS savings_plan_spend\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2' \nAND line_item_operation LIKE '%RunInstances%' \nAND line_item_usage_type NOT LIKE '%DataXfer%' \nAND product_servicecode <> 'AWSDataTransfer' \nAND line_item_resource_id NOT LIKE 'arn:%:capacity-reservation/%'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nAND resource_tags['${TagKey}'] = '${TagValue}'\nGROUP BY\nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date)\nORDER BY\nline_item_usage_start_date DESC\n",
+              "refId": "SavingsPlan"
+            },
+            {
+              "connectionArgs": {
+                "catalog": "__default",
+                "database": "__default",
+                "region": "__default",
+                "resultReuseEnabled": false,
+                "resultReuseMaxAgeInMinutes": 60
+              },
+              "datasource": {
+                "type": "grafana-athena-datasource",
+                "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
+              },
+              "format": 1,
+              "hide": false,
+              "rawSQL": "SELECT \nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date) as line_item_usage_start_date,\nSUM(CASE\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN reservation_effective_cost\n    ELSE 0 \n  END) AS reserved_instance_spend\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2'\nAND line_item_operation = 'RunInstances'\nAND line_item_usage_type LIKE '%Box%'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nAND resource_tags['${TagKey}'] = '${TagValue}'\nGROUP BY\nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date)\nORDER BY\nline_item_usage_start_date DESC\n",
+              "refId": "ReservedInstance"
+            },
+            {
+              "connectionArgs": {
+                "catalog": "__default",
+                "database": "__default",
+                "region": "__default",
+                "resultReuseEnabled": false,
+                "resultReuseMaxAgeInMinutes": 60
+              },
+              "datasource": {
+                "type": "grafana-athena-datasource",
+                "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
+              },
+              "format": 1,
+              "hide": false,
+              "rawSQL": "SELECT \nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date) as line_item_usage_start_date,\nSUM(CASE\n    WHEN line_item_line_item_type = 'Usage' THEN line_item_unblended_cost\n    ELSE 0 \n  END) AS ondemand_spend\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2'\nAND line_item_operation = 'RunInstances'\nAND line_item_usage_type LIKE '%Box%'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nAND resource_tags['${TagKey}'] = '${TagValue}'\nGROUP BY\nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date)\nORDER BY\nline_item_usage_start_date DESC\n",
+              "refId": "OnDemand"
+            }
+          ],
+          "title": "EC2 Compute cost by purchase type for ${AccountId} in ${Region} -  Tag: (${TagKey}, ${TagValue})",
+          "transparent": true,
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "datasource",
+            "uid": "-- Mixed --"
+          },
+          "description": "Top 10 instance types - ${__from:date:iso} - ${__to:date:iso}\n",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "fixedColor": "dark-green",
+                "mode": "shades"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "Amortized Cost",
+                "axisPlacement": "auto",
+                "axisSoftMin": 5,
+                "fillOpacity": 80,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineWidth": 1,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "displayName": "Instance Types",
+              "mappings": [],
+              "noValue": "No data for tag",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  }
+                ]
+              },
+              "unit": "currencyUSD"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 20
+          },
+          "id": 22,
+          "options": {
+            "barRadius": 0,
+            "barWidth": 0.97,
+            "fullHighlight": false,
+            "groupWidth": 0.7,
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "orientation": "auto",
+            "showValue": "auto",
+            "stacking": "none",
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            },
+            "xTickLabelRotation": 0,
+            "xTickLabelSpacing": 0
+          },
+          "pluginVersion": "10.4.1",
+          "targets": [
+            {
+              "connectionArgs": {
+                "catalog": "__default",
+                "database": "__default",
+                "region": "__default",
+                "resultReuseEnabled": false,
+                "resultReuseMaxAgeInMinutes": 60
+              },
+              "datasource": {
+                "type": "grafana-athena-datasource",
+                "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
+              },
+              "format": 1,
+              "hide": false,
+              "rawSQL": "SELECT \nproduct_instance_type,\nSUM(CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN savings_plan_savings_plan_effective_cost\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN reservation_effective_cost\n    WHEN line_item_line_item_type = 'Usage' THEN line_item_unblended_cost\n    ELSE 0 \n  END) AS amortized_cost\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2' \nAND line_item_operation LIKE '%RunInstances%' \nAND line_item_usage_type NOT LIKE '%DataXfer%' \nAND product_servicecode <> 'AWSDataTransfer' \nAND line_item_resource_id NOT LIKE 'arn:%:capacity-reservation/%'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nAND resource_tags['${TagKey}'] = '${TagValue}'\nGROUP BY\nproduct_instance_type\nORDER BY \namortized_cost DESC\nLIMIT 10;\n",
+              "refId": "InstanceTypes"
+            }
+          ],
+          "title": "Comput Spend by Instance Type in  ${AccountId} in ${Region} - Tag: (${TagKey}, ${TagValue})",
+          "transparent": true,
+          "type": "barchart"
+        },
+        {
+          "datasource": {
+            "type": "grafana-athena-datasource",
+            "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
+          },
+          "description": "Top 100 Instance by amortized cost for time period",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "filterable": true,
+                "inspect": false,
+                "minWidth": 50
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "currencyUSD"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 12,
+            "x": 0,
+            "y": 28
+          },
+          "id": 25,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "enablePagination": true,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "showHeader": true
+          },
+          "pluginVersion": "10.4.1",
+          "targets": [
+            {
+              "connectionArgs": {
+                "catalog": "__default",
+                "database": "__default",
+                "region": "__default",
+                "resultReuseEnabled": false,
+                "resultReuseMaxAgeInMinutes": 60
+              },
+              "datasource": {
+                "type": "grafana-athena-datasource",
+                "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
+              },
+              "format": 1,
+              "rawSQL": "SELECT\nline_item_resource_id as instance_id,\nSUM(CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN savings_plan_savings_plan_effective_cost\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN reservation_effective_cost\n    WHEN line_item_line_item_type = 'Usage' THEN line_item_unblended_cost\n    ELSE 0 \n  END) AS amortized_cost\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date) \nAND line_item_product_code = 'AmazonEC2' \nAND line_item_operation LIKE '%RunInstances%' \nAND line_item_usage_type NOT LIKE '%DataXfer%' \nAND product_servicecode <> 'AWSDataTransfer' \nAND line_item_resource_id NOT LIKE 'arn:%:capacity-reservation/%'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nAND resource_tags['${TagKey}'] = '${TagValue}'\nGROUP BY\nline_item_resource_id\nORDER BY\namortized_cost DESC\nLIMIT 100",
+              "refId": "CUR"
+            }
+          ],
+          "title": "Top 100 Instances by Cost - Tag: (${TagKey}, ${TagValue})",
+          "type": "table"
+        }
+      ],
       "title": "Tag Explorer",
       "type": "row"
     },
     {
-      "datasource": {
-        "type": "datasource",
-        "uid": "-- Mixed --"
-      },
-      "description": "Amortized cost for  EC2 Compute ",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "fixedColor": "dark-green",
-            "mode": "shades",
-            "seriesBy": "max"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "series",
-            "axisLabel": "Amortized Cost",
-            "axisPlacement": "left",
-            "axisSoftMin": 5,
-            "axisWidth": 75,
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 25,
-            "gradientMode": "opacity",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "smooth",
-            "lineStyle": {
-              "dash": [
-                0,
-                10
-              ],
-              "fill": "dot"
-            },
-            "lineWidth": 1,
-            "pointSize": 2,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "displayName": "Amortized Cost",
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          },
-          "unit": "currencyUSD"
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "unit_cost"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "unit_cost"
-              },
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "purple",
-                  "mode": "shades"
-                }
-              },
-              {
-                "id": "custom.lineStyle"
-              },
-              {
-                "id": "custom.lineInterpolation",
-                "value": "smooth"
-              },
-              {
-                "id": "custom.fillOpacity",
-                "value": 0
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "count_instances"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "instance_count"
-              },
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "blue",
-                  "mode": "shades"
-                }
-              },
-              {
-                "id": "unit",
-                "value": "none"
-              },
-              {
-                "id": "custom.axisPlacement",
-                "value": "right"
-              },
-              {
-                "id": "custom.axisLabel",
-                "value": "Instance Count"
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 37
-      },
-      "id": 24,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "connectionArgs": {
-            "catalog": "__default",
-            "database": "__default",
-            "region": "__default",
-            "resultReuseEnabled": false,
-            "resultReuseMaxAgeInMinutes": 60
-          },
-          "datasource": {
-            "type": "grafana-athena-datasource",
-            "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
-          },
-          "format": 1,
-          "hide": false,
-          "rawSQL": "SELECT \nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date) as line_item_usage_start_date,\nCOUNT(DISTINCT(line_item_resource_id)) as count_instances,\nSUM(CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN savings_plan_savings_plan_effective_cost\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN reservation_effective_cost\n    WHEN line_item_line_item_type = 'Usage' THEN line_item_unblended_cost\n    ELSE 0 \n  END) AS amortized_cost\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2'\nAND line_item_operation = 'RunInstances'\nAND line_item_usage_type LIKE '%Box%'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nAND resource_tags['${TagKey}'] = '${TagValue}'\nGROUP BY\nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date)\nORDER BY\nline_item_usage_start_date DESC\n",
-          "refId": "CUR"
-        }
-      ],
-      "title": "EC2 Compute Cost for ${AccountId} in ${Region} -  Tag: (${TagKey}, ${TagValue})",
-      "transformations": [
-        {
-          "id": "calculateField",
-          "options": {
-            "alias": "unit_cost",
-            "binary": {
-              "left": "amortized_cost",
-              "operator": "/",
-              "right": "count_instances"
-            },
-            "mode": "binary",
-            "reduce": {
-              "reducer": "sum"
-            },
-            "replaceFields": false
-          }
-        },
-        {
-          "id": "organize",
-          "options": {
-            "excludeByName": {
-              "count_instances": false
-            },
-            "includeByName": {},
-            "indexByName": {},
-            "renameByName": {}
-          }
-        }
-      ],
-      "transparent": true,
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "datasource",
-        "uid": "-- Mixed --"
-      },
-      "description": "Amortized cost includes EC2 Compute: ${__from:date:iso} - ${__to:date:iso}",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "displayName": "Amortized EC2 Cost for Tag",
-          "mappings": [],
-          "noValue": "$0",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          },
-          "unit": "currencyUSD"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 37
-      },
-      "id": 20,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showPercentChange": false,
-        "textMode": "auto",
-        "wideLayout": true
-      },
-      "pluginVersion": "10.4.1",
-      "targets": [
-        {
-          "connectionArgs": {
-            "catalog": "__default",
-            "database": "__default",
-            "region": "__default",
-            "resultReuseEnabled": false,
-            "resultReuseMaxAgeInMinutes": 60
-          },
-          "datasource": {
-            "type": "grafana-athena-datasource",
-            "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
-          },
-          "format": 1,
-          "hide": false,
-          "rawSQL": "SELECT \nSUM(CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN savings_plan_savings_plan_effective_cost\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN reservation_effective_cost\n    WHEN line_item_line_item_type = 'Usage' THEN line_item_unblended_cost\n    ELSE 0 \n  END) AS amortized_cost\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2'\nAND line_item_operation = 'RunInstances'\nAND line_item_usage_type LIKE '%Box%'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nAND resource_tags['${TagKey}'] = '${TagValue}';\n\n",
-          "refId": "CUR"
-        }
-      ],
-      "title": "EC2 Compute Cost for ${AccountId} in ${Region} -  Tag: (${TagKey}, ${TagValue})",
-      "transparent": true,
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "datasource",
-        "uid": "-- Mixed --"
-      },
-      "description": "Amortized cost for  EC2 Compute ",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "fixedColor": "dark-green",
-            "mode": "shades",
-            "seriesBy": "max"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "series",
-            "axisLabel": "Amortized Cost",
-            "axisPlacement": "left",
-            "axisSoftMin": 5,
-            "axisWidth": 75,
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 25,
-            "gradientMode": "opacity",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "smooth",
-            "lineStyle": {
-              "dash": [
-                0,
-                10
-              ],
-              "fill": "dot"
-            },
-            "lineWidth": 1,
-            "pointSize": 2,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "displayName": "Savings Plan Spend",
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          },
-          "unit": "currencyUSD"
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byFrameRefID",
-              "options": "ReservedInstance"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "dark-orange",
-                  "mode": "shades"
-                }
-              },
-              {
-                "id": "custom.axisColorMode",
-                "value": "text"
-              },
-              {
-                "id": "displayName",
-                "value": "Reserved Instance Spend"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byFrameRefID",
-              "options": "OnDemand"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "OnDemand"
-              },
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "dark-purple",
-                  "mode": "shades"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 45
-      },
-      "id": 21,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "connectionArgs": {
-            "catalog": "__default",
-            "database": "__default",
-            "region": "__default",
-            "resultReuseEnabled": false,
-            "resultReuseMaxAgeInMinutes": 60
-          },
-          "datasource": {
-            "type": "grafana-athena-datasource",
-            "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
-          },
-          "format": 1,
-          "hide": false,
-          "rawSQL": "SELECT \nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date) as line_item_usage_start_date,\nSUM(CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN savings_plan_savings_plan_effective_cost\n    ELSE 0 \n  END) AS savings_plan_spend\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2'\nAND line_item_operation = 'RunInstances'\nAND line_item_usage_type LIKE '%Box%'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nAND resource_tags['${TagKey}'] = '${TagValue}'\nGROUP BY\nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date)\nORDER BY\nline_item_usage_start_date DESC\n",
-          "refId": "SavingsPlan"
-        },
-        {
-          "connectionArgs": {
-            "catalog": "__default",
-            "database": "__default",
-            "region": "__default",
-            "resultReuseEnabled": false,
-            "resultReuseMaxAgeInMinutes": 60
-          },
-          "datasource": {
-            "type": "grafana-athena-datasource",
-            "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
-          },
-          "format": 1,
-          "hide": false,
-          "rawSQL": "SELECT \nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date) as line_item_usage_start_date,\nSUM(CASE\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN reservation_effective_cost\n    ELSE 0 \n  END) AS reserved_instance_spend\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2'\nAND line_item_operation = 'RunInstances'\nAND line_item_usage_type LIKE '%Box%'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nAND resource_tags['${TagKey}'] = '${TagValue}'\nGROUP BY\nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date)\nORDER BY\nline_item_usage_start_date DESC\n",
-          "refId": "ReservedInstance"
-        },
-        {
-          "connectionArgs": {
-            "catalog": "__default",
-            "database": "__default",
-            "region": "__default",
-            "resultReuseEnabled": false,
-            "resultReuseMaxAgeInMinutes": 60
-          },
-          "datasource": {
-            "type": "grafana-athena-datasource",
-            "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
-          },
-          "format": 1,
-          "hide": false,
-          "rawSQL": "SELECT \nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date) as line_item_usage_start_date,\nSUM(CASE\n    WHEN line_item_line_item_type = 'Usage' THEN line_item_unblended_cost\n    ELSE 0 \n  END) AS ondemand_spend\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2'\nAND line_item_operation = 'RunInstances'\nAND line_item_usage_type LIKE '%Box%'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nAND resource_tags['${TagKey}'] = '${TagValue}'\nGROUP BY\nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date)\nORDER BY\nline_item_usage_start_date DESC\n",
-          "refId": "OnDemand"
-        }
-      ],
-      "title": "EC2 Compute cost by purchase type for ${AccountId} in ${Region} -  Tag: (${TagKey}, ${TagValue})",
-      "transparent": true,
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "datasource",
-        "uid": "-- Mixed --"
-      },
-      "description": "Top 10 instance types - ${__from:date:iso} - ${__to:date:iso}\n",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "fixedColor": "dark-green",
-            "mode": "shades"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "Amortized Cost",
-            "axisPlacement": "auto",
-            "axisSoftMin": 5,
-            "fillOpacity": 80,
-            "gradientMode": "opacity",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineWidth": 1,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "displayName": "Instance Types",
-          "mappings": [],
-          "noValue": "No data for tag",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          },
-          "unit": "currencyUSD"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 45
-      },
-      "id": 22,
-      "options": {
-        "barRadius": 0,
-        "barWidth": 0.97,
-        "fullHighlight": false,
-        "groupWidth": 0.7,
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "orientation": "auto",
-        "showValue": "auto",
-        "stacking": "none",
-        "tooltip": {
-          "mode": "multi",
-          "sort": "none"
-        },
-        "xTickLabelRotation": 0,
-        "xTickLabelSpacing": 0
-      },
-      "pluginVersion": "10.4.1",
-      "targets": [
-        {
-          "connectionArgs": {
-            "catalog": "__default",
-            "database": "__default",
-            "region": "__default",
-            "resultReuseEnabled": false,
-            "resultReuseMaxAgeInMinutes": 60
-          },
-          "datasource": {
-            "type": "grafana-athena-datasource",
-            "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
-          },
-          "format": 1,
-          "hide": false,
-          "rawSQL": "SELECT \nproduct_instance_type,\nSUM(CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN savings_plan_savings_plan_effective_cost\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN reservation_effective_cost\n    WHEN line_item_line_item_type = 'Usage' THEN line_item_unblended_cost\n    ELSE 0 \n  END) AS amortized_cost\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2'\nAND line_item_operation = 'RunInstances'\nAND line_item_usage_type LIKE '%Box%'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nAND resource_tags['${TagKey}'] = '${TagValue}'\nGROUP BY\nproduct_instance_type\nORDER BY \namortized_cost DESC\nLIMIT 10;\n",
-          "refId": "InstanceTypes"
-        }
-      ],
-      "title": "Comput Spend by Instance Type in  ${AccountId} in ${Region} - Tag: (${TagKey}, ${TagValue})",
-      "transparent": true,
-      "type": "barchart"
-    },
-    {
-      "datasource": {
-        "type": "grafana-athena-datasource",
-        "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
-      },
-      "description": "Top 100 Instance by amortized cost for time period",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "align": "auto",
-            "cellOptions": {
-              "type": "auto"
-            },
-            "filterable": true,
-            "inspect": false,
-            "minWidth": 50
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "currencyUSD"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 9,
-        "w": 12,
-        "x": 0,
-        "y": 53
-      },
-      "id": 25,
-      "options": {
-        "cellHeight": "sm",
-        "footer": {
-          "countRows": false,
-          "enablePagination": true,
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
-        },
-        "showHeader": true
-      },
-      "pluginVersion": "10.4.1",
-      "targets": [
-        {
-          "connectionArgs": {
-            "catalog": "__default",
-            "database": "__default",
-            "region": "__default",
-            "resultReuseEnabled": false,
-            "resultReuseMaxAgeInMinutes": 60
-          },
-          "datasource": {
-            "type": "grafana-athena-datasource",
-            "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
-          },
-          "format": 1,
-          "rawSQL": "SELECT\nline_item_resource_id as instance_id,\nSUM(CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN savings_plan_savings_plan_effective_cost\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN reservation_effective_cost\n    WHEN line_item_line_item_type = 'Usage' THEN line_item_unblended_cost\n    ELSE 0 \n  END) AS amortized_cost\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date) \nAND line_item_product_code = 'AmazonEC2'\nAND line_item_operation = 'RunInstances'\nAND line_item_usage_type LIKE '%Box%'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nAND resource_tags['${TagKey}'] = '${TagValue}'\nGROUP BY\nline_item_resource_id\nORDER BY\namortized_cost DESC\nLIMIT 100",
-          "refId": "CUR"
-        }
-      ],
-      "title": "Top 100 Instances by Cost - Tag: (${TagKey}, ${TagValue})",
-      "type": "table"
-    },
-    {
       "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 62
+        "y": 12
       },
       "id": 10,
       "panels": [],
@@ -1557,7 +1549,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 63
+        "y": 13
       },
       "id": 3,
       "options": {
@@ -1587,7 +1579,7 @@
           },
           "format": 1,
           "hide": false,
-          "rawSQL": "SELECT \nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date) as line_item_usage_start_date,\nSUM(CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN savings_plan_savings_plan_effective_cost\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN reservation_effective_cost\n    WHEN line_item_line_item_type = 'Usage' THEN line_item_unblended_cost\n    ELSE 0 \n  END) AS amortized_cost\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2'\nAND line_item_operation = 'RunInstances'\nAND line_item_usage_type LIKE '%Box%'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nAND line_item_resource_id = '${InstanceId}'\nGROUP BY\nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date)\nORDER BY\nline_item_usage_start_date DESC\n",
+          "rawSQL": "SELECT \nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date) as line_item_usage_start_date,\nSUM(CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN savings_plan_savings_plan_effective_cost\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN reservation_effective_cost\n    WHEN line_item_line_item_type = 'Usage' THEN line_item_unblended_cost\n    ELSE 0 \n  END) AS amortized_cost\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2' \nAND line_item_operation LIKE '%RunInstances%' \nAND line_item_usage_type NOT LIKE '%DataXfer%' \nAND product_servicecode <> 'AWSDataTransfer' \nAND line_item_resource_id NOT LIKE 'arn:%:capacity-reservation/%'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nAND line_item_resource_id = '${InstanceId}'\nGROUP BY\nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date)\nORDER BY\nline_item_usage_start_date DESC\n",
           "refId": "CUR"
         },
         {
@@ -1596,7 +1588,7 @@
             "uid": "${DS_GRAFANA-DASHBOARDS-CLOUDWATCH}"
           },
           "dimensions": {},
-          "expression": "REMOVE_EMPTY(SEARCH('{\"AWS/EC2\",\"InstanceId\"} \"CPUUtilization\" InstanceId=\"${InstanceId}\" :aws.AccountId=\"${AccountId}\"', 'Average', ${CWGranularity}))",
+          "expression": "REMOVE_EMPTY(SEARCH('{\"AWS/EC2\",\"InstanceId\"} MetricName=\"CPUUtilization\" InstanceId=\"${InstanceId}\" :aws.AccountId=\"${AccountId}\"', 'Average', ${CWGranularity}))",
           "hide": false,
           "id": "",
           "label": "",
@@ -1653,7 +1645,7 @@
         "h": 8,
         "w": 6,
         "x": 12,
-        "y": 63
+        "y": 13
       },
       "id": 16,
       "options": {
@@ -1686,7 +1678,7 @@
           },
           "format": 1,
           "hide": false,
-          "rawSQL": "SELECT \nproduct_instance_type\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2'\nAND line_item_operation = 'RunInstances'\nAND line_item_usage_type LIKE '%Box%'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nAND line_item_resource_id = '${InstanceId}'\nGROUP BY\nproduct_instance_type\n\n",
+          "rawSQL": "SELECT \nproduct_instance_type\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2' \nAND line_item_operation LIKE '%RunInstances%' \nAND line_item_usage_type NOT LIKE '%DataXfer%' \nAND product_servicecode <> 'AWSDataTransfer' \nAND line_item_resource_id NOT LIKE 'arn:%:capacity-reservation/%'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nAND line_item_resource_id = '${InstanceId}'\nGROUP BY\nproduct_instance_type\n\n",
           "refId": "CUR"
         }
       ],
@@ -1729,7 +1721,7 @@
         "h": 8,
         "w": 6,
         "x": 18,
-        "y": 63
+        "y": 13
       },
       "id": 17,
       "options": {
@@ -1762,7 +1754,7 @@
           },
           "format": 1,
           "hide": false,
-          "rawSQL": "\nSELECT \n  DISTINCT\n  CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN 'Savings Plan'\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN 'Reserved Instance'\n    WHEN line_item_line_item_type = 'Usage' THEN 'On Demand'\n    ELSE 'Other'\n  END\nFROM \n  ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2'\nAND line_item_operation = 'RunInstances'\nAND line_item_usage_type LIKE '%Box%'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nAND line_item_resource_id = '${InstanceId}'\n",
+          "rawSQL": "\nSELECT \n  DISTINCT\n  CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN 'Savings Plan'\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN 'Reserved Instance'\n    WHEN line_item_line_item_type = 'Usage' THEN 'On Demand'\n    ELSE 'Other'\n  END\nFROM \n  ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2' \nAND line_item_operation LIKE '%RunInstances%' \nAND line_item_usage_type NOT LIKE '%DataXfer%' \nAND product_servicecode <> 'AWSDataTransfer' \nAND line_item_resource_id NOT LIKE 'arn:%:capacity-reservation/%'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nAND line_item_resource_id = '${InstanceId}'\n",
           "refId": "CUR"
         }
       ],
@@ -1887,7 +1879,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 71
+        "y": 21
       },
       "id": 5,
       "options": {
@@ -1917,7 +1909,7 @@
           },
           "format": 1,
           "hide": false,
-          "rawSQL": "SELECT \nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date) as line_item_usage_start_date,\nSUM(line_item_usage_amount) as sum_line_item_usage_amount\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2'\nAND line_item_operation = 'RunInstances'\nAND line_item_usage_type LIKE '%Box%'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nAND line_item_resource_id = '${InstanceId}'\nGROUP BY\nline_item_usage_start_date\nORDER BY\nline_item_usage_start_date DESC\n",
+          "rawSQL": "SELECT \nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date) as line_item_usage_start_date,\nSUM(line_item_usage_amount) as sum_line_item_usage_amount\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2' \nAND line_item_operation LIKE '%RunInstances%' \nAND line_item_usage_type NOT LIKE '%DataXfer%' \nAND product_servicecode <> 'AWSDataTransfer' \nAND line_item_resource_id NOT LIKE 'arn:%:capacity-reservation/%'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nAND line_item_resource_id = '${InstanceId}'\nGROUP BY\nline_item_usage_start_date\nORDER BY\nline_item_usage_start_date DESC\n",
           "refId": "CUR"
         },
         {
@@ -2067,7 +2059,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 71
+        "y": 21
       },
       "id": 7,
       "options": {
@@ -2190,8 +2182,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               }
             ]
           },
@@ -2248,7 +2239,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 79
+        "y": 29
       },
       "id": 6,
       "options": {
@@ -2371,8 +2362,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               }
             ]
           },
@@ -2429,7 +2419,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 79
+        "y": 29
       },
       "id": 9,
       "options": {
@@ -2603,7 +2593,7 @@
             "resultReuseMaxAgeInMinutes": 60
           },
           "format": 1,
-          "rawSQL": "SELECT \nDISTINCT line_item_usage_account_id\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\n-- line_item_usage_start_date >= CAST('${__from:date:YYYY-MM-DD}' as date)\n-- AND line_item_usage_start_date <= CAST('${__to:date:YYYY-MM-DD}' as date)\n"
+          "rawSQL": "SELECT \nDISTINCT line_item_usage_account_id\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date);\n"
         },
         "refresh": 1,
         "regex": "",
@@ -2675,7 +2665,7 @@
       },
       {
         "current": {
-          "selected": true,
+          "selected": false,
           "text": "day",
           "value": "day"
         },
@@ -2714,14 +2704,14 @@
       },
       {
         "current": {
-          "selected": true,
+          "selected": false,
           "text": "86400",
           "value": "86400"
         },
         "description": "Select the Granularity for CloudWatch data points in seconds.  \n\n300 = 5 minutes, 3600 = 1 hour, 86400 = 1 day, 604800 = 1 week, 2592000 = 1 month",
         "hide": 0,
         "includeAll": false,
-        "label": "CloudWatch Granularity (s)",
+        "label": "CloudWatch Granularity(s)",
         "multi": false,
         "name": "CWGranularity",
         "options": [
@@ -2763,7 +2753,7 @@
           "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
         },
         "definition": "",
-        "description": "Tag Key extracted from CUR and observed in the past 30 days",
+        "description": "Tag Key extracted from CUR and observed in the time period selected.",
         "hide": 0,
         "includeAll": false,
         "label": "Tag Key",
@@ -2779,7 +2769,7 @@
             "resultReuseMaxAgeInMinutes": 60
           },
           "format": 1,
-          "rawSQL": "WITH all_keys AS (\n  SELECT ARRAY_DISTINCT(ARRAY_AGG(key)) AS unique_keys\n  FROM ${CURDatabase}.${CURTable}\n  CROSS JOIN UNNEST(MAP_KEYS(resource_tags)) AS t(key)\n  WHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_usage_account_id = '${AccountId}'\n  AND product_region_code = '${Region}'\n  -- AND line_item_usage_start_date >= ${__from:date:iso} AND line_item_usage_start_date <= ${__to:date:iso} \n  -- AND line_item_usage_start_date >= CAST('${__from:date:YYYY-MM-DD}' as date)\n  -- AND line_item_usage_start_date <= CAST('${__to:date:YYYY-MM-DD}' as date)\n)\n\nSELECT key AS unique_key\nFROM all_keys\nCROSS JOIN UNNEST(unique_keys) AS t(key)"
+          "rawSQL": "WITH all_keys AS (\n  SELECT ARRAY_DISTINCT(ARRAY_AGG(key)) AS unique_keys\n  FROM ${CURDatabase}.${CURTable}\n  CROSS JOIN UNNEST(MAP_KEYS(resource_tags)) AS t(key)\n  WHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_usage_account_id = '${AccountId}'\n  AND product_region_code = '${Region}'\n)\n\nSELECT key AS unique_key\nFROM all_keys\nCROSS JOIN UNNEST(unique_keys) AS t(key);"
         },
         "refresh": 1,
         "regex": "",
@@ -2809,7 +2799,38 @@
             "resultReuseMaxAgeInMinutes": 60
           },
           "format": 1,
-          "rawSQL": "SELECT \n  resource_tags['${TagKey}'] AS tag_value,\n  COUNT(*) AS count\nFROM ${CURDatabase}.${CURTable}\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_usage_account_id = '${AccountId}'\n  AND product_region_code = '${Region}'\n  AND resource_tags['${TagKey}'] IS NOT NULL\n  -- AND line_item_usage_start_date >= CAST('${__from:date:YYYY-MM-DD}' as date)\n  -- AND line_item_usage_start_date <= CAST('${__to:date:YYYY-MM-DD}' as date)\nGROUP BY resource_tags['${TagKey}']\nORDER BY count DESC;"
+          "rawSQL": "SELECT \n  resource_tags['${TagKey}'] AS tag_value,\n  COUNT(*) AS count\nFROM ${CURDatabase}.${CURTable}\nWHERE \n  $__timeFilter(line_item_usage_start_date)\n  AND line_item_usage_account_id = '${AccountId}'\n  AND product_region_code = '${Region}'\n  AND resource_tags['${TagKey}'] IS NOT NULL\nGROUP BY resource_tags['${TagKey}']\nORDER BY count DESC;"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "grafana-athena-datasource",
+          "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
+        },
+        "definition": "",
+        "description": "Load Balancer Name - tagged with $TagKey $TagValue - observed during selected time period. ",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Load Balancer",
+        "multi": false,
+        "name": "LBName",
+        "options": [],
+        "query": {
+          "connectionArgs": {
+            "catalog": "__default",
+            "database": "__default",
+            "region": "__default",
+            "resultReuseEnabled": false,
+            "resultReuseMaxAgeInMinutes": 60
+          },
+          "format": 1,
+          "rawSQL": "SELECT \n  DISTINCT(line_item_resource_id)\nFROM ${CURDatabase}.${CURTable}\nWHERE \n  $__timeFilter(line_item_usage_start_date) \n  -- line_item_usage_start_date >= (current_date - interval '3' day) --lookback period\n  AND line_item_product_code = 'AWSELB'\n  AND line_item_usage_account_id = '${AccountId}'\n  AND product_region_code = '${Region}'\n  AND resource_tags['${TagKey}'] = '${TagValue}';\n\n"
         },
         "refresh": 1,
         "regex": "",
@@ -2830,6 +2851,6 @@
   "timezone": "browser",
   "title": "EC2 Dashboard",
   "uid": "aer8d8juorh8gd",
-  "version": 146,
+  "version": 166,
   "weekStart": ""
 }

@@ -31,15 +31,19 @@ COAST is deployed via CloudFormation, which allows for the provisioning of [Amaz
 ### Installation
 ---
 
-##### Step 1.
+##### 1. CUR Data Preparation.
 
 We recommend deploying dashboards in a dedicated monitoring account to aggregate Cost and Usage Report (CUR) data and CloudWatch cross-account metrics. This separation from the payer management account enhances security by consolidating observability functions in a tightly controlled environment. To deploy the COAST Grafana dashboard infrastructure, we recommend utilizing the data collection engine of the **Cloud Intelligence Dashboards** which has built an architecture and deployment for central CUR aggregation utilized for the CID Dashboards. 
 
-The CID Data Collection Lab provides CloudFormation templates to copy CUR 2.0 data from your Management Account to a dedicated one. You can use it to aggregate data from multiple Management (Payer) Accounts or multiple Linked Accounts.
+The CID Data Collection Lab provides CloudFormation templates to copy CUR 2.0 data from your Management (Payer) Account to a dedicated one. You can use it to aggregate data from multiple Management Accounts or multiple Linked Accounts.  
 
-[Deploy CID Data Collection](https://catalog.workshops.aws/awscid/en-US/dashboards/foundational/cudos-cid-kpi/deploy)
+[Step 1: Create Desitination for CUR Aggregattion](https://catalog.workshops.aws/awscid/en-US/dashboards/foundational/cudos-cid-kpi/deploy#step-1.-data-collection-account-create-destination-for-cur-aggregation) in your dedicated Data Collection Account.
 
-##### Step 2.
+[Step 2: Create CUR 2.0 and replication](https://catalog.workshops.aws/awscid/en-US/dashboards/foundational/cudos-cid-kpi/deploy#step-2.-in-managementpayersource-account-create-cur-2.0-and-replication) in the Management Account.
+
+*Step 3 may be ignored.*
+
+##### 2. Metrics Configuration.
 
 Most dashboards will have a requirement of CloudWatch metrics to visualize performance metrics. As a best practice, we recommend the configuration of **CloudWatch cross-account observability** into the central monitoring account (data collection account).  Each account (source account) that you wish to collect CloudWatch metrics from will need to configure each region to send metrics to the monitoring account (data collection account).
 
@@ -49,7 +53,7 @@ In each source account in each region, in the CloudWatch settings, select *Sourc
 
 For more in-depth instructions, see [Configure CloudWatch cross-account observability](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-Unified-Cross-Account.html). 
 
-##### Step 3. 
+##### 3. Solution Deployment. 
 
 Deploy COAST within the central monitoring account (data collection account). The COAST CloudFormation template builds the Amazon Grafana Workspace, installs the Athena plugin, and configures the Athena plugin with the deployed CUR and CloudWatch.
 
