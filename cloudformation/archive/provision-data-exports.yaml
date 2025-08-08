@@ -31,7 +31,7 @@ Parameters:
     Type: String
     Description: "Use an already existing CUR2 Data Export?"
     AllowedValues: ['Yes', 'No']
-    Default: 'no'
+    Default: 'No'
   DataExportType:
     Description: "Select a Data Export type"
     Type: String
@@ -767,6 +767,60 @@ Resources:
             - UniqueString: !Select [ 0, !Split [ '-', !Select [ 2, !Split [ '/', !Ref 'AWS::StackId' ] ] ] ]
               MappedExportName: !FindInMap [DataExportTypeMap, !Ref DataExportType, ExportName]
         CatalogId: !Sub "${AWS::AccountId}"
+
+  ###########################################################################
+  # Build Athena WorkGroup and Query Results Bucket
+  ###########################################################################
+
+    AthenaQueryResultsBucket:
+      Type: AWS::S3::Bucket
+      DeletionPolicy: Delete
+      UpdateReplacePolicy: Retain
+      Properties:
+        BucketName: 
+          !Sub 
+          - ${ResourcePrefix}-athena-results-${MappedExportName}-${UniqueString}
+          - UniqueString: !Select [ 0, !Split [ '-', !Select [ 2, !Split [ '/', !Ref 'AWS::StackId' ] ] ] ]
+            MappedExportName: !FindInMap [DataExportTypeMap, !Ref DataExportType, ExportName]
+        BucketEncryption:
+          ServerSideEncryptionConfiguration:
+            - ServerSideEncryptionByDefault:
+                SSEAlgorithm: AES256
+        AccessControl: BucketOwnerFullControl
+        OwnershipControls:
+          Rules:
+            - ObjectOwnership: BucketOwnerEnforced
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: true
+          BlockPublicPolicy: true
+          IgnorePublicAcls: true
+          RestrictPublicBuckets: true
+        LifecycleConfiguration:
+          Rules:
+            - Id: QueryResultsExpiration
+              Status: Enabled
+              ExpirationInDays: 30
+        Tags:
+        - Key: "project"
+          Value: !Sub ${ResourcePrefix}
+
+    AthenaWorkGroup:
+      Type: AWS::Athena::WorkGroup
+      Properties:
+        Name: 
+          !Sub 
+          - ${ResourcePrefix}-${MappedExportName}-${UniqueString}
+          - UniqueString: !Select [ 0, !Split [ '-', !Select [ 2, !Split [ '/', !Ref 'AWS::StackId' ] ] ] ]
+            MappedExportName: !FindInMap [DataExportTypeMap, !Ref DataExportType, ExportName]
+        Description: Athena workgroup for COAST data export queries
+        WorkGroupConfiguration:
+          ResultConfiguration:
+            OutputLocation: !Sub 's3://${AthenaQueryResultsBucket}/'
+          EnforceWorkGroupConfiguration: true
+          PublishCloudWatchMetrics: true
+        Tags:
+        - Key: "project"
+          Value: !Sub ${ResourcePrefix}
 
 Outputs:
   DataExportS3BucketName:
