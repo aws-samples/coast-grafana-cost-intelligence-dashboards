@@ -181,7 +181,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   }
                 ]
               },
@@ -195,10 +196,6 @@
                 },
                 "properties": [
                   {
-                    "id": "displayName",
-                    "value": "unit_cost"
-                  },
-                  {
                     "id": "color",
                     "value": {
                       "fixedColor": "purple",
@@ -210,23 +207,35 @@
                   },
                   {
                     "id": "custom.lineInterpolation",
-                    "value": "smooth"
+                    "value": "stepBefore"
                   },
                   {
                     "id": "custom.fillOpacity",
                     "value": 0
+                  },
+                  {
+                    "id": "custom.axisPlacement",
+                    "value": "auto"
+                  },
+                  {
+                    "id": "displayName",
+                    "value": "Unit Cost VCPU"
+                  },
+                  {
+                    "id": "custom.axisLabel",
+                    "value": "Unit Cost VCPU"
                   }
                 ]
               },
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "count_instances"
+                  "options": "number_of_vcpu"
                 },
                 "properties": [
                   {
                     "id": "displayName",
-                    "value": "instance_count"
+                    "value": "Number of VCPU"
                   },
                   {
                     "id": "color",
@@ -245,7 +254,7 @@
                   },
                   {
                     "id": "custom.axisLabel",
-                    "value": "Instance Count"
+                    "value": "Number of VCPU"
                   }
                 ]
               }
@@ -285,7 +294,7 @@
               },
               "format": 1,
               "hide": false,
-              "rawSQL": "SELECT \nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date) as line_item_usage_start_date,\nCOUNT(DISTINCT(line_item_resource_id)) as count_instances,\nSUM(CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN savings_plan_savings_plan_effective_cost\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN reservation_effective_cost\n    WHEN line_item_line_item_type = 'Usage' THEN line_item_unblended_cost\n    ELSE 0 \n  END) AS amortized_cost\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2' \nAND line_item_operation LIKE '%RunInstances%' \nAND line_item_usage_type NOT LIKE '%DataXfer%' \nAND product_servicecode <> 'AWSDataTransfer' \nAND line_item_resource_id NOT LIKE 'arn:%:capacity-reservation/%'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nGROUP BY\nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date)\nORDER BY\nline_item_usage_start_date DESC\n",
+              "rawSQL": "SELECT \nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date) as line_item_usage_start_date,\nSUM(CAST(product['vcpu'] as int)) as number_of_vcpu,\nSUM(CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN savings_plan_savings_plan_effective_cost\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN reservation_effective_cost\n    WHEN line_item_line_item_type = 'Usage' THEN line_item_unblended_cost\n    ELSE 0 \n  END) AS amortized_cost\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2' \nAND line_item_operation LIKE '%RunInstances%' \nAND line_item_usage_type NOT LIKE '%DataXfer%' \nAND product_servicecode <> 'AWSDataTransfer' \nAND line_item_resource_id NOT LIKE 'arn:%:capacity-reservation/%'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nGROUP BY\nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date)\nORDER BY\nline_item_usage_start_date DESC\n",
               "refId": "CUR"
             }
           ],
@@ -298,7 +307,7 @@
                 "binary": {
                   "left": "amortized_cost",
                   "operator": "/",
-                  "right": "count_instances"
+                  "right": "number_of_vcpu"
                 },
                 "mode": "binary",
                 "reduce": {
@@ -339,7 +348,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   }
                 ]
               },
@@ -410,7 +420,7 @@
               "custom": {
                 "axisBorderShow": false,
                 "axisCenteredZero": false,
-                "axisColorMode": "series",
+                "axisColorMode": "text",
                 "axisLabel": "Amortized Cost",
                 "axisPlacement": "left",
                 "axisSoftMin": 5,
@@ -454,7 +464,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   }
                 ]
               },
@@ -463,41 +474,29 @@
             "overrides": [
               {
                 "matcher": {
-                  "id": "byFrameRefID",
-                  "options": "ReservedInstance"
+                  "id": "byName",
+                  "options": "savings_plan"
                 },
                 "properties": [
                   {
                     "id": "color",
                     "value": {
-                      "fixedColor": "dark-orange",
+                      "fixedColor": "purple",
                       "mode": "shades"
                     }
-                  },
-                  {
-                    "id": "custom.axisColorMode",
-                    "value": "text"
-                  },
-                  {
-                    "id": "displayName",
-                    "value": "Reserved Instance Spend"
                   }
                 ]
               },
               {
                 "matcher": {
-                  "id": "byFrameRefID",
-                  "options": "OnDemand"
+                  "id": "byName",
+                  "options": "reserved_instance"
                 },
                 "properties": [
                   {
-                    "id": "displayName",
-                    "value": "OnDemand"
-                  },
-                  {
                     "id": "color",
                     "value": {
-                      "fixedColor": "dark-purple",
+                      "fixedColor": "red",
                       "mode": "shades"
                     }
                   }
@@ -539,45 +538,27 @@
               },
               "format": 1,
               "hide": false,
-              "rawSQL": "SELECT \nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date) as line_item_usage_start_date,\nSUM(CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN savings_plan_savings_plan_effective_cost\n    ELSE 0 \n  END) AS savings_plan_spend\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2' \nAND line_item_operation LIKE '%RunInstances%' \nAND line_item_usage_type NOT LIKE '%DataXfer%' \nAND product_servicecode <> 'AWSDataTransfer' \nAND line_item_resource_id NOT LIKE 'arn:%:capacity-reservation/%'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nGROUP BY\nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date)\nORDER BY\nline_item_usage_start_date DESC\n",
+              "rawSQL": "SELECT \nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date) as line_item_usage_start_date,\nSUM(CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN savings_plan_savings_plan_effective_cost\n    ELSE 0 \n  END) AS savings_plan_spend,\nSUM(CASE\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN reservation_effective_cost\n    ELSE 0 \n  END) AS reserved_instance_spend,\nSUM(CASE\n    WHEN line_item_line_item_type = 'Usage' THEN line_item_unblended_cost\n    ELSE 0 \n  END) AS ondemand_spend\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2' \nAND line_item_operation LIKE '%RunInstances%' \nAND line_item_usage_type NOT LIKE '%DataXfer%' \nAND product_servicecode <> 'AWSDataTransfer' \nAND line_item_resource_id NOT LIKE 'arn:%:capacity-reservation/%'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nGROUP BY\nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date)\nORDER BY\nline_item_usage_start_date DESC\n",
               "refId": "SavingsPlan"
-            },
-            {
-              "connectionArgs": {
-                "catalog": "__default",
-                "database": "__default",
-                "region": "__default",
-                "resultReuseEnabled": false,
-                "resultReuseMaxAgeInMinutes": 60
-              },
-              "datasource": {
-                "type": "grafana-athena-datasource",
-                "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
-              },
-              "format": 1,
-              "hide": false,
-              "rawSQL": "SELECT \nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date) as line_item_usage_start_date,\nSUM(CASE\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN reservation_effective_cost\n    ELSE 0 \n  END) AS reserved_instance_spend\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2' \nAND line_item_operation LIKE '%RunInstances%' \nAND line_item_usage_type NOT LIKE '%DataXfer%' \nAND product_servicecode <> 'AWSDataTransfer' \nAND line_item_resource_id NOT LIKE 'arn:%:capacity-reservation/%'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nGROUP BY\nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date)\nORDER BY\nline_item_usage_start_date DESC\n",
-              "refId": "ReservedInstance"
-            },
-            {
-              "connectionArgs": {
-                "catalog": "__default",
-                "database": "__default",
-                "region": "__default",
-                "resultReuseEnabled": false,
-                "resultReuseMaxAgeInMinutes": 60
-              },
-              "datasource": {
-                "type": "grafana-athena-datasource",
-                "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
-              },
-              "format": 1,
-              "hide": false,
-              "rawSQL": "SELECT \nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date) as line_item_usage_start_date,\nSUM(CASE\n    WHEN line_item_line_item_type = 'Usage' THEN line_item_unblended_cost\n    ELSE 0 \n  END) AS ondemand_spend\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2' \nAND line_item_operation LIKE '%RunInstances%' \nAND line_item_usage_type NOT LIKE '%DataXfer%' \nAND product_servicecode <> 'AWSDataTransfer' \nAND line_item_resource_id NOT LIKE 'arn:%:capacity-reservation/%'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nGROUP BY\nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date)\nORDER BY\nline_item_usage_start_date DESC\n",
-              "refId": "OnDemand"
             }
           ],
           "title": "EC2 Compute cost by purchase type for ${AccountId} in ${Region}",
+          "transformations": [
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {},
+                "includeByName": {},
+                "indexByName": {},
+                "renameByName": {
+                  "line_item_usage_start_date": "",
+                  "ondemand_spend": "ondemand",
+                  "reserved_instance_spend": "reserved_instance",
+                  "savings_plan_spend": "savings_plan"
+                }
+              }
+            }
+          ],
           "transparent": true,
           "type": "timeseries"
         },
@@ -621,7 +602,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   }
                 ]
               },
@@ -706,7 +688,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -834,7 +817,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   }
                 ]
               },
@@ -938,7 +922,7 @@
               },
               "format": 1,
               "hide": false,
-              "rawSQL": "SELECT \nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date) as line_item_usage_start_date,\nCOUNT(DISTINCT(line_item_resource_id)) as count_instances,\nSUM(CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN savings_plan_savings_plan_effective_cost\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN reservation_effective_cost\n    WHEN line_item_line_item_type = 'Usage' THEN line_item_unblended_cost\n    ELSE 0 \n  END) AS amortized_cost\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2' \nAND line_item_operation LIKE '%RunInstances%' \nAND line_item_usage_type NOT LIKE '%DataXfer%' \nAND product_servicecode <> 'AWSDataTransfer' \nAND line_item_resource_id NOT LIKE 'arn:%:capacity-reservation/%'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nAND resource_tags['${TagKey}'] = '${TagValue}'\nGROUP BY\nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date)\nORDER BY\nline_item_usage_start_date DESC\n",
+              "rawSQL": "SELECT \nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date) as line_item_usage_start_date,\nSUM(CAST(product['vcpu'] as int)) as number_of_vcpu,\nSUM(CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN savings_plan_savings_plan_effective_cost\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN reservation_effective_cost\n    WHEN line_item_line_item_type = 'Usage' THEN line_item_unblended_cost\n    ELSE 0 \n  END) AS amortized_cost\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2' \nAND line_item_operation LIKE '%RunInstances%' \nAND line_item_usage_type NOT LIKE '%DataXfer%' \nAND product_servicecode <> 'AWSDataTransfer' \nAND line_item_resource_id NOT LIKE 'arn:%:capacity-reservation/%'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nAND resource_tags['${TagKey}'] = '${TagValue}'\nGROUP BY\nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date)\nORDER BY\nline_item_usage_start_date DESC\n",
               "refId": "CUR"
             }
           ],
@@ -993,7 +977,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   }
                 ]
               },
@@ -1064,7 +1049,7 @@
               "custom": {
                 "axisBorderShow": false,
                 "axisCenteredZero": false,
-                "axisColorMode": "series",
+                "axisColorMode": "text",
                 "axisLabel": "Amortized Cost",
                 "axisPlacement": "left",
                 "axisSoftMin": 5,
@@ -1108,7 +1093,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   }
                 ]
               },
@@ -1117,41 +1103,29 @@
             "overrides": [
               {
                 "matcher": {
-                  "id": "byFrameRefID",
-                  "options": "ReservedInstance"
+                  "id": "byName",
+                  "options": "savings_plan"
                 },
                 "properties": [
                   {
                     "id": "color",
                     "value": {
-                      "fixedColor": "dark-orange",
+                      "fixedColor": "purple",
                       "mode": "shades"
                     }
-                  },
-                  {
-                    "id": "custom.axisColorMode",
-                    "value": "text"
-                  },
-                  {
-                    "id": "displayName",
-                    "value": "Reserved Instance Spend"
                   }
                 ]
               },
               {
                 "matcher": {
-                  "id": "byFrameRefID",
-                  "options": "OnDemand"
+                  "id": "byName",
+                  "options": "reserved_instances"
                 },
                 "properties": [
                   {
-                    "id": "displayName",
-                    "value": "OnDemand"
-                  },
-                  {
                     "id": "color",
                     "value": {
-                      "fixedColor": "dark-purple",
+                      "fixedColor": "red",
                       "mode": "shades"
                     }
                   }
@@ -1193,45 +1167,26 @@
               },
               "format": 1,
               "hide": false,
-              "rawSQL": "SELECT \nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date) as line_item_usage_start_date,\nSUM(CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN savings_plan_savings_plan_effective_cost\n    ELSE 0 \n  END) AS savings_plan_spend\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2' \nAND line_item_operation LIKE '%RunInstances%' \nAND line_item_usage_type NOT LIKE '%DataXfer%' \nAND product_servicecode <> 'AWSDataTransfer' \nAND line_item_resource_id NOT LIKE 'arn:%:capacity-reservation/%'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nAND resource_tags['${TagKey}'] = '${TagValue}'\nGROUP BY\nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date)\nORDER BY\nline_item_usage_start_date DESC\n",
+              "rawSQL": "SELECT \nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date) as line_item_usage_start_date,\nSUM(CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN savings_plan_savings_plan_effective_cost\n    ELSE 0 \n  END) AS savings_plan_spend,\nSUM(CASE\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN reservation_effective_cost\n    ELSE 0 \n  END) AS reserved_instance_spend,\nSUM(CASE\n    WHEN line_item_line_item_type = 'Usage' THEN line_item_unblended_cost\n    ELSE 0 \n  END) AS ondemand_spend\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2' \nAND line_item_operation LIKE '%RunInstances%' \nAND line_item_usage_type NOT LIKE '%DataXfer%' \nAND product_servicecode <> 'AWSDataTransfer' \nAND line_item_resource_id NOT LIKE 'arn:%:capacity-reservation/%'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nAND resource_tags['${TagKey}'] = '${TagValue}'\nGROUP BY\nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date)\nORDER BY\nline_item_usage_start_date DESC\n\n",
               "refId": "SavingsPlan"
-            },
-            {
-              "connectionArgs": {
-                "catalog": "__default",
-                "database": "__default",
-                "region": "__default",
-                "resultReuseEnabled": false,
-                "resultReuseMaxAgeInMinutes": 60
-              },
-              "datasource": {
-                "type": "grafana-athena-datasource",
-                "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
-              },
-              "format": 1,
-              "hide": false,
-              "rawSQL": "SELECT \nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date) as line_item_usage_start_date,\nSUM(CASE\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN reservation_effective_cost\n    ELSE 0 \n  END) AS reserved_instance_spend\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2'\nAND line_item_operation = 'RunInstances'\nAND line_item_usage_type LIKE '%Box%'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nAND resource_tags['${TagKey}'] = '${TagValue}'\nGROUP BY\nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date)\nORDER BY\nline_item_usage_start_date DESC\n",
-              "refId": "ReservedInstance"
-            },
-            {
-              "connectionArgs": {
-                "catalog": "__default",
-                "database": "__default",
-                "region": "__default",
-                "resultReuseEnabled": false,
-                "resultReuseMaxAgeInMinutes": 60
-              },
-              "datasource": {
-                "type": "grafana-athena-datasource",
-                "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
-              },
-              "format": 1,
-              "hide": false,
-              "rawSQL": "SELECT \nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date) as line_item_usage_start_date,\nSUM(CASE\n    WHEN line_item_line_item_type = 'Usage' THEN line_item_unblended_cost\n    ELSE 0 \n  END) AS ondemand_spend\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2'\nAND line_item_operation = 'RunInstances'\nAND line_item_usage_type LIKE '%Box%'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nAND resource_tags['${TagKey}'] = '${TagValue}'\nGROUP BY\nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date)\nORDER BY\nline_item_usage_start_date DESC\n",
-              "refId": "OnDemand"
             }
           ],
           "title": "EC2 Compute cost by purchase type for ${AccountId} in ${Region} -  Tag: (${TagKey}, ${TagValue})",
+          "transformations": [
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {},
+                "includeByName": {},
+                "indexByName": {},
+                "renameByName": {
+                  "ondemand_spend": "ondemand",
+                  "reserved_instance_spend": "reserved_instances",
+                  "savings_plan_spend": "savings_plan"
+                }
+              }
+            }
+          ],
           "transparent": true,
           "type": "timeseries"
         },
@@ -1276,7 +1231,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   }
                 ]
               },
@@ -1361,7 +1317,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -1420,7 +1377,7 @@
       "type": "row"
     },
     {
-      "collapsed": false,
+      "collapsed": true,
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -1428,1057 +1385,1060 @@
         "y": 12
       },
       "id": 10,
-      "panels": [],
+      "panels": [
+        {
+          "datasource": {
+            "type": "datasource",
+            "uid": "-- Mixed --"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "fixedColor": "dark-green",
+                "mode": "shades",
+                "seriesBy": "max"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "series",
+                "axisLabel": "Amortized Cost",
+                "axisPlacement": "left",
+                "axisSoftMin": 5,
+                "axisWidth": 75,
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 25,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "smooth",
+                "lineStyle": {
+                  "dash": [
+                    0,
+                    10
+                  ],
+                  "fill": "dot"
+                },
+                "lineWidth": 1,
+                "pointSize": 2,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "displayName": "Amortized Cost",
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "currencyUSD"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byFrameRefID",
+                  "options": "CW"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "dark-purple",
+                      "mode": "shades",
+                      "seriesBy": "max"
+                    }
+                  },
+                  {
+                    "id": "custom.axisPlacement",
+                    "value": "right"
+                  },
+                  {
+                    "id": "custom.axisLabel",
+                    "value": "CPU Percentage"
+                  },
+                  {
+                    "id": "custom.axisSoftMin",
+                    "value": 5
+                  },
+                  {
+                    "id": "unit",
+                    "value": "percent"
+                  },
+                  {
+                    "id": "displayName",
+                    "value": "CPU Percentage"
+                  },
+                  {
+                    "id": "custom.gradientMode",
+                    "value": "opacity"
+                  },
+                  {
+                    "id": "custom.fillOpacity",
+                    "value": 50
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 13
+          },
+          "id": 3,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "connectionArgs": {
+                "catalog": "__default",
+                "database": "__default",
+                "region": "__default",
+                "resultReuseEnabled": false,
+                "resultReuseMaxAgeInMinutes": 60
+              },
+              "datasource": {
+                "type": "grafana-athena-datasource",
+                "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
+              },
+              "format": 1,
+              "hide": false,
+              "rawSQL": "SELECT \nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date) as line_item_usage_start_date,\nSUM(CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN savings_plan_savings_plan_effective_cost\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN reservation_effective_cost\n    WHEN line_item_line_item_type = 'Usage' THEN line_item_unblended_cost\n    ELSE 0 \n  END) AS amortized_cost\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2' \nAND line_item_operation LIKE '%RunInstances%' \nAND line_item_usage_type NOT LIKE '%DataXfer%' \nAND product_servicecode <> 'AWSDataTransfer' \nAND line_item_resource_id NOT LIKE 'arn:%:capacity-reservation/%'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nAND line_item_resource_id = '${InstanceId}'\nGROUP BY\nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date)\nORDER BY\nline_item_usage_start_date DESC\n",
+              "refId": "CUR"
+            },
+            {
+              "datasource": {
+                "type": "cloudwatch",
+                "uid": "${DS_GRAFANA-DASHBOARDS-CLOUDWATCH}"
+              },
+              "dimensions": {},
+              "expression": "REMOVE_EMPTY(SEARCH('{\"AWS/EC2\",\"InstanceId\"} MetricName=\"CPUUtilization\" InstanceId=\"${InstanceId}\" :aws.AccountId=\"${AccountId}\"', 'Average', ${CWGranularity}))",
+              "hide": false,
+              "id": "",
+              "label": "",
+              "logGroups": [],
+              "matchExact": true,
+              "metricEditorMode": 1,
+              "metricName": "",
+              "metricQueryType": 0,
+              "namespace": "",
+              "period": "",
+              "queryMode": "Metrics",
+              "refId": "CW",
+              "region": "$Region",
+              "sqlExpression": "",
+              "statistic": "Average"
+            }
+          ],
+          "title": "CPU over Cost - ${InstanceId}",
+          "transparent": true,
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "datasource",
+            "uid": "-- Mixed --"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "fixedColor": "semi-dark-green",
+                "mode": "shades"
+              },
+              "displayName": "Instance Type",
+              "mappings": [],
+              "noValue": "No value",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 6,
+            "x": 12,
+            "y": 13
+          },
+          "id": 16,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [],
+              "fields": "/.*/",
+              "values": true
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "10.4.1",
+          "targets": [
+            {
+              "connectionArgs": {
+                "catalog": "__default",
+                "database": "__default",
+                "region": "__default",
+                "resultReuseEnabled": false,
+                "resultReuseMaxAgeInMinutes": 60
+              },
+              "datasource": {
+                "type": "grafana-athena-datasource",
+                "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
+              },
+              "format": 1,
+              "hide": false,
+              "rawSQL": "SELECT \nproduct_instance_type\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2' \nAND line_item_operation LIKE '%RunInstances%' \nAND line_item_usage_type NOT LIKE '%DataXfer%' \nAND product_servicecode <> 'AWSDataTransfer' \nAND line_item_resource_id NOT LIKE 'arn:%:capacity-reservation/%'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nAND line_item_resource_id = '${InstanceId}'\nGROUP BY\nproduct_instance_type\n\n",
+              "refId": "CUR"
+            }
+          ],
+          "title": "Instance Types",
+          "transparent": true,
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "datasource",
+            "uid": "-- Mixed --"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "fixedColor": "semi-dark-green",
+                "mode": "shades"
+              },
+              "displayName": "${InstanceId}",
+              "mappings": [],
+              "noValue": "No value",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 6,
+            "x": 18,
+            "y": 13
+          },
+          "id": 17,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [],
+              "fields": "/.*/",
+              "values": true
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "10.4.1",
+          "targets": [
+            {
+              "connectionArgs": {
+                "catalog": "__default",
+                "database": "__default",
+                "region": "__default",
+                "resultReuseEnabled": false,
+                "resultReuseMaxAgeInMinutes": 60
+              },
+              "datasource": {
+                "type": "grafana-athena-datasource",
+                "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
+              },
+              "format": 1,
+              "hide": false,
+              "rawSQL": "\nSELECT \n  DISTINCT\n  CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN 'Savings Plan'\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN 'Reserved Instance'\n    WHEN line_item_line_item_type = 'Usage' THEN 'On Demand'\n    ELSE 'Other'\n  END\nFROM \n  ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2' \nAND line_item_operation LIKE '%RunInstances%' \nAND line_item_usage_type NOT LIKE '%DataXfer%' \nAND product_servicecode <> 'AWSDataTransfer' \nAND line_item_resource_id NOT LIKE 'arn:%:capacity-reservation/%'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nAND line_item_resource_id = '${InstanceId}'\n",
+              "refId": "CUR"
+            }
+          ],
+          "title": "Instance Purchase Types",
+          "transparent": true,
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "datasource",
+            "uid": "-- Mixed --"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "fixedColor": "dark-green",
+                "mode": "shades",
+                "seriesBy": "max"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "series",
+                "axisLabel": "Usage Amount",
+                "axisPlacement": "left",
+                "axisSoftMin": 5,
+                "axisWidth": 50,
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 25,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "smooth",
+                "lineStyle": {
+                  "dash": [
+                    0,
+                    10
+                  ],
+                  "fill": "dot"
+                },
+                "lineWidth": 1,
+                "pointSize": 2,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "displayName": "Usage Amount",
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "none"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byFrameRefID",
+                  "options": "CW"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "dark-purple",
+                      "mode": "shades",
+                      "seriesBy": "max"
+                    }
+                  },
+                  {
+                    "id": "custom.axisPlacement",
+                    "value": "right"
+                  },
+                  {
+                    "id": "custom.axisLabel",
+                    "value": "CPU Percentage"
+                  },
+                  {
+                    "id": "custom.axisSoftMin",
+                    "value": 5
+                  },
+                  {
+                    "id": "unit",
+                    "value": "percent"
+                  },
+                  {
+                    "id": "displayName",
+                    "value": "CPU Percentage"
+                  },
+                  {
+                    "id": "custom.gradientMode",
+                    "value": "opacity"
+                  },
+                  {
+                    "id": "custom.fillOpacity",
+                    "value": 50
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 21
+          },
+          "id": 5,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "connectionArgs": {
+                "catalog": "__default",
+                "database": "__default",
+                "region": "__default",
+                "resultReuseEnabled": false,
+                "resultReuseMaxAgeInMinutes": 60
+              },
+              "datasource": {
+                "type": "grafana-athena-datasource",
+                "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
+              },
+              "format": 1,
+              "hide": false,
+              "rawSQL": "SELECT \nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date) as line_item_usage_start_date,\nSUM(line_item_usage_amount) as sum_line_item_usage_amount\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2' \nAND line_item_operation LIKE '%RunInstances%' \nAND line_item_usage_type NOT LIKE '%DataXfer%' \nAND product_servicecode <> 'AWSDataTransfer' \nAND line_item_resource_id NOT LIKE 'arn:%:capacity-reservation/%'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nAND line_item_resource_id = '${InstanceId}'\nGROUP BY\nline_item_usage_start_date\nORDER BY\nline_item_usage_start_date DESC\n",
+              "refId": "CUR"
+            },
+            {
+              "datasource": {
+                "type": "cloudwatch",
+                "uid": "${DS_GRAFANA-DASHBOARDS-CLOUDWATCH}"
+              },
+              "dimensions": {},
+              "expression": "REMOVE_EMPTY(SEARCH('{\"AWS/EC2\",\"InstanceId\"} \"CPUUtilization\" InstanceId=\"${InstanceId}\" :aws.AccountId=\"${AccountId}\"', 'Average', ${CWGranularity}))",
+              "hide": false,
+              "id": "",
+              "label": "",
+              "logGroups": [],
+              "matchExact": true,
+              "metricEditorMode": 1,
+              "metricName": "",
+              "metricQueryType": 0,
+              "namespace": "",
+              "period": "",
+              "queryMode": "Metrics",
+              "refId": "CW",
+              "region": "us-east-1",
+              "sqlExpression": "",
+              "statistic": "Average"
+            }
+          ],
+          "title": "CPU over Usage -  ${InstanceId}",
+          "transparent": true,
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "datasource",
+            "uid": "-- Mixed --"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "fixedColor": "dark-green",
+                "mode": "shades",
+                "seriesBy": "max"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "series",
+                "axisLabel": "Network Cost",
+                "axisPlacement": "left",
+                "axisSoftMin": 0,
+                "axisWidth": 75,
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 25,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "smooth",
+                "lineStyle": {
+                  "dash": [
+                    0,
+                    10
+                  ],
+                  "fill": "dot"
+                },
+                "lineWidth": 1,
+                "pointSize": 2,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "displayName": "Network Cost",
+              "mappings": [],
+              "min": 0,
+              "noValue": "No Value",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "currencyUSD"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byFrameRefID",
+                  "options": "CW"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "dark-purple",
+                      "mode": "shades",
+                      "seriesBy": "max"
+                    }
+                  },
+                  {
+                    "id": "custom.axisPlacement",
+                    "value": "right"
+                  },
+                  {
+                    "id": "custom.axisLabel",
+                    "value": "CPU Percentage"
+                  },
+                  {
+                    "id": "custom.axisSoftMin",
+                    "value": 10
+                  },
+                  {
+                    "id": "unit",
+                    "value": "bytes"
+                  },
+                  {
+                    "id": "displayName",
+                    "value": "Network Out (Bytes)"
+                  },
+                  {
+                    "id": "custom.gradientMode",
+                    "value": "opacity"
+                  },
+                  {
+                    "id": "custom.fillOpacity",
+                    "value": 50
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 21
+          },
+          "id": 7,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "connectionArgs": {
+                "catalog": "__default",
+                "database": "__default",
+                "region": "__default",
+                "resultReuseEnabled": false,
+                "resultReuseMaxAgeInMinutes": 60
+              },
+              "datasource": {
+                "type": "grafana-athena-datasource",
+                "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
+              },
+              "format": 1,
+              "hide": false,
+              "rawSQL": "SELECT \nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date) as line_item_usage_start_date,\nSUM(line_item_unblended_cost) as sum_line_item_unblended_cost\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2'\nAND line_item_usage_type LIKE '%DataTransfer-Out-Bytes'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nAND line_item_resource_id = '${InstanceId}'\nGROUP BY\nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date)\nORDER BY\nline_item_usage_start_date DESC\n",
+              "refId": "CUR"
+            },
+            {
+              "datasource": {
+                "type": "cloudwatch",
+                "uid": "${DS_GRAFANA-DASHBOARDS-CLOUDWATCH}"
+              },
+              "dimensions": {},
+              "expression": "REMOVE_EMPTY(SEARCH('{\"AWS/EC2\",\"InstanceId\"} \"NetworkOut\" InstanceId=\"${InstanceId}\" :aws.AccountId=\"${AccountId}\"', 'Average', ${CWGranularity}))",
+              "hide": false,
+              "id": "",
+              "label": "",
+              "logGroups": [],
+              "matchExact": true,
+              "metricEditorMode": 1,
+              "metricName": "",
+              "metricQueryType": 0,
+              "namespace": "",
+              "period": "",
+              "queryMode": "Metrics",
+              "refId": "CW",
+              "region": "us-east-1",
+              "sqlExpression": "",
+              "statistic": "Average"
+            }
+          ],
+          "title": "Network Out over Data Transfer Out Cost - ${InstanceId}",
+          "transparent": true,
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "datasource",
+            "uid": "-- Mixed --"
+          },
+          "description": "Absence of cost may mean the instance is in the free teir",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "fixedColor": "dark-green",
+                "mode": "shades",
+                "seriesBy": "max"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "series",
+                "axisLabel": "Network Cost",
+                "axisPlacement": "left",
+                "axisSoftMin": 0,
+                "axisWidth": 75,
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 25,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "smooth",
+                "lineStyle": {
+                  "dash": [
+                    0,
+                    10
+                  ],
+                  "fill": "dot"
+                },
+                "lineWidth": 1,
+                "pointSize": 2,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "displayName": "Network Cost",
+              "mappings": [],
+              "min": 0,
+              "noValue": "No Value",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "currencyUSD"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byFrameRefID",
+                  "options": "CW"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "dark-purple",
+                      "mode": "shades",
+                      "seriesBy": "max"
+                    }
+                  },
+                  {
+                    "id": "custom.axisPlacement",
+                    "value": "right"
+                  },
+                  {
+                    "id": "custom.axisLabel",
+                    "value": "CPU Percentage"
+                  },
+                  {
+                    "id": "custom.axisSoftMin",
+                    "value": 10
+                  },
+                  {
+                    "id": "unit",
+                    "value": "bytes"
+                  },
+                  {
+                    "id": "displayName",
+                    "value": "Network Out (Bytes)"
+                  },
+                  {
+                    "id": "custom.gradientMode",
+                    "value": "opacity"
+                  },
+                  {
+                    "id": "custom.fillOpacity",
+                    "value": 50
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 29
+          },
+          "id": 6,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "connectionArgs": {
+                "catalog": "__default",
+                "database": "__default",
+                "region": "__default",
+                "resultReuseEnabled": false,
+                "resultReuseMaxAgeInMinutes": 60
+              },
+              "datasource": {
+                "type": "grafana-athena-datasource",
+                "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
+              },
+              "format": 1,
+              "hide": false,
+              "rawSQL": "SELECT \nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date) as line_item_usage_start_date,\nSUM(line_item_unblended_cost) as sum_line_item_unblended_cost\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2'\nAND line_item_usage_type LIKE '%DataTransfer-Regional-Bytes'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nAND line_item_resource_id = '${InstanceId}'\nGROUP BY\nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date)\nORDER BY\nline_item_usage_start_date DESC\n",
+              "refId": "CUR"
+            },
+            {
+              "datasource": {
+                "type": "cloudwatch",
+                "uid": "${DS_GRAFANA-DASHBOARDS-CLOUDWATCH}"
+              },
+              "dimensions": {},
+              "expression": "REMOVE_EMPTY(SEARCH('{\"AWS/EC2\",\"InstanceId\"} \"NetworkOut\" InstanceId=\"${InstanceId}\" :aws.AccountId=\"${AccountId}\"', 'Average', ${CWGranularity}))",
+              "hide": false,
+              "id": "",
+              "label": "",
+              "logGroups": [],
+              "matchExact": true,
+              "metricEditorMode": 1,
+              "metricName": "",
+              "metricQueryType": 0,
+              "namespace": "",
+              "period": "",
+              "queryMode": "Metrics",
+              "refId": "CW",
+              "region": "us-east-1",
+              "sqlExpression": "",
+              "statistic": "Average"
+            }
+          ],
+          "title": "Network Out over Data Transfer Regional  Cost - ${InstanceId}",
+          "transparent": true,
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "datasource",
+            "uid": "-- Mixed --"
+          },
+          "description": "Transfer between regions from resource.  Absence of cost may mean the instance is covered under the free tier.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "fixedColor": "dark-green",
+                "mode": "shades",
+                "seriesBy": "max"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "series",
+                "axisLabel": "Network Cost",
+                "axisPlacement": "left",
+                "axisSoftMin": 0,
+                "axisWidth": 75,
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 25,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "smooth",
+                "lineStyle": {
+                  "dash": [
+                    0,
+                    10
+                  ],
+                  "fill": "dot"
+                },
+                "lineWidth": 1,
+                "pointSize": 2,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "displayName": "Network Cost",
+              "mappings": [],
+              "min": 0,
+              "noValue": "No Value",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "currencyUSD"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byFrameRefID",
+                  "options": "CW"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "dark-purple",
+                      "mode": "shades",
+                      "seriesBy": "max"
+                    }
+                  },
+                  {
+                    "id": "custom.axisPlacement",
+                    "value": "right"
+                  },
+                  {
+                    "id": "custom.axisLabel",
+                    "value": "CPU Percentage"
+                  },
+                  {
+                    "id": "custom.axisSoftMin",
+                    "value": 10
+                  },
+                  {
+                    "id": "unit",
+                    "value": "bytes"
+                  },
+                  {
+                    "id": "displayName",
+                    "value": "Network Out (Bytes)"
+                  },
+                  {
+                    "id": "custom.gradientMode",
+                    "value": "opacity"
+                  },
+                  {
+                    "id": "custom.fillOpacity",
+                    "value": 50
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 29
+          },
+          "id": 9,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "connectionArgs": {
+                "catalog": "__default",
+                "database": "__default",
+                "region": "__default",
+                "resultReuseEnabled": false,
+                "resultReuseMaxAgeInMinutes": 60
+              },
+              "datasource": {
+                "type": "grafana-athena-datasource",
+                "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
+              },
+              "format": 1,
+              "hide": false,
+              "rawSQL": "SELECT \nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date) as line_item_usage_start_date,\nSUM(line_item_unblended_cost) as sum_line_item_unblended_cost\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2'\nAND line_item_usage_type LIKE '%-AWS-In-Bytes'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nAND line_item_resource_id = '${InstanceId}'\nGROUP BY\nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date)\nORDER BY\nline_item_usage_start_date DESC\n",
+              "refId": "CUR"
+            },
+            {
+              "datasource": {
+                "type": "cloudwatch",
+                "uid": "${DS_GRAFANA-DASHBOARDS-CLOUDWATCH}"
+              },
+              "dimensions": {},
+              "expression": "REMOVE_EMPTY(SEARCH('{\"AWS/EC2\",\"InstanceId\"} \"NetworkOut\" InstanceId=\"${InstanceId}\" :aws.AccountId=\"${AccountId}\"', 'Average', ${CWGranularity}))",
+              "hide": false,
+              "id": "",
+              "label": "",
+              "logGroups": [],
+              "matchExact": true,
+              "metricEditorMode": 1,
+              "metricName": "",
+              "metricQueryType": 0,
+              "namespace": "",
+              "period": "",
+              "queryMode": "Metrics",
+              "refId": "CW",
+              "region": "us-east-1",
+              "sqlExpression": "",
+              "statistic": "Average"
+            }
+          ],
+          "title": "Network Out over Intra-Region Data Transfer Cost - ${InstanceId}",
+          "transparent": true,
+          "type": "timeseries"
+        }
+      ],
       "title": "Instance Explorer - ${InstanceId}",
       "type": "row"
-    },
-    {
-      "datasource": {
-        "type": "datasource",
-        "uid": "-- Mixed --"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "fixedColor": "dark-green",
-            "mode": "shades",
-            "seriesBy": "max"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "series",
-            "axisLabel": "Amortized Cost",
-            "axisPlacement": "left",
-            "axisSoftMin": 5,
-            "axisWidth": 75,
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 25,
-            "gradientMode": "opacity",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "smooth",
-            "lineStyle": {
-              "dash": [
-                0,
-                10
-              ],
-              "fill": "dot"
-            },
-            "lineWidth": 1,
-            "pointSize": 2,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "displayName": "Amortized Cost",
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          },
-          "unit": "currencyUSD"
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byFrameRefID",
-              "options": "CW"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "dark-purple",
-                  "mode": "shades",
-                  "seriesBy": "max"
-                }
-              },
-              {
-                "id": "custom.axisPlacement",
-                "value": "right"
-              },
-              {
-                "id": "custom.axisLabel",
-                "value": "CPU Percentage"
-              },
-              {
-                "id": "custom.axisSoftMin",
-                "value": 5
-              },
-              {
-                "id": "unit",
-                "value": "percent"
-              },
-              {
-                "id": "displayName",
-                "value": "CPU Percentage"
-              },
-              {
-                "id": "custom.gradientMode",
-                "value": "opacity"
-              },
-              {
-                "id": "custom.fillOpacity",
-                "value": 50
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 13
-      },
-      "id": 3,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "connectionArgs": {
-            "catalog": "__default",
-            "database": "__default",
-            "region": "__default",
-            "resultReuseEnabled": false,
-            "resultReuseMaxAgeInMinutes": 60
-          },
-          "datasource": {
-            "type": "grafana-athena-datasource",
-            "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
-          },
-          "format": 1,
-          "hide": false,
-          "rawSQL": "SELECT \nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date) as line_item_usage_start_date,\nSUM(CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN savings_plan_savings_plan_effective_cost\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN reservation_effective_cost\n    WHEN line_item_line_item_type = 'Usage' THEN line_item_unblended_cost\n    ELSE 0 \n  END) AS amortized_cost\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2' \nAND line_item_operation LIKE '%RunInstances%' \nAND line_item_usage_type NOT LIKE '%DataXfer%' \nAND product_servicecode <> 'AWSDataTransfer' \nAND line_item_resource_id NOT LIKE 'arn:%:capacity-reservation/%'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nAND line_item_resource_id = '${InstanceId}'\nGROUP BY\nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date)\nORDER BY\nline_item_usage_start_date DESC\n",
-          "refId": "CUR"
-        },
-        {
-          "datasource": {
-            "type": "cloudwatch",
-            "uid": "${DS_GRAFANA-DASHBOARDS-CLOUDWATCH}"
-          },
-          "dimensions": {},
-          "expression": "REMOVE_EMPTY(SEARCH('{\"AWS/EC2\",\"InstanceId\"} MetricName=\"CPUUtilization\" InstanceId=\"${InstanceId}\" :aws.AccountId=\"${AccountId}\"', 'Average', ${CWGranularity}))",
-          "hide": false,
-          "id": "",
-          "label": "",
-          "logGroups": [],
-          "matchExact": true,
-          "metricEditorMode": 1,
-          "metricName": "",
-          "metricQueryType": 0,
-          "namespace": "",
-          "period": "",
-          "queryMode": "Metrics",
-          "refId": "CW",
-          "region": "$Region",
-          "sqlExpression": "",
-          "statistic": "Average"
-        }
-      ],
-      "title": "CPU over Cost - ${InstanceId}",
-      "transparent": true,
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "datasource",
-        "uid": "-- Mixed --"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "fixedColor": "semi-dark-green",
-            "mode": "shades"
-          },
-          "displayName": "Instance Type",
-          "mappings": [],
-          "noValue": "No value",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "short"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 6,
-        "x": 12,
-        "y": 13
-      },
-      "id": 16,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [],
-          "fields": "/.*/",
-          "values": true
-        },
-        "showPercentChange": false,
-        "textMode": "auto",
-        "wideLayout": true
-      },
-      "pluginVersion": "10.4.1",
-      "targets": [
-        {
-          "connectionArgs": {
-            "catalog": "__default",
-            "database": "__default",
-            "region": "__default",
-            "resultReuseEnabled": false,
-            "resultReuseMaxAgeInMinutes": 60
-          },
-          "datasource": {
-            "type": "grafana-athena-datasource",
-            "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
-          },
-          "format": 1,
-          "hide": false,
-          "rawSQL": "SELECT \nproduct_instance_type\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2' \nAND line_item_operation LIKE '%RunInstances%' \nAND line_item_usage_type NOT LIKE '%DataXfer%' \nAND product_servicecode <> 'AWSDataTransfer' \nAND line_item_resource_id NOT LIKE 'arn:%:capacity-reservation/%'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nAND line_item_resource_id = '${InstanceId}'\nGROUP BY\nproduct_instance_type\n\n",
-          "refId": "CUR"
-        }
-      ],
-      "title": "Instance Types",
-      "transparent": true,
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "datasource",
-        "uid": "-- Mixed --"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "fixedColor": "semi-dark-green",
-            "mode": "shades"
-          },
-          "displayName": "${InstanceId}",
-          "mappings": [],
-          "noValue": "No value",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "short"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 6,
-        "x": 18,
-        "y": 13
-      },
-      "id": 17,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [],
-          "fields": "/.*/",
-          "values": true
-        },
-        "showPercentChange": false,
-        "textMode": "auto",
-        "wideLayout": true
-      },
-      "pluginVersion": "10.4.1",
-      "targets": [
-        {
-          "connectionArgs": {
-            "catalog": "__default",
-            "database": "__default",
-            "region": "__default",
-            "resultReuseEnabled": false,
-            "resultReuseMaxAgeInMinutes": 60
-          },
-          "datasource": {
-            "type": "grafana-athena-datasource",
-            "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
-          },
-          "format": 1,
-          "hide": false,
-          "rawSQL": "\nSELECT \n  DISTINCT\n  CASE\n    WHEN line_item_line_item_type = 'SavingsPlanCoveredUsage' THEN 'Savings Plan'\n    WHEN line_item_line_item_type = 'DiscountedUsage' THEN 'Reserved Instance'\n    WHEN line_item_line_item_type = 'Usage' THEN 'On Demand'\n    ELSE 'Other'\n  END\nFROM \n  ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2' \nAND line_item_operation LIKE '%RunInstances%' \nAND line_item_usage_type NOT LIKE '%DataXfer%' \nAND product_servicecode <> 'AWSDataTransfer' \nAND line_item_resource_id NOT LIKE 'arn:%:capacity-reservation/%'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nAND line_item_resource_id = '${InstanceId}'\n",
-          "refId": "CUR"
-        }
-      ],
-      "title": "Instance Purchase Types",
-      "transparent": true,
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "datasource",
-        "uid": "-- Mixed --"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "fixedColor": "dark-green",
-            "mode": "shades",
-            "seriesBy": "max"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "series",
-            "axisLabel": "Usage Amount",
-            "axisPlacement": "left",
-            "axisSoftMin": 5,
-            "axisWidth": 50,
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 25,
-            "gradientMode": "opacity",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "smooth",
-            "lineStyle": {
-              "dash": [
-                0,
-                10
-              ],
-              "fill": "dot"
-            },
-            "lineWidth": 1,
-            "pointSize": 2,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "displayName": "Usage Amount",
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          },
-          "unit": "none"
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byFrameRefID",
-              "options": "CW"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "dark-purple",
-                  "mode": "shades",
-                  "seriesBy": "max"
-                }
-              },
-              {
-                "id": "custom.axisPlacement",
-                "value": "right"
-              },
-              {
-                "id": "custom.axisLabel",
-                "value": "CPU Percentage"
-              },
-              {
-                "id": "custom.axisSoftMin",
-                "value": 5
-              },
-              {
-                "id": "unit",
-                "value": "percent"
-              },
-              {
-                "id": "displayName",
-                "value": "CPU Percentage"
-              },
-              {
-                "id": "custom.gradientMode",
-                "value": "opacity"
-              },
-              {
-                "id": "custom.fillOpacity",
-                "value": 50
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 21
-      },
-      "id": 5,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "connectionArgs": {
-            "catalog": "__default",
-            "database": "__default",
-            "region": "__default",
-            "resultReuseEnabled": false,
-            "resultReuseMaxAgeInMinutes": 60
-          },
-          "datasource": {
-            "type": "grafana-athena-datasource",
-            "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
-          },
-          "format": 1,
-          "hide": false,
-          "rawSQL": "SELECT \nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date) as line_item_usage_start_date,\nSUM(line_item_usage_amount) as sum_line_item_usage_amount\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2' \nAND line_item_operation LIKE '%RunInstances%' \nAND line_item_usage_type NOT LIKE '%DataXfer%' \nAND product_servicecode <> 'AWSDataTransfer' \nAND line_item_resource_id NOT LIKE 'arn:%:capacity-reservation/%'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nAND line_item_resource_id = '${InstanceId}'\nGROUP BY\nline_item_usage_start_date\nORDER BY\nline_item_usage_start_date DESC\n",
-          "refId": "CUR"
-        },
-        {
-          "datasource": {
-            "type": "cloudwatch",
-            "uid": "${DS_GRAFANA-DASHBOARDS-CLOUDWATCH}"
-          },
-          "dimensions": {},
-          "expression": "REMOVE_EMPTY(SEARCH('{\"AWS/EC2\",\"InstanceId\"} \"CPUUtilization\" InstanceId=\"${InstanceId}\" :aws.AccountId=\"${AccountId}\"', 'Average', ${CWGranularity}))",
-          "hide": false,
-          "id": "",
-          "label": "",
-          "logGroups": [],
-          "matchExact": true,
-          "metricEditorMode": 1,
-          "metricName": "",
-          "metricQueryType": 0,
-          "namespace": "",
-          "period": "",
-          "queryMode": "Metrics",
-          "refId": "CW",
-          "region": "us-east-1",
-          "sqlExpression": "",
-          "statistic": "Average"
-        }
-      ],
-      "title": "CPU over Usage -  ${InstanceId}",
-      "transparent": true,
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "datasource",
-        "uid": "-- Mixed --"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "fixedColor": "dark-green",
-            "mode": "shades",
-            "seriesBy": "max"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "series",
-            "axisLabel": "Network Cost",
-            "axisPlacement": "left",
-            "axisSoftMin": 0,
-            "axisWidth": 75,
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 25,
-            "gradientMode": "opacity",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "smooth",
-            "lineStyle": {
-              "dash": [
-                0,
-                10
-              ],
-              "fill": "dot"
-            },
-            "lineWidth": 1,
-            "pointSize": 2,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "displayName": "Network Cost",
-          "mappings": [],
-          "min": 0,
-          "noValue": "No Value",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          },
-          "unit": "currencyUSD"
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byFrameRefID",
-              "options": "CW"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "dark-purple",
-                  "mode": "shades",
-                  "seriesBy": "max"
-                }
-              },
-              {
-                "id": "custom.axisPlacement",
-                "value": "right"
-              },
-              {
-                "id": "custom.axisLabel",
-                "value": "CPU Percentage"
-              },
-              {
-                "id": "custom.axisSoftMin",
-                "value": 10
-              },
-              {
-                "id": "unit",
-                "value": "bytes"
-              },
-              {
-                "id": "displayName",
-                "value": "Network Out (Bytes)"
-              },
-              {
-                "id": "custom.gradientMode",
-                "value": "opacity"
-              },
-              {
-                "id": "custom.fillOpacity",
-                "value": 50
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 21
-      },
-      "id": 7,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "connectionArgs": {
-            "catalog": "__default",
-            "database": "__default",
-            "region": "__default",
-            "resultReuseEnabled": false,
-            "resultReuseMaxAgeInMinutes": 60
-          },
-          "datasource": {
-            "type": "grafana-athena-datasource",
-            "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
-          },
-          "format": 1,
-          "hide": false,
-          "rawSQL": "SELECT \nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date) as line_item_usage_start_date,\nSUM(line_item_unblended_cost) as sum_line_item_unblended_cost\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2'\nAND line_item_usage_type LIKE '%DataTransfer-Out-Bytes'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nAND line_item_resource_id = '${InstanceId}'\nGROUP BY\nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date)\nORDER BY\nline_item_usage_start_date DESC\n",
-          "refId": "CUR"
-        },
-        {
-          "datasource": {
-            "type": "cloudwatch",
-            "uid": "${DS_GRAFANA-DASHBOARDS-CLOUDWATCH}"
-          },
-          "dimensions": {},
-          "expression": "REMOVE_EMPTY(SEARCH('{\"AWS/EC2\",\"InstanceId\"} \"NetworkOut\" InstanceId=\"${InstanceId}\" :aws.AccountId=\"${AccountId}\"', 'Average', ${CWGranularity}))",
-          "hide": false,
-          "id": "",
-          "label": "",
-          "logGroups": [],
-          "matchExact": true,
-          "metricEditorMode": 1,
-          "metricName": "",
-          "metricQueryType": 0,
-          "namespace": "",
-          "period": "",
-          "queryMode": "Metrics",
-          "refId": "CW",
-          "region": "us-east-1",
-          "sqlExpression": "",
-          "statistic": "Average"
-        }
-      ],
-      "title": "Network Out over Data Transfer Out Cost - ${InstanceId}",
-      "transparent": true,
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "datasource",
-        "uid": "-- Mixed --"
-      },
-      "description": "Absence of cost may mean the instance is in the free teir",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "fixedColor": "dark-green",
-            "mode": "shades",
-            "seriesBy": "max"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "series",
-            "axisLabel": "Network Cost",
-            "axisPlacement": "left",
-            "axisSoftMin": 0,
-            "axisWidth": 75,
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 25,
-            "gradientMode": "opacity",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "smooth",
-            "lineStyle": {
-              "dash": [
-                0,
-                10
-              ],
-              "fill": "dot"
-            },
-            "lineWidth": 1,
-            "pointSize": 2,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "displayName": "Network Cost",
-          "mappings": [],
-          "min": 0,
-          "noValue": "No Value",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green"
-              }
-            ]
-          },
-          "unit": "currencyUSD"
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byFrameRefID",
-              "options": "CW"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "dark-purple",
-                  "mode": "shades",
-                  "seriesBy": "max"
-                }
-              },
-              {
-                "id": "custom.axisPlacement",
-                "value": "right"
-              },
-              {
-                "id": "custom.axisLabel",
-                "value": "CPU Percentage"
-              },
-              {
-                "id": "custom.axisSoftMin",
-                "value": 10
-              },
-              {
-                "id": "unit",
-                "value": "bytes"
-              },
-              {
-                "id": "displayName",
-                "value": "Network Out (Bytes)"
-              },
-              {
-                "id": "custom.gradientMode",
-                "value": "opacity"
-              },
-              {
-                "id": "custom.fillOpacity",
-                "value": 50
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 29
-      },
-      "id": 6,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "connectionArgs": {
-            "catalog": "__default",
-            "database": "__default",
-            "region": "__default",
-            "resultReuseEnabled": false,
-            "resultReuseMaxAgeInMinutes": 60
-          },
-          "datasource": {
-            "type": "grafana-athena-datasource",
-            "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
-          },
-          "format": 1,
-          "hide": false,
-          "rawSQL": "SELECT \nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date) as line_item_usage_start_date,\nSUM(line_item_unblended_cost) as sum_line_item_unblended_cost\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2'\nAND line_item_usage_type LIKE '%DataTransfer-Regional-Bytes'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nAND line_item_resource_id = '${InstanceId}'\nGROUP BY\nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date)\nORDER BY\nline_item_usage_start_date DESC\n",
-          "refId": "CUR"
-        },
-        {
-          "datasource": {
-            "type": "cloudwatch",
-            "uid": "${DS_GRAFANA-DASHBOARDS-CLOUDWATCH}"
-          },
-          "dimensions": {},
-          "expression": "REMOVE_EMPTY(SEARCH('{\"AWS/EC2\",\"InstanceId\"} \"NetworkOut\" InstanceId=\"${InstanceId}\" :aws.AccountId=\"${AccountId}\"', 'Average', ${CWGranularity}))",
-          "hide": false,
-          "id": "",
-          "label": "",
-          "logGroups": [],
-          "matchExact": true,
-          "metricEditorMode": 1,
-          "metricName": "",
-          "metricQueryType": 0,
-          "namespace": "",
-          "period": "",
-          "queryMode": "Metrics",
-          "refId": "CW",
-          "region": "us-east-1",
-          "sqlExpression": "",
-          "statistic": "Average"
-        }
-      ],
-      "title": "Network Out over Data Transfer Regional  Cost - ${InstanceId}",
-      "transparent": true,
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "datasource",
-        "uid": "-- Mixed --"
-      },
-      "description": "Transfer between regions from resource.  Absence of cost may mean the instance is covered under the free tier.",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "fixedColor": "dark-green",
-            "mode": "shades",
-            "seriesBy": "max"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "series",
-            "axisLabel": "Network Cost",
-            "axisPlacement": "left",
-            "axisSoftMin": 0,
-            "axisWidth": 75,
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 25,
-            "gradientMode": "opacity",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "smooth",
-            "lineStyle": {
-              "dash": [
-                0,
-                10
-              ],
-              "fill": "dot"
-            },
-            "lineWidth": 1,
-            "pointSize": 2,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "displayName": "Network Cost",
-          "mappings": [],
-          "min": 0,
-          "noValue": "No Value",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green"
-              }
-            ]
-          },
-          "unit": "currencyUSD"
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byFrameRefID",
-              "options": "CW"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "dark-purple",
-                  "mode": "shades",
-                  "seriesBy": "max"
-                }
-              },
-              {
-                "id": "custom.axisPlacement",
-                "value": "right"
-              },
-              {
-                "id": "custom.axisLabel",
-                "value": "CPU Percentage"
-              },
-              {
-                "id": "custom.axisSoftMin",
-                "value": 10
-              },
-              {
-                "id": "unit",
-                "value": "bytes"
-              },
-              {
-                "id": "displayName",
-                "value": "Network Out (Bytes)"
-              },
-              {
-                "id": "custom.gradientMode",
-                "value": "opacity"
-              },
-              {
-                "id": "custom.fillOpacity",
-                "value": 50
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 29
-      },
-      "id": 9,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "connectionArgs": {
-            "catalog": "__default",
-            "database": "__default",
-            "region": "__default",
-            "resultReuseEnabled": false,
-            "resultReuseMaxAgeInMinutes": 60
-          },
-          "datasource": {
-            "type": "grafana-athena-datasource",
-            "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
-          },
-          "format": 1,
-          "hide": false,
-          "rawSQL": "SELECT \nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date) as line_item_usage_start_date,\nSUM(line_item_unblended_cost) as sum_line_item_unblended_cost\nFROM ${CURDatabase}.${CURTable}\nWHERE \n$__timeFilter(line_item_usage_start_date)\nAND line_item_product_code = 'AmazonEC2'\nAND line_item_usage_type LIKE '%-AWS-In-Bytes'\nAND line_item_line_item_type in ('SavingsPlanCoveredUsage', 'Usage', 'DiscountedUsage')\nAND line_item_usage_account_id = '${AccountId}'\nAND product_region_code = '${Region}'\nAND line_item_resource_id = '${InstanceId}'\nGROUP BY\nDATE_TRUNC('${CURGranularity}', line_item_usage_start_date)\nORDER BY\nline_item_usage_start_date DESC\n",
-          "refId": "CUR"
-        },
-        {
-          "datasource": {
-            "type": "cloudwatch",
-            "uid": "${DS_GRAFANA-DASHBOARDS-CLOUDWATCH}"
-          },
-          "dimensions": {},
-          "expression": "REMOVE_EMPTY(SEARCH('{\"AWS/EC2\",\"InstanceId\"} \"NetworkOut\" InstanceId=\"${InstanceId}\" :aws.AccountId=\"${AccountId}\"', 'Average', ${CWGranularity}))",
-          "hide": false,
-          "id": "",
-          "label": "",
-          "logGroups": [],
-          "matchExact": true,
-          "metricEditorMode": 1,
-          "metricName": "",
-          "metricQueryType": 0,
-          "namespace": "",
-          "period": "",
-          "queryMode": "Metrics",
-          "refId": "CW",
-          "region": "us-east-1",
-          "sqlExpression": "",
-          "statistic": "Average"
-        }
-      ],
-      "title": "Network Out over Intra-Region Data Transfer Cost - ${InstanceId}",
-      "transparent": true,
-      "type": "timeseries"
     }
   ],
   "refresh": "",
@@ -2806,42 +2766,11 @@
         "skipUrlSync": false,
         "sort": 0,
         "type": "query"
-      },
-      {
-        "current": {},
-        "datasource": {
-          "type": "grafana-athena-datasource",
-          "uid": "${DS_GRAFANA-DASHBOARDS-ATHENA}"
-        },
-        "definition": "",
-        "description": "Load Balancer Name - tagged with $TagKey $TagValue - observed during selected time period. ",
-        "hide": 0,
-        "includeAll": false,
-        "label": "Load Balancer",
-        "multi": false,
-        "name": "LBName",
-        "options": [],
-        "query": {
-          "connectionArgs": {
-            "catalog": "__default",
-            "database": "__default",
-            "region": "__default",
-            "resultReuseEnabled": false,
-            "resultReuseMaxAgeInMinutes": 60
-          },
-          "format": 1,
-          "rawSQL": "SELECT \n  DISTINCT(line_item_resource_id)\nFROM ${CURDatabase}.${CURTable}\nWHERE \n  $__timeFilter(line_item_usage_start_date) \n  -- line_item_usage_start_date >= (current_date - interval '3' day) --lookback period\n  AND line_item_product_code = 'AWSELB'\n  AND line_item_usage_account_id = '${AccountId}'\n  AND product_region_code = '${Region}'\n  AND resource_tags['${TagKey}'] = '${TagValue}';\n\n"
-        },
-        "refresh": 1,
-        "regex": "",
-        "skipUrlSync": false,
-        "sort": 0,
-        "type": "query"
       }
     ]
   },
   "time": {
-    "from": "now-6M",
+    "from": "now-7d",
     "to": "now-1440m"
   },
   "timepicker": {
@@ -2851,6 +2780,6 @@
   "timezone": "browser",
   "title": "EC2 Dashboard",
   "uid": "aer8d8juorh8gd",
-  "version": 166,
+  "version": 176,
   "weekStart": ""
 }
