@@ -18,6 +18,8 @@
 
 COAST is an open-source collection of Grafana dashboards that provide the capability to combine and observe AWS resource performance metrics with AWS cost and usage report (CUR) data. These dashboards assist customers in promoting financial accountability, optimizing costs, tracking usage goals, implementing governance best practices, and achieving operational excellence across all Well-Architected pillars. Utilizing Amazon Managed Grafana allows us to use an open-source platform that is very popular with the engineering community.
 
+**THIS IS A BETA PROJECT.  Please be sure to monitor and observe costs closely for the serivces that this project utilizes.**. Services used by this project include Amazon Managed Grafana, Amazon CloudWatch, Amazon Athena, Amazon Glue, and Amazon S3.
+
 ###### Advantages of COAST
 
 - If you are already using Grafana for monitoring application metrics, you will be familiar with the tool interface.
@@ -33,11 +35,11 @@ COAST is deployed via CloudFormation, which allows for the provisioning of [Amaz
 
 ##### 1. CUR Data Preparation.
 
-We recommend deploying dashboards in a dedicated monitoring account to aggregate Cost and Usage Report (CUR) data and CloudWatch cross-account metrics. This separation from the payer management account enhances security by consolidating observability functions in a tightly controlled environment. To deploy the COAST Grafana dashboard infrastructure, we recommend utilizing the data collection engine of the **Cloud Intelligence Dashboards** which has built an architecture and deployment for central CUR aggregation utilized for the CID Dashboards. 
+We recommend deploying dashboards in a **dedicated monitoring** account to aggregate Cost and Usage Report (CUR) data and CloudWatch cross-account metrics. This separation from the payer management account enhances security by consolidating observability functions in a tightly controlled environment. To deploy the COAST Grafana dashboard infrastructure, we recommend utilizing the data collection engine of the **Cloud Intelligence Dashboards (CID)**.  CID has built an architecture and deployment for central CUR and FOCUS aggregation utilized for the CID Dashboards. 
 
 The CID Data Collection Lab provides CloudFormation templates to copy CUR 2.0 data from your Management (Payer) Account to a dedicated one. You can use it to aggregate data from multiple Management Accounts or multiple Linked Accounts.  
 
-[Step 1: Create Desitination for CUR Aggregattion](https://catalog.workshops.aws/awscid/en-US/dashboards/foundational/cudos-cid-kpi/deploy#step-1.-data-collection-account-create-destination-for-cur-aggregation) in your dedicated Data Collection Account.
+[Step 1: Create Desitination for CUR Aggregattion](https://docs.aws.amazon.com/guidance/latest/cloud-intelligence-dashboards/deployment-in-global-regions.html#deploy-in-global-regions-create-cur-and-replication) in your dedicated Data Collection Account.
 
 [Step 2: Create CUR 2.0 and replication](https://catalog.workshops.aws/awscid/en-US/dashboards/foundational/cudos-cid-kpi/deploy#step-2.-in-managementpayersource-account-create-cur-2.0-and-replication) in the Management Account.
 
@@ -90,7 +92,33 @@ COAST is an open-source solution and is completely free to use. However, you wil
 
 [CloudWatch Grafana Plugin Cost](https://grafana.com/docs/grafana/latest/datasources/aws-cloudwatch/#control-pricing)
 
-Each dashboard may have additional cost implications. Details are provided in the README file associated with each dashboard.
+Each dashboard may have additional cost implications. Details are provided in the README file associated with each dashboard.  Consider that the more queries you have in a dashboard, and the longer the lookback period will result in a larger data pull from Athena which will impact cost.
+
+### Split CUR per Business Unit
+
+You may with to import dashboards which allow access to only a small subset of the accounts from your CUR.  Common use cases are to allows individual business units to see their data only.  This is possible with the combination of views in Athena and Grafana permissions management.
+
+1. Create a view in the data collection account Athena which only contains cost and usage data for a subset of accounts. 
+
+    ```
+    CREATE OR REPLACE VIEW "engineering_team_view" AS 
+    SELECT *
+    FROM
+    cid_data_export.cur2
+    WHERE (line_item_usage_account_id IN ('111222333444', '222333444555'))
+    ```
+    <br><br>
+
+2. Import the dashboard under this folder, and make sure the permissions do not override that of the parent folder.  On the folder adjust the permissions to only allow the appropriate users or teams to access this dashboard as viewers.  In this case,  demo-user has viewer access.  The demo-user account will only be able to view dashboards under this folder and not view dashboards in other folders.
+
+    <img src="images/grafana_permissions.png"><br><br>
+
+
+3. In the imported dashboard(s), adjust the CURTable variable so that it is pointing at the newly created view, in this example 'engineering_team_view'.
+
+    <img src="images/grafana_athena_table.png"><br><br>
+
+4. The dashboard will now display only the accounts within the view.
 
 ### Dashboards
 ---
@@ -99,7 +127,7 @@ Each dashboard may have additional cost implications. Details are provided in th
 
 The EC2 Instance Dashboard displays EC2 instance compute cost, usage and performance metric information filtered by account and region. One section also filters by tag. The filter panel will refresh based on selections of previous filters. For example, when an account is selected the Region menu will only show regions, instances and tags observed in that account for the time period selected.
 
-[AmazonEC2 Dashboard](grafana_dashboards/ec2_dashboard/README.md)
+[AmazonEC2 Dashboard](grafana_dashboards/cur2/ec2_dashboard/README.md)
 
 <img src="images/amazonec2_dashboard.png">
 <br>
@@ -109,11 +137,15 @@ The EC2 Instance Dashboard displays EC2 instance compute cost, usage and perform
 
 The Athena Dashboard displays Amazon Athena cost over CloudWatch metrics such as ProcessedBytes or TotalExecutionTime. Usage and performance metric information is filtered by account and region. One section also filters by tag. The filter panel will refresh based on selections of previous filters. For example, when an account is selected the Region menu will only show regions, workgroups and tags observed in that account for the time period selected.
 
+[Athena Dashboard](grafana_dashboards/cur2/athena_dashboard/README.md)
+
 <img src="images/amazonathena_dashboard.png">
 
 ###### Auto Scaling Dashboard
 
 The Auto scaling dashboard provides comprehensive visibility into your Auto scaling workloads, organized by Auto scaling group name and tag/key values. Built on the CUR 2 format, it requires both CUR 2 and CloudWatch data sources. The dashboard consolidates autoscaling workload resources, enabling you to monitor both cost and performance metrics in a single unified view.
+
+[Athena Dashboard](grafana_dashboards/cur2/auto_scaling_dashboard/README.md)
 
 <img src="images/autoscaling_dashboard.png">
 
@@ -121,7 +153,7 @@ The Auto scaling dashboard provides comprehensive visibility into your Auto scal
 
 The AmazonEKS Split Cost Allocation Dashboard combines the split cost allocation data available within the cost and usage (CUR) report and marries the data with CloudWatch performance metrics to graph performance metrics over cost. The Amazon EKS Split Cost Allocation Dashboard is crucial for engineers as it provides a unified view of cost and performance metrics, enabling them to make informed decisions, optimize resource usage, and ensure efficient cloud operations.
 
-[AmazonEKS Split Cost Dashboard](grafana_dashboards/amazoneks_dashboard/README.md)
+[AmazonEKS Split Cost Dashboard](grafana_dashboards/cur2/amazoneks_dashboard/README.md)
 
 <img src="images/amazoneks_dashboard.jpg">
 
