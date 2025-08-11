@@ -109,7 +109,7 @@ You may with to import dashboards which allow access to only a small subset of t
     ```
     <br><br>
 
-2. Import the dashboard under this folder, and make sure the permissions do not override that of the parent folder.  On the folder adjust the permissions to only allow the appropriate users or teams to access this dashboard as viewers.  In this case,  demo-user has viewer access.  The demo-user account will only be able to view dashboards under this folder and not view dashboards in other folders.
+2. Import the dashboard under this folder, and make sure the permissions do not override that of the parent folder.  On the folder adjust the permissions to only allow the appropriate users or teams to access this dashboard as viewers.  In this case,  demo-user has viewer access.  The demo-user account will only be able to view dashboards under this folder and not view dashboards in other folders.     
 
     <img src="images/grafana_permissions.png"><br><br>
 
