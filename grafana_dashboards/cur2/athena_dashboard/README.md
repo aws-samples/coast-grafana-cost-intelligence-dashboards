@@ -1,4 +1,4 @@
-# AmazonEC2 Dashboard
+# Athena Dashboard
 
 <p align="center">
 <img alt="GitHub commit activity" src="https://img.shields.io/github/commit-activity/m/aws-samples/coast-grafana-cost-intelligence-dashboards">
@@ -16,11 +16,13 @@
 ### Introduction
 ---
 
-The Athena Dashboard displays Amazon Athena cost, usage and performance metric information filtered by account and region. One section also filters by tag. The filter panel will refresh based on selections of previous filters. For example, when an account is selected the Region menu will only show regions, workgroups and tags observed in that account for the time period selected.
+**THIS IS A BETA PROJECT.  Please be sure to monitor and observe costs closely for the serivces that this project utilizes.**.
+
+The Athena Dashboard displays Amazon Athena cost, usage and performance metric information filtered by account and region. One section also filters by tag. The filter panel will refresh based on selections of previous filters. For example, when an account is selected the region menu will only show regions observed in that account for the time period selected.
 
 CloudWatch metrics are available in certain graphs where a common key can be defined between CUR data and CloudWatch data (i.e. workgroup name). For metrics to work correctly, you need the CloudWatch data source enabled. For CloudWatch cross-account/cross-region to work correctly you need to have CloudWatch (cross-account) metrics configured. 
 
-<img src="../../images/amazonathena_dashboard.png"><br>
+<img src="../../../images/amazonathena_dashboard.png"><br>
 
 
 ### Installation
@@ -28,7 +30,7 @@ CloudWatch metrics are available in certain graphs where a common key can be def
 
 ##### Step 1.
 
-This dashboard requires CUR 2.0 and assumes you have installed the CID Datacollection stack per the instructions in the project README file.  Once configured, be sure to adjust CURDatabase and CURTable variables if you have changed your Athena database and table names.
+This dashboard requires CUR 2.0 and assumes you have installed the CID Datacollection stack per the instructions in the project README file.  Once configured, be sure to adjust CURDatabase and CURTable variables if you have changed your Athena database and table names.  We default to the CUR Table named cur2.
 
 ##### Step 2.
 

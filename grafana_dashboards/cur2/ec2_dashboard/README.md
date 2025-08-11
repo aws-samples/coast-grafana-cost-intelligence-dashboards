@@ -16,12 +16,14 @@
 ### Introduction
 ---
 
+**THIS IS A BETA PROJECT.  Please be sure to monitor and observe costs closely for the serivces that this project utilizes.**.
+
 The EC2 Instance Dashboard displays EC2 instance compute cost, usage and performance metric information filtered by account and region. One section also filters by tag. The filter panel will refresh based on selections of previous filters. For example, when an account is selected the Region menu will only show regions, instances and tags observed in that account for the time period selected.
 
 CloudWatch metrics are available in certain graphs where a common key can be defined between CUR data and CloudWatch data (i.e. instance name). For metrics to work correctly, you need the CloudWatch data source enabled. For CloudWatch cross-account/cross-region to work correctly you need to have CloudWatch (cross-account) metrics configured. 
 
-<img src="../../images/amazonec2_dashboard.png"><br>
-<img src="../../images/amazonec2_dashboard_instance_explorer.png">
+<img src="../../../images/amazonec2_dashboard.png"><br>
+<img src="../../../images/amazonec2_dashboard_instance_explorer.png">
 
 
 ### Installation

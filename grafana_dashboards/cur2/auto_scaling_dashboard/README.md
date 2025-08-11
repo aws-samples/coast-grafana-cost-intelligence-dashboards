@@ -1,191 +1,70 @@
 # Autoscaling Dashboard
 
-![Autoscaling Dashboard](../../images/coast_banner.png)
+<p align="center">
+<img alt="GitHub commit activity" src="https://img.shields.io/github/commit-activity/m/aws-samples/coast-grafana-cost-intelligence-dashboards">
 
-## About
+</p>
 
-The COAST Autoscaling Dashboard provides a comprehensive overview of cost and infrastructure performance metrics related to EC2 Autoscaling Groups, Load Balancers, NAT Gateways, and networking across all associated resources. The data sources feeding into this dashboard are CloudWatch and the Cost and Usage Report (CUR).
+<p align="center">
+<a href="../../README.md">Project Home</a> &nbsp;&bull;&nbsp;
+<a href="#introduction">Introduction</a> &nbsp;&bull;&nbsp;
+<a href="#installation">Installation</a> &nbsp;&bull;&nbsp;
+<a href="#documentation">Documentation</a> &nbsp;&bull;&nbsp;
+<a href="#license">License</a>
+</p>
+
+### Introduction
+---
+
+**THIS IS A BETA PROJECT.  Please be sure to monitor and observe costs closely for the serivces that this project utilizes.**.
+
+The Auto Scaling Dashboard provides a comprehensive overview of cost and infrastructure performance metrics related to EC2 Auto Scaling Groups, Load Balancers, NAT Gateways, and networking across all associated resources. The data sources feeding into this dashboard are CloudWatch and the Cost and Usage Report (CUR).
 
 To effectively utilize this dashboard, it necessitates the specification of your autoscaling group's name. Moreover, all resources within your autoscaling workload must be tagged with a unique tag key/value pair specific to this workload. It is imperative that these tags are enabled as Cost Allocation Tags and persist within the Cost and Usage Report (CUR).
 
-## Usage
-All panels within the Autoscaling Dashboard require cost allocation tags to exist within your CUR.  First select the region where or the workload.  Next, you will need to fill in the name of the autoscaling group you wish to monitor, the cost of the autoscaling group will be displayed with by selecting the accompaning tag for the autoscaling group and all of it's resources, and supporting resources (i.e. LB, NATGW).   
-
-The values for the NAT Gateway and Load Balancer menus will populate based on your selection for tags.  Additional graphs will be selected once one or more NATGW's or LB's are selected. 
+<img src="../../../images/amazonathena_dashboard.png"><br>
 
 
-## Limitations 
+### Installation
+---
 
-Currently the COAST Autoscaling Dashboard is in a proof of concept phase.  It has been certified for workloads which are operating in the same account as the COAST deployment.  Workloads from multiple regions in the account may be observed.  We are working on a mechanism to make the COAST Autoscaling Dashboard operational across accounts.
+##### Step 1.
 
-## Layout
-```
-mermaid
-block-beta
+This dashboard requires CUR 2.0 and assumes you have installed the CID Datacollection stack per the instructions in the project README file.  Once configured, be sure to adjust CURDatabase and CURTable variables if you have changed your Athena database and table names.  We default to the CUR Table named cur2.
 
-  block:Instructions:4
-    columns 2
-    a1["Auto Scaling Dashboard"] 
-    a2["How to Utilize this 
-    Dashboard"]
+##### Step 2.
 
-    a3["Validator Instructions"]
-    a4["Validator"]
-  end
-  
-  block:workloadCostTrends:4
-    columns 4
-    b1["Compute - Period over Period  
-    Type:unblended;TagSupport:Yes"]
-    b2["Load Balancer - Period over Period
-    Type:unblended;TagSupport:Yes"]
-    b3["Network - Period over Period
-    Type:unblended;TagSupport:Yes"]
-    b4["NAT Gateway - Period over Period
-    Type:unblended;TagSupport:Yes"]
-  end
+Some visuals in this dashboard require a CloudWatch datasource and **CloudWatch cross-account observability**.  It is assumed you have installed the CloudWatch datasource per the instructions in the project Readme file.
 
-  columns 4
-  b5["Service Cost Trend
-  Type:unblended;TagSupport:Yes"]:4
+##### Step 2. 
 
-  block:computeCosts:4
-    b6["Compute Cost by AZ
-    Type:unblended;TagSupport:Yes"]
-    b7["Compute Cost by Instance
-    Type:unblended;TagSupport:Yes"]
-  end 
+Under the Grafana Dashboard menu select New -> Import.  Next select your Athena and CloudWatch datasources.
 
-  classDef defaultBox fill:#E6E6FA,stroke:#7F00FF,stroke-width:1px;
-  classDef notagClass fill:#F5F5F5,font-size:4pt  
-  classDef seperators font-size:2pt,width:100%
-  
-  class Instructions,workloadCostTrends,computeCosts defaultBox
-  class a1,a2,a3,a4,b1,b2,b3,b4,b5,b6,b7 notagClass
-  class sep1 seperators
-```
+### Documentation
+---
 
-## Layout
-- Type: [unblended|amortized] How are the costs displated unblended or amortized
-- TagSupport: [Yes|No] If the panel requires tags
-- DependsOn: If the panel depends on any menu selection items
+This dashboard has two sections.
 
-```mermaid
-block-beta
-
-  columns 4
-
-  block:Instructions:4
-    columns 2
-    a1["Auto Scaling Dashboard"] 
-    a2["How to Utilize this 
-    Dashboard"]
-
-    a3["Validator Instructions"]
-    a4["Validator"]
-  end
-  
-  block:workloadCostTrends:4
-    columns 4
-    b1["Compute - Period over Period  
-    Type:unblended;TagSupport:Yes"]
-    b2["Load Balancer - Period over Period
-    Type:unblended;TagSupport:Yes"]
-    b3["Network - Period over Period
-    Type:unblended;TagSupport:Yes"]
-    b4["NAT Gateway - Period over Period
-    Type:unblended;TagSupport:Yes"]
-  end
-
-  block:computeCosts:4
-    b6["Compute Cost by AZ
-    Type:unblended;TagSupport:Yes"]
-    b7["Compute Cost by Instance
-    Type:unblended;TagSupport:Yes"]
-  end 
-
-  block:serviceTrends:4
-    b5["Service Cost Trend
-    Type:unblended;TagSupport:Yes"]
-  end
-
-  block:computeActivity:4
-    columns 2
-    c1["Scaling Activity
-    Type:unblended;TagSupport:Yes
-    DependsOn: ASGName"]
-    c2["Average CPU
-    Type:unblended;TagSupport:Yes
-    DependsOn: ASGName"]
+##### Overview Section
+A general overview of Athena Spend and associated CloudWatch metrics.
     
-    c3["Instance Status Check
-    Type:unblended;TagSupport:Yes
-    DependsOn: ASG Name"]
-    c4["CPU Credit Balance
-    Type:unblended;TagSupport:Yes
-    DependsOn: ASG Name"]
-  end 
+##### Tag Explorer
+A collection of visuals displaying Cost and Usage grouped by the selected Tag and Value (CloudWatch is not supported with tagging)
 
-  block:networkingActivity:4
-    columns 2
-    d1["EC2 Networking Bytes Out
-    Type:unblended;TagSupport:Yes
-    DependsOn: ASG Name"]
 
-    d2["EC2 Networking Packets Out
-    Type:unblended;TagSupport:Yes
-    DependsOn: ASG Name"]
-  end
+######  Associated Cost
+> [!IMPORTANT]
+> Costs are associated with operating this dashboard.  Costs depend on usage and the size of your datasets, be sure to get a complete understanding of costs before deployment. 
 
-  block:elbActivity:4
-    columns 2
-    e1["LCU Metrics
-    Type:unblended;TagSupport:Yes
-    DependsOn: ELB ResourceID"]
+[CloudWatch Pricing](https://aws.amazon.com/cloudwatch/pricing/)
 
-    e2["Hourly Costs and Requests
-    Type:unblended;TagSupport:Yes
-    DependsOn: ELB ResourceID"]
-  end
+Additional costs have been outlined in the [project README](../../README.md)
 
-  block:natgwActivity:4
-    columns 2
-    f1["Nat Gateway Traffic
-    Type:unblended;TagSupport:Yes
-    DependsOn: NATGW ResourceID"]
-
-    f2["Nat Gateway Hourly
-    Type:unblended;TagSupport:Yes
-    DependsOn: NATGW ResourceID"]
-  end
-
-  
-
-  classDef section1 fill:#E6E6FA,stroke:#7F00FF,stroke-width:1px;
-  classDef section2 fill:#C2DFFF,stroke:#357EC7,stroke-width:1px;
-  classDef tagClass fill:#F5F5F5,font-size:4pt,stroke:#646D7E 
-  classDef notagClass fill:#E0FFFF,font-size:4pt,stroke:#646D7E 
-  
-  class Instructions,computeActivity,elbActivity section1
-  class computeCosts,serviceTrends,workloadCostTrends,networkingActivity,natgwActivity section2
-  class a1,a2,a3,a4,b1,b2,b3,b4,b5,b6,b7,c1,c2,c3,c4 tagClass
-  class d1,d2,e1,e2,f1,f2 tagClass
-
-  classDef section1 fill:#E6E6FA,stroke:#7F00FF,stroke-width:1px;
-  classDef section2 fill:#C2DFFF,stroke:#357EC7,stroke-width:1px;
-  classDef tagClass fill:#F5F5F5,font-size:4pt,stroke:#646D7E 
-  classDef notagClass fill:#E0FFFF,font-size:4pt,stroke:#646D7E 
-  
-  class Instructions,computeActivity,elbActivity section1
-  class computeCosts,serviceTrends,workloadCostTrends,networkingActivity section2
-  class a1,a2,a3,a4,b1,b2,b3,b4,b5,b6,b7,c1,c2,c3,c4 tagClass
-  class d1,d2,e1,e2 tagClass
-
-```
+### License
+---
+This library is licensed under the MIT-0 License. See the [LICENSE](https://github.com/aws-samples/COAST/blob/main/LICENSE) file.
 
 ## Troubleshooting
 
 #####Autoscaling Metrics
 If you are not seeing Autoscaling Metrics in Cloudwatch, make sure to enable 'Auto Scaling group metrics collection' under the monitoring tab in your Autoscaling Group console.
-
-
