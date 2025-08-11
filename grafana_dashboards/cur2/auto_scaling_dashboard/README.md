@@ -60,6 +60,30 @@ A collection of visuals displaying Cost and Usage grouped by the selected Tag an
 
 Additional costs have been outlined in the [project README](../../README.md)
 
+######  Splitting CUR per Business Unit
+
+Many customers will require to deliver a dashboard to a business unit which owns only a small subset of accounts under the management account.  This goal may be accomplished by utilizing Athena views and Grafana permissions.  
+
+1. Create a view which includes only the accounts necessary for the business unit
+
+    The below example shows an example based on cur2:
+
+    ```
+    CREATE OR REPLACE VIEW "engineering_team_view" AS 
+    SELECT *
+    FROM
+    cid_data_export.cur2
+    WHERE (line_item_usage_account_id IN ('111222333444', '555666777888'))
+    ```
+
+2. Create a folder for the business unit, and grant view permissions down to the user(s), teams or roles.  In the example below demo-user has the ability to view dashboards in this folder.  Other dashboads in Grafana forbid demo-user from gaining viewing their content. 
+
+    <img src="../../../images/grafana_permissions.png"><br>
+
+3. Next for all dashboards in the folder, adjust their CURTable variable to point to the newly created view 'engineering_team_view':
+
+    <img src="../../../images/grafana_athena_table.png"><br>
+
 ### License
 ---
 This library is licensed under the MIT-0 License. See the [LICENSE](https://github.com/aws-samples/COAST/blob/main/LICENSE) file.
