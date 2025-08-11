@@ -94,7 +94,7 @@ COAST is an open-source solution and is completely free to use. However, you wil
 
 Each dashboard may have additional cost implications. Details are provided in the README file associated with each dashboard.  Consider that the more queries you have in a dashboard, and the longer the lookback period will result in a larger data pull from Athena which will impact cost.
 
-### Split CUR per Business Unit
+###### Split CUR per Business Unit
 
 You may with to import dashboards which allow access to only a small subset of the accounts from your CUR.  Common use cases are to allows individual business units to see their data only.  This is possible with the combination of views in Athena and Grafana permissions management.
 
