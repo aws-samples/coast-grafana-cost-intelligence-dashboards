@@ -39,9 +39,9 @@ We recommend deploying dashboards in a **dedicated monitoring** account to aggre
 
 The CID Data Collection Lab provides CloudFormation templates to copy CUR 2.0 data from your Management (Payer) Account to a dedicated one. You can use it to aggregate data from multiple Management Accounts or multiple Linked Accounts.  
 
-[Step 1: Create Desitination for CUR Aggregattion](https://docs.aws.amazon.com/guidance/latest/cloud-intelligence-dashboards/deployment-in-global-regions.html#deploy-in-global-regions-create-cur-and-replication) in your dedicated Data Collection Account.
+[Step 1: Create Desitination for CUR Aggregattion](https://docs.aws.amazon.com/guidance/latest/cloud-intelligence-dashboards/deployment-in-global-regions.html#deploy-in-global-regions-create-destination-for-cur) in your dedicated Data Collection Account.
 
-[Step 2: Create CUR 2.0 and replication](https://catalog.workshops.aws/awscid/en-US/dashboards/foundational/cudos-cid-kpi/deploy#step-2.-in-managementpayersource-account-create-cur-2.0-and-replication) in the Management Account.
+[Step 2: Create CUR 2.0 and replication](https://docs.aws.amazon.com/guidance/latest/cloud-intelligence-dashboards/deployment-in-global-regions.html#deploy-in-global-regions-create-cur-and-replication) in the Management Account.
 
 *Step 3 may be ignored.*
 
