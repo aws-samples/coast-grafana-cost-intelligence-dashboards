@@ -55,6 +55,8 @@ In each source account in each region, in the CloudWatch settings, select *Sourc
 
 For more in-depth instructions, see [Configure CloudWatch cross-account observability](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-Unified-Cross-Account.html). 
 
+Cross-account observability comes with no extra cost for logs and metrics.  See the [CloudWatch pricing page](https://aws.amazon.com/cloudwatch/pricing/) for more information.  
+
 ##### 3. Solution Deployment. 
 
 Deploy COAST within the central monitoring account (data collection account). The COAST CloudFormation template builds the Amazon Grafana Workspace, installs the Athena plugin, and configures the Athena plugin with the deployed CUR and CloudWatch.
@@ -84,13 +86,24 @@ After importing the dashboards, follow the dashboard's readme file to set your v
 ######  Associated Cost
 
 > [!IMPORTANT]
-> Costs are associated with operating this dashboard.  Costs depend on usage and the size of your datasets, be sure to get a complete understanding of costs before deployment. 
+> Costs are associated with operating this dashboard.  Costs depend on usage and the size of your datasets, be sure to get a complete understanding of costs before deployment.  COAST is an open-source solution and is completely free to use. However, you will be responsible for any AWS costs associated with underlying AWS services. Costs to consider:
 
-COAST is an open-source solution and is completely free to use. However, you will be responsible for any AWS costs associated with underlying AWS services. Costs to consider:
-
+*Grafana*:
 [Amazon Managed Grafana Pricing](https://aws.amazon.com/grafana/pricing/)
 
-[CloudWatch Grafana Plugin Cost](https://grafana.com/docs/grafana/latest/datasources/aws-cloudwatch/#control-pricing)
+*Athena*:
+[Amazon Athena Pricing](https://aws.amazon.com/athena/pricing/)
+
+*CloudWatch*:
+1/ Cross-account observability comes with no extra cost for logs and metrics.  See the [CloudWatch pricing page](https://aws.amazon.com/cloudwatch/pricing/) for more information. 
+
+2/ [CloudWatch Grafana Plugin Cost](https://grafana.com/docs/grafana/latest/datasources/aws-cloudwatch/#control-pricing)
+
+**Price Estimation**
+
+Consider the size of our CUR, the number of visuals on your dashboards, the number of Grafana users and views per day in the estimation of costs.  Use the [AWS Pricing Calculator](https://calculator.aws/#/) to breat an estimation.  Most implementations will be between $10 and $300/month, however it is advised to program your specific scenario into the AWS Calculator to understand costs prior to deployment.  
+
+Post deployment, we advise you to create a dashboard for Athena, CloudWatch, Glue and S3 to track cost trends. 
 
 Each dashboard may have additional cost implications. Details are provided in the README file associated with each dashboard.  Consider that the more queries you have in a dashboard, and the longer the lookback period will result in a larger data pull from Athena which will impact cost.
 
