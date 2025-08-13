@@ -18,7 +18,9 @@
 
 **THIS IS A BETA PROJECT.  Please be sure to monitor and observe costs closely for the serivces that this project utilizes.**.
 
-The FOCUS Cost and Usage Overview dashboard aims to provide an example of observing utilizing the [AWS implementation of the FinOps.org FOCUS specification](https://docs.aws.amazon.com/cur/latest/userguide/table-dictionary-focus-1-0-aws.html).  The dashboard provides two sections.  A high level overview of spend trends across all accounts and an account/region specific section to observe cost per account in a specific region. 
+The FOCUS Cost and Usage Overview dashboard aims to provide an example of observing cost and usage utilizing the [AWS implementation of the FinOps.org FOCUS specification](https://docs.aws.amazon.com/cur/latest/userguide/table-dictionary-focus-1-0-aws.html).  The dashboard provides two sections.  A high level overview of spend trends across all accounts and an account/region specific section to observe cost per account in a specific region. 
+
+More information on the FOCUS specification is available at the [focus.finops.org](https://focus.finops.org/).
 
 
 <img src="../../../images/focus-dashboard1.png"><br>
@@ -30,7 +32,7 @@ The FOCUS Cost and Usage Overview dashboard aims to provide an example of observ
 
 ##### Step 1.
 
-This dashboard requires FOCUS and assumes you have installed the CID Datacollection stack per the instructions in the project Readme file.  Once configured, be sure to adjust CURDatabase and CURTable variables if you have changed your Athena database and table name.
+This dashboard requires the FOCUS dataset and assumes you have installed the CID Datacollection stack per the instructions in the project Readme file.  Once configured, be sure to adjust CURDatabase and CURTable variables if you have changed your Athena database and table name.
 
 
 ##### Step 2. 
